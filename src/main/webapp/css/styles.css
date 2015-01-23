@@ -1,0 +1,80 @@
+.modalspinner {
+    display:    none;
+    position:   fixed;
+    z-index:    1000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .1 )
+    url('../images/ajax-loader.gif')
+    50% 50%
+    no-repeat;
+}
+
+/* When the body has the loading class, we turn
+   the scrollbar off with overflow:hidden */
+body.loading {
+    overflow: hidden;
+}
+
+/* Anytime the body has the loading class, our
+   modal element will be visible */
+body.loading .modalspinner {
+    display: block;
+}
+
+.th {
+    font-weight:bold;
+}
+
+/*
+#mapModalDialog {
+    width: auto !important;
+    margin: 30px !important;
+}
+*/
+/*
+.modal-dialog {
+    width: 98%;
+    height: 95%;
+    padding: 0;
+}
+*/
+.modal-fullscreen-dialog {
+    width: 98%;
+    height: 95%;
+    margin: 20px;
+}
+.modal-content {
+    height: 100%;
+    border-radius: 0;
+}
+
+.gameinfo-dialog {
+	z-index: 1040;
+	position:absolute;
+	right:10px;
+	top:100px;
+    min-width: 260px;
+    border:2px solid !important;
+    border-radius:8px;
+    box-shadow: 10 10px 10px rgba(0,0,0,0.5);
+}
+
+h5 {
+    font-size:14pt;
+}
+
+#object-properties {
+    position: absolute;
+    left:0px;
+    bottom:0px;
+    padding:12px;
+    width:225px;
+    color:#9d9d9d;
+}
+
+.propertyelement {
+    margin-bottom:10px;
+}
