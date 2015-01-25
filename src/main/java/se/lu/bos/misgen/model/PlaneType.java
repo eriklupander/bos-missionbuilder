@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
  * To change this template use File | Settings | File Templates.
  */
 public enum PlaneType {
+
+    // TODO we should add a default cruise speed to use as default waypoint speed
+
     BF109G2(201, "LuaScripts\\WorldObjects\\Planes\\bf109g2.txt", "graphics\\planes\\bf109g2\\bf109g2.mgm"),
     BF109F4(201, "LuaScripts\\WorldObjects\\Planes\\bf109f4.txt", "graphics\\planes\\bf109f4\\bf109f4.mgm"),
     YAK1(101, "LuaScripts\\WorldObjects\\Planes\\yak1s69.txt", "graphics\\planes\\yak1s69\\yak1s69.mgm"),

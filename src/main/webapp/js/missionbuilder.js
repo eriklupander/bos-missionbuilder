@@ -256,7 +256,8 @@ var missionbuilder = new function() {
                 y:y,
                 z:worldZ,
                 clientId:new Date().getTime(),
-                action:null
+                speed:300,
+                action:{"actionType":"FLY"}
             }
             state.getSelectedUnitGroup().waypoints.push(waypoint);
             rest.updateMission(state.getCurrentMission(), function(data) {
@@ -291,7 +292,7 @@ var missionbuilder = new function() {
                     var html    = template(obj);
                     $('#object-properties').html(html);
                     util.bindTextField('planes-edit-group-name', obj, 'name');
-                    util.bindTextField('planes-edit-group-description', obj, 'description');
+                    util.bindTextArea('planes-edit-group-description', obj, 'description');
                     rest.getPlaneTypes(state.getCurrentCountry(), function(data) {
                         util.populateSelect('planes-edit-group-type', obj, 'type', data);
                     });
@@ -300,7 +301,17 @@ var missionbuilder = new function() {
                     util.populateSelectKeyVal('planes-edit-group-skill', obj, 'aiLevel', statics.getSkills());
                     break;
                 case "GROUND_GROUP":
-                    $('#object-properties').html('Not implemented yet!');
+                    var src = $('#ground-group-edit-tpl').html();
+                    var template = Handlebars.compile(src);
+                    var html    = template(obj);
+                    $('#object-properties').html(html);
+                    util.bindTextField('ground-group-edit-group-name', obj, 'name');
+                    util.bindTextArea('ground-group-edit-group-description', obj, 'description');
+                    rest.getVehicleTypes(state.getCurrentCountry(), function(data) {
+                        util.populateSelect('ground-group-edit-group-type', obj, 'type', data);
+                    });
+                    util.populateSelect('ground-group-edit-group-size', obj, 'size', statics.getGroupSizes());
+                    util.populateSelectKeyVal('ground-group-edit-group-skill', obj, 'aiLevel', statics.getSkills());
                     break;
             }
 
@@ -326,7 +337,26 @@ var missionbuilder = new function() {
                             });
                         break;
                     case "WAYPOINT":
-                        $('#object-properties').html('Not implemented yet!');
+                        var src = $('#waypoint-edit-tpl').html();
+                        var template = Handlebars.compile(src);
+                        var html    = template(obj);
+                        $('#object-properties').html(html);
+                        util.bindTextField('waypoint-edit-name', obj, 'name');
+                        $('#waypoint-edit-speed').slider().on('slide', function(ev){
+                            $('#speed-text').text(ev.value);
+                            obj.speed = ev.value;
+                            maprenderer.redraw();
+                        }).on('slideStop', function(ev){
+                                $('#speed-text').text(ev.value + ' km/h');
+                                obj.speed = ev.value;
+                                rest.updateMission(state.getCurrentMission(), function(data) {
+                                    state.setCurrentMission(data);
+                                    maprenderer.redraw();
+                                })
+                            });
+                        rest.getActionTypes( function(data) {
+                            util.populateSelect('waypoint-edit-action', obj, 'action.actionType', data);
+                        });
                         break;
                 }
             }

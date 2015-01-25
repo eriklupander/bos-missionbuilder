@@ -15,12 +15,16 @@ var util = new function() {
             $('#' + id).append('<option value="'+value+'">'+value+'</option>');
         });
         $('#' + id).unbind().change(function() {
-            obj[field] = $('#' + id).val();
-            rest.updateMission(state.getCurrentMission(), function() {
+            var newValue = $('#' + id).val();
+
+            setValueOnProperty(obj, field, newValue);
+
+            rest.updateMission(state.getCurrentMission(), function(data) {
+                state.setCurrentMission(data);
                 console.log("Saved mission after property change.");
             })
         });
-        util.setSelectedSelectItem(id, obj[field]);
+        util.setSelectedSelectItem(id, getValueOnProperty(obj, field));
     }
 
     this.populateSelectKeyVal = function(id, obj, field, items) {
@@ -30,7 +34,8 @@ var util = new function() {
         });
         $('#' + id).unbind().change(function() {
             obj[field] = $('#' + id).val();
-            rest.updateMission(state.getCurrentMission(), function() {
+            rest.updateMission(state.getCurrentMission(), function(data) {
+                state.setCurrentMission(data);
                 console.log("Saved mission after property change.");
             })
         });
@@ -38,10 +43,22 @@ var util = new function() {
     }
 
     this.bindTextField = function(id, obj, field) {
-        $('#' + id).unbind().focusout(function() {
+        $('#' + id).on('focusout', function() {
             obj[field] = $('#' + id).val();
-            rest.updateMission(state.getCurrentMission(), function() {
+            rest.updateMission(state.getCurrentMission(), function(data) {
+                state.setCurrentMission(data);
                 console.log("Saved mission after text change.");
+                maprenderer.redraw();
+            })
+        });
+    }
+
+    this.bindTextArea = function(id, obj, field) {
+        $('#' + id).on('focusout', function() {
+            obj[field] = $('#' + id).val();
+            rest.updateMission(state.getCurrentMission(), function(data) {
+                state.setCurrentMission(data);
+                console.log("Saved mission after textarea change.");
                 maprenderer.redraw();
             })
         });
@@ -57,5 +74,40 @@ var util = new function() {
 //
 //            return out + "</select>";
 //        });
+    }
+
+    var setValueOnProperty = function(obj, field, newValue) {
+        field = field.replace(/^\./, '');
+        if(field.indexOf('.') == -1) {
+            obj[field] = newValue;
+        } else {
+            var parts = field.split('.');
+            var currentLevel = obj;
+            for(var a = 0; a < parts.length; a++) {
+
+                if(a == parts.length -1) {
+                    currentLevel[parts[a]] = newValue;
+                    return;
+                }
+                currentLevel = currentLevel[parts[a]];
+            }
+        }
+    }
+
+    var getValueOnProperty = function(obj, field) {
+        field = field.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
+        field = field.replace(/^\./, '');           // strip a leading dot
+        var a = field.split('.');
+        while (a.length) {
+            var n = a.shift();
+            if(util.notNull(n)) {
+                if (n in obj) {
+                    obj = obj[n];
+                } else {
+                    return;
+                }
+            }
+        }
+        return obj;
     }
 }

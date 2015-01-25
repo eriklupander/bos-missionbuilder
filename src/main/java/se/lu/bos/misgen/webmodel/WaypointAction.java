@@ -10,15 +10,15 @@ import java.util.Set;
  * To change this template use File | Settings | File Templates.
  */
 public class WaypointAction {
-    private ActionType action;
+    private ActionType actionType;
     private Set<Integer> targetClientId;
 
-    public ActionType getAction() {
-        return action;
+    public ActionType getActionType() {
+        return actionType;
     }
 
-    public void setAction(ActionType action) {
-        this.action = action;
+    public void setActionType(ActionType actionType) {
+        this.actionType = actionType;
     }
 
     public Set<Integer> getTargetClientId() {

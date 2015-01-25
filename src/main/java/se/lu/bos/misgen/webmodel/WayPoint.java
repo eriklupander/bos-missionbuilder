@@ -9,12 +9,15 @@ package se.lu.bos.misgen.webmodel;
  */
 public class WayPoint extends MapObject {
 
-    private Integer speed;
+    private Integer speed = 300;
+    private String name;
 
-    private WaypointAction action;
+    private WaypointAction action = new WaypointAction();
 
     public WayPoint() {
         super.setObjectType(MapObjectType.WAYPOINT);
+        this.action = new WaypointAction();
+        this.action.setActionType(ActionType.FLY);
     }
 
     public Integer getSpeed() {
@@ -23,6 +26,14 @@ public class WayPoint extends MapObject {
 
     public void setSpeed(Integer speed) {
         this.speed = speed;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public WaypointAction getAction() {

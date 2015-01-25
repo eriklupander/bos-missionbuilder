@@ -16,6 +16,7 @@ public class UnitGroup extends MapObject {
     private Integer size;
     private Integer countryCode = -1;
     private String name;
+    private String description;
     private String type;
 
     private boolean startsInAir;
@@ -107,5 +108,13 @@ public class UnitGroup extends MapObject {
 
     public String getServerId() {
         return serverId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

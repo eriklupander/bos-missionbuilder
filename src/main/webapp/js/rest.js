@@ -42,6 +42,10 @@ var rest = new function() {
         $.getJSON(BASE + "/vehicleTypes/" + countryId, callback);
     }
 
+    this.getActionTypes = function(callback) {
+        $.getJSON(BASE + "/actionTypes", callback);
+    }
+
     this.getMissions = function(callback) {
         $.getJSON(BASE + "/missions", callback);
     }
