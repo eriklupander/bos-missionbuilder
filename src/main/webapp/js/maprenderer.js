@@ -75,6 +75,7 @@ var maprenderer = new function() {
                         // TODO unify to use "drag target" or "selected object" only.
                         state.setSelectedUnitGroup(null);
                         state.setSelectedWaypoint(null);
+                        state.setSelectedTriggerZone(null);
                         state.setDragTarget(null);
                     }
                 }
@@ -83,7 +84,6 @@ var maprenderer = new function() {
                     imageX+startXX*zoom, imageY+startYY*zoom,
                     metadata);
                 missionbuilder.saveWaypoint(worldCoords.x, worldCoords.z);
-                state.setState(state.NORMAL);
             }
 
 
@@ -163,6 +163,7 @@ var maprenderer = new function() {
                         // TODO unify to use "drag target" or "selected object" only.
                         state.setSelectedUnitGroup(null);
                         state.setSelectedWaypoint(null);
+                        state.setSelectedTriggerZone(null);
                         state.setDragTarget(null);
                     }
                     break;

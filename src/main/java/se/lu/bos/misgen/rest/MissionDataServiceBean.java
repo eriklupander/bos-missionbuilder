@@ -19,6 +19,7 @@ import se.lu.bos.misgen.model.VehicleType;
 import se.lu.bos.misgen.nosql.ElasticSearchServer;
 import se.lu.bos.misgen.webmodel.ActionType;
 import se.lu.bos.misgen.webmodel.ClientMission;
+import se.lu.bos.misgen.webmodel.FormationType;
 import se.lu.bos.misgen.webmodel.UnitGroup;
 
 import java.io.IOException;
@@ -184,4 +185,9 @@ public class MissionDataServiceBean {
                 .collect(Collectors.toList()), HttpStatus.OK);
     }
 
+
+    @RequestMapping(method = RequestMethod.GET, value = "/formationTypes", produces = "application/json")
+    public ResponseEntity<List<FormationType>> getFormationTypes() {
+        return new ResponseEntity(FormationType.values(), HttpStatus.OK);
+    }
 }

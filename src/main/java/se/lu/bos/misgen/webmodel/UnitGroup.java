@@ -26,6 +26,8 @@ public class UnitGroup extends MapObject {
     private List<WayPoint> waypoints = new ArrayList<WayPoint>();
     private String serverId;
 
+    private FormationType formation = FormationType.LINE;
+
     public UnitGroup() {
         super.setObjectType(MapObjectType.UNIT_GROUP);
     }
@@ -116,5 +118,13 @@ public class UnitGroup extends MapObject {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public FormationType getFormation() {
+        return formation;
+    }
+
+    public void setFormation(FormationType formation) {
+        this.formation = formation;
     }
 }

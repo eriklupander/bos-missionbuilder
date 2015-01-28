@@ -60,6 +60,16 @@ var state = new function() {
 
     this.setCurrentMission = function(mission) {
         currentMission = mission;
+
+        // Re-set the unit group
+        if(util.notNull(selectedUnitGroup)) {
+            for(var a = 0; a < currentMission.axis.unitGroups.length; a++) {
+                if(currentMission.axis.unitGroups[a].clientId === selectedUnitGroup.clientId) {
+                    selectedUnitGroup = currentMission.axis.unitGroups[a];
+                    break;
+                }
+            }
+        }
     }
 
     this.getSelectedUnitGroup = function() {

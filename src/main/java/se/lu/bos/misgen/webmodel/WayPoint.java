@@ -11,6 +11,7 @@ public class WayPoint extends MapObject {
 
     private Integer speed = 300;
     private String name;
+    private Long clientId;
 
     private WaypointAction action = new WaypointAction();
 
@@ -34,6 +35,14 @@ public class WayPoint extends MapObject {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Long getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(Long clientId) {
+        this.clientId = clientId;
     }
 
     public WaypointAction getAction() {

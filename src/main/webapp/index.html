@@ -585,6 +585,15 @@
         </select>
     </div>
     <div class="propertyelement">
+        <label>Heading (0-359)</label>
+        <input id="planes-edit-group-heading" class="form-control" type="text" value="{{yRot}}"/>
+    </div>
+    <div class="propertyelement">
+        <label>Formation</label>
+        <select  class="form-control" id="planes-edit-group-formation">
+        </select>
+    </div>
+    <div class="propertyelement">
         <label>Number of units</label>
         <select  class="form-control" id="planes-edit-group-size">
         </select>
@@ -621,7 +630,15 @@
         <label>Name</label>
         <input id="ground-group-edit-group-name" class="form-control" type="text" value="{{name}}"/>
     </div>
-
+    <div class="propertyelement">
+        <label>Heading (0-359)</label>
+        <input id="ground-group-edit-group-heading" class="form-control" type="text" value="{{yOri}}"/>
+    </div>
+    <div class="propertyelement">
+        <label>Formation</label>
+        <select  class="form-control" id="ground-group-edit-group-formation">
+        </select>
+    </div>
     <div class="propertyelement">
         <label>Number of units</label>
         <select  class="form-control" id="ground-group-edit-group-size">
@@ -666,7 +683,7 @@
 </script>
 
 <script id="waypoint-edit-tpl" type="text/x-handlebars-template">
-    <h4>Edit trigger</h4>
+    <h4>Edit waypoints</h4>
 
     <div class="propertyelement">
         <label>Name</label>
@@ -704,6 +721,7 @@
             state.setState(state.NORMAL);
             $('#clickOnMapDiv').addClass('hidden');
             $("#map").css("cursor", "");
+            maprenderer.redraw();
         }
     });
     util.initHandlebarHelpers();

@@ -256,13 +256,14 @@ var missionbuilder = new function() {
                 y:y,
                 z:worldZ,
                 clientId:new Date().getTime(),
-                speed:300,
+                speed:300,     // TODO Fix speed depending on air or ground unit
                 action:{"actionType":"FLY"}
             }
             state.getSelectedUnitGroup().waypoints.push(waypoint);
             rest.updateMission(state.getCurrentMission(), function(data) {
-                state.setCurrentMission(data);
+                state.setCurrentMission(data);   // NOTE: When setting current mission, we either need to null all "selected objects" or reassign them.
                 maprenderer.redraw();
+                missionbuilder.addWaypoint();
             });
 
         }
@@ -292,9 +293,13 @@ var missionbuilder = new function() {
                     var html    = template(obj);
                     $('#object-properties').html(html);
                     util.bindTextField('planes-edit-group-name', obj, 'name');
+                    util.bindTextField('planes-edit-group-heading', obj, 'yOri');
                     util.bindTextArea('planes-edit-group-description', obj, 'description');
                     rest.getPlaneTypes(state.getCurrentCountry(), function(data) {
                         util.populateSelect('planes-edit-group-type', obj, 'type', data);
+                    });
+                    rest.getFormationTypes(function(data) {
+                        util.populateSelect('planes-edit-group-formation', obj, 'formation', data);
                     });
                     util.populateSelect('planes-edit-group-size', obj, 'size', statics.getGroupSizes());
                     util.populateSelect('planes-edit-group-altitude', obj, 'y', statics.getAltitudes());
@@ -306,9 +311,13 @@ var missionbuilder = new function() {
                     var html    = template(obj);
                     $('#object-properties').html(html);
                     util.bindTextField('ground-group-edit-group-name', obj, 'name');
+                    util.bindTextField('ground-group-edit-group-heading', obj, 'yOri');
                     util.bindTextArea('ground-group-edit-group-description', obj, 'description');
                     rest.getVehicleTypes(state.getCurrentCountry(), function(data) {
                         util.populateSelect('ground-group-edit-group-type', obj, 'type', data);
+                    });
+                    rest.getFormationTypes(function(data) {
+                        util.populateSelect('ground-group-edit-group-formation', obj, 'formation', data);
                     });
                     util.populateSelect('ground-group-edit-group-size', obj, 'size', statics.getGroupSizes());
                     util.populateSelectKeyVal('ground-group-edit-group-skill', obj, 'aiLevel', statics.getSkills());
@@ -366,31 +375,53 @@ var missionbuilder = new function() {
 
         $('#delete').unbind().click(function() {
             if(confirm("Do you want to delete this object?")) {
-                for(var a = 0; a < state.getCurrentMission().axis.unitGroups.length; a++) {
-                    if(state.getCurrentMission().axis.unitGroups[a].clientId === obj.clientId) {
+                if(util.notNull(state.getSelectedUnitGroup())) {
+                    for(var a = 0; a < state.getCurrentMission().axis.unitGroups.length; a++) {
+                        if(state.getCurrentMission().axis.unitGroups[a].clientId === obj.clientId) {
 
-                        state.getCurrentMission().axis.unitGroups.splice(a, 1);
-                        state.setSelectedUnitGroup(null);
-                        rest.updateMission(state.getCurrentMission(), function(data) {
-                            console.log("Deleted object and saved mission");
-                            state.setCurrentMission(data);
-                            maprenderer.redraw();
-                        });
-                        return;
+                            state.getCurrentMission().axis.unitGroups.splice(a, 1);
+                            state.setSelectedUnitGroup(null);
+                            rest.updateMission(state.getCurrentMission(), function(data) {
+                                console.log("Deleted object and saved mission");
+                                state.setCurrentMission(data);
+                                maprenderer.redraw();
+                            });
+                            return;
+                        }
                     }
-                }
+                } else if(util.notNull(state.getSelectedTriggerZone())) {
 
-                // Also do triggers if not unit or waypoint
-                for(var a = 0; a < state.getCurrentMission().triggerZones.length; a++) {
-                    if(state.getCurrentMission().triggerZones[a].clientId === obj.clientId) {
-                        state.getCurrentMission().triggerZones.splice(a, 1);
-                        state.setSelectedTriggerZone(null);
-                        rest.updateMission(state.getCurrentMission(), function(data) {
-                            state.setCurrentMission(data);
-                            console.log("Deleted trigger zone and saved mission");
-                            maprenderer.redraw();
-                        });
-                        return;
+
+                    // Also do triggers if not unit or waypoint
+                    for(var a = 0; a < state.getCurrentMission().triggerZones.length; a++) {
+                        if(state.getCurrentMission().triggerZones[a].clientId === obj.clientId) {
+                            state.getCurrentMission().triggerZones.splice(a, 1);
+                            state.setSelectedTriggerZone(null);
+                            rest.updateMission(state.getCurrentMission(), function(data) {
+                                state.setCurrentMission(data);
+                                console.log("Deleted trigger zone and saved mission");
+                                maprenderer.redraw();
+                            });
+                            return;
+                        }
+                    }
+                } else if(util.notNull(state.getSelectedWaypoint())) {
+                    for(var a = 0; a < state.getCurrentMission().axis.unitGroups.length; a++) {
+                        var ugroup = state.getCurrentMission().axis.unitGroups[a];
+
+                        for(var b = 0; b < ugroup.waypoints.length; b++) {
+                            if(ugroup.waypoints[b].clientId == obj.clientId) {
+                                // Splice the array
+                                ugroup.waypoints.splice(b, 1);
+                                state.setSelectedWaypoint(null);
+                                rest.updateMission(state.getCurrentMission(), function(data) {
+                                    console.log("Deleted waypoint and saved mission");
+                                    state.setCurrentMission(data);
+                                    maprenderer.redraw();
+                                });
+                                return;
+                            }
+                        }
                     }
                 }
             }

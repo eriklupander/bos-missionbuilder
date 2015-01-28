@@ -46,6 +46,10 @@ var rest = new function() {
         $.getJSON(BASE + "/actionTypes", callback);
     }
 
+    this.getFormationTypes = function(callback) {
+        $.getJSON(BASE + "/formationTypes", callback);
+    }
+
     this.getMissions = function(callback) {
         $.getJSON(BASE + "/missions", callback);
     }
