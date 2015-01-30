@@ -13,10 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import se.lu.bos.misgen.model.GeneratedMission;
 import se.lu.bos.misgen.model.PlaneType;
 import se.lu.bos.misgen.model.StaticObjectType;
 import se.lu.bos.misgen.model.VehicleType;
 import se.lu.bos.misgen.nosql.ElasticSearchServer;
+import se.lu.bos.misgen.serializer.MissionConverter;
+import se.lu.bos.misgen.serializer.MissionWriter;
 import se.lu.bos.misgen.webmodel.ActionType;
 import se.lu.bos.misgen.webmodel.ClientMission;
 import se.lu.bos.misgen.webmodel.FormationType;
@@ -40,6 +43,20 @@ public class MissionDataServiceBean {
 
     @Autowired
     ElasticSearchServer elasticSearchServer;
+
+    @RequestMapping(method = RequestMethod.GET, value="/mission/{serverId}/export", produces="text/plain")
+    public ResponseEntity<String> exportMissionAsText(@PathVariable String serverId) {
+        String json = elasticSearchServer.getClient().prepareGet("missions", "mission", serverId).execute().actionGet().getSourceAsString();
+        try {
+            ClientMission clientMission = mapper.readValue(json, ClientMission.class);
+
+            GeneratedMission generatedMission = MissionConverter.convert(clientMission);
+            String missionFileBody = new MissionWriter().generateMission(generatedMission);
+            return new ResponseEntity(missionFileBody, HttpStatus.OK);
+        } catch (IOException e) {
+            return new ResponseEntity(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @RequestMapping(method = RequestMethod.POST, value = "/mission", consumes = "application/json", produces = "application/json")
     public ResponseEntity<ClientMission> createClientMission(@RequestBody ClientMission clientMission) {

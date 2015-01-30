@@ -14,6 +14,8 @@ public class WayPoint extends MapObject {
     private Long clientId;
 
     private WaypointAction action = new WaypointAction();
+    private Integer priority = 1;
+    private Integer area = 500;
 
     public WayPoint() {
         super.setObjectType(MapObjectType.WAYPOINT);
@@ -51,5 +53,21 @@ public class WayPoint extends MapObject {
 
     public void setAction(WaypointAction action) {
         this.action = action;
+    }
+
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
+    }
+
+    public Integer getArea() {
+        return area;
+    }
+
+    public void setArea(Integer area) {
+        this.area = area;
     }
 }

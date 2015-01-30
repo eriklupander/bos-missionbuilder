@@ -1,7 +1,9 @@
 package se.lu.bos.misgen.webmodel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,10 +21,14 @@ public class ClientMission {
     private String serverId;
     private Integer clientId;
 
-    private Side axis = new Side("Germany");
-    private Side allies = new Side("USSR");
+    private Map<Integer, Side> sides = new HashMap<>();
 
     private List<TriggerZone> triggerZones = new ArrayList<>();
+
+    private ClientMission() {
+        sides.put(101, new Side("USSR"));
+        sides.put(201, new Side("Germany"));
+    }
 
     public String getName() {
         return name;
@@ -64,20 +70,12 @@ public class ClientMission {
         this.clientId = clientId;
     }
 
-    public Side getAxis() {
-        return axis;
+    public Map<Integer, Side> getSides() {
+        return sides;
     }
 
-    public void setAxis(Side axis) {
-        this.axis = axis;
-    }
-
-    public Side getAllies() {
-        return allies;
-    }
-
-    public void setAllies(Side allies) {
-        this.allies = allies;
+    public void setSides(Map<Integer, Side> sides) {
+        this.sides = sides;
     }
 
     public String getServerId() {
