@@ -8,7 +8,7 @@ package se.lu.bos.misgen.groups;
  * To change this template use File | Settings | File Templates.
  */
 public enum GroupEntityType {
-    AIRFIELD("Group"), TOWN("Group"), BRIDGE("Bridge"), TRAIN_STATION("Group"), STALINGRAD_CITY("Group");
+    AIRFIELD("Group"), TOWN("Group"), BRIDGE("Bridge"), TRAIN_STATION("Group"), STALINGRAD_CITY("Group"), AIRFIELD_ICONS("MCU_Icon");
 
     private String rootObjectName;
 

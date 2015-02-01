@@ -9,6 +9,7 @@ import se.lu.bos.misgen.groups.StaticGroupReader;
 import java.io.IOException;
 import java.util.List;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 /**
@@ -51,5 +52,11 @@ public class StaticGroupReaderTest {
     public void testRailwayStations() throws IOException {
         List<GroupEntity> groupEntityList =  testee.readGroupEntities("Stalingrad_railway_stations.Group", GroupEntityType.TRAIN_STATION);
         assertNotNull(groupEntityList);
+    }
+
+    public void testAirfieldIconParsing() throws IOException {
+        List<GroupEntity> groupEntities = testee.readGroupEntities("airfieldicons.group", GroupEntityType.AIRFIELD_ICONS);
+        assertNotNull(groupEntities);
+        assertEquals(groupEntities.size(), 173);
     }
 }

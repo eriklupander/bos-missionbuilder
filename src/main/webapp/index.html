@@ -57,7 +57,9 @@
                     <li>
                         <a href="#" onclick="missionbuilder.openLoadMissionDialog();">Load Mission</a>
                     </li>
-
+                    <li>
+                        <a href="#" onclick="missionbuilder.exportMissionAsText();">Export Mission</a>
+                    </li>
                 </ul>
             </li>
             <li class="dropdown hidden"  id="country-select">
@@ -86,6 +88,9 @@
                     </li>
                     <li>
                         <a href="#" onclick="missionbuilder.toggleMapFilter('trigger');"><i id="trigger_check" class="fa fa-check"></i> Triggers</a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="missionbuilder.toggleMapFilter('airfields');"><i id="airfields_check" class="fa fa-check"></i> Airfields</a>
                     </li>
                 </ul>
             </li>
@@ -118,7 +123,7 @@
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul id="rightmenu" class="nav navbar-nav side-nav hidden">
                 <li>
-                    <a href="#"  title="Click to edit basic data"> <h3 class="text-center" id="mission-name"></h3><div class="text-center" style="font-size:8pt;">Click to edit mission</div></a>
+                    <a href="#"  title="Click to edit basic data" onclick="missionbuilder.editMission();"> <h3 class="text-center" id="mission-name"></h3><div class="text-center" style="font-size:8pt;">Click to edit mission</div></a>
                 </li>
 
 
@@ -234,8 +239,9 @@
                 </div>
                 <div class="form-group">
                     <label>Mission date & time</label>
-                    <input id="create-mission-date" class="form-control" value="1942.11.22">
-                    <input id="create-mission-time" class="form-control" value="12:00">
+                    <input id="create-mission-date" class="form-control" value="11.12.1942">
+                    <input id="create-mission-time" class="form-control" value="9:30:0">
+                    <i>MM.DD.YYYY and HH:mm:ss</i>
                 </div>
                 <div class="form-group">
                     <label>Mission briefing</label>
@@ -245,6 +251,24 @@
                     <button type="button" class="btn btn-success" data-dismiss="modal" onclick="missionbuilder.createMission();">Create</button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
                 </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div class="modal fade" id="editMissionModal">
+    <div id="editModalDialog" class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title">Edit Mission</h4>
+            </div>
+            <div class="modal-body" id="edit-mission-body">
+
             </div>
         </div>
         <!-- /.modal-content -->
@@ -699,13 +723,57 @@
     </div>
 
     <div class="propertyelement">
+        <label>Altitude</label>
+        <input id="waypoint-edit-altitude" type="text" class="slider" style="width:200px;" value=""
+               data-slider-min="0" data-slider-max="10000" data-slider-step="10" data-slider-value="{{y}}"
+               data-slider-orientation="horizontal" data-slider-selection="after" data-slider-tooltip="hide">
+        <div id="y-text" class="text-center">{{y}} meters</div>
+    </div>
+
+    <div class="propertyelement">
         <label>Waypoint action</label>
         <select class="form-control" id="waypoint-edit-action">
         </select>
     </div>
 
+    <div class="propertyelement" class="" id="waypoint-edit-action-target-wrapper">
+        <label>Target</label>
+        <select class="form-control" id="waypoint-edit-action-target">
+        </select>
+        <i>Only applicable to COVER and ATTACK commands</i>
+    </div>
+
+    <div class="propertyelement">
+        <label>Action radius</label>
+        <input id="waypoint-edit-radius" type="text" class="slider" style="width:200px;" value=""
+               data-slider-min="100" data-slider-max="5000" data-slider-step="50" data-slider-value="{{area}}"
+               data-slider-orientation="horizontal" data-slider-selection="after" data-slider-tooltip="hide">
+        <div id="action-radius-text" class="text-center">{{area}} meters</div>
+    </div>
+
     <div class="text-center propertyelement">
         <button class="btn btn-info" id="edit-action"><i class="fa fa-exclamation"></i> Edit action</button> <button class="btn btn-danger" id="delete"><i class="fa fa-remove"></i> Delete</button>
+    </div>
+</script>
+
+<script id="mission-edit-tpl" type="text/x-handlebars-template">
+    <div class="form-group">
+        <label>Mission name</label>
+        <input id="edit-mission-name" class="form-control" value="{{name}}">
+    </div>
+    <div class="form-group">
+        <label>Mission date & time</label>
+        <input id="edit-mission-date" class="form-control" value="{{date}}">
+        <input id="edit-mission-time" class="form-control" value="{{time}}">
+        <i>MM.DD.YYYY and HH:mm:ss</i>
+    </div>
+    <div class="form-group">
+        <label>Mission briefing</label>
+        <textarea id="edit-mission-desc" rows="10" class="form-control">{{description}}</textarea>
+    </div>
+    <div class="form-group text-center">
+        <button type="button" class="btn btn-success" data-dismiss="modal" onclick="missionbuilder.saveMission();">Save</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
     </div>
 </script>
 
@@ -725,6 +793,7 @@
         }
     });
     util.initHandlebarHelpers();
+    statics.loadAirfields();
     missionbuilder.initMap();
 
 </script>

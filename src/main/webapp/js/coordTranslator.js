@@ -7,7 +7,10 @@ var coordTranslator = new function() {
     var MAP_PIXEL_SIZE_Y = 5245;
 
     this.ifUnitGroupSelected = function(hitBox, metadata, callback) {
-        var unitList = state.getCurrentMission().axis.unitGroups;
+        if(!util.notNull(state.getCurrentMission())) {
+            return;
+        }
+        var unitList = state.getCurrentMission().sides[state.getCurrentCountry()].unitGroups;
 
         // Try to find unit or waypoint
         for(var a = 0; a < unitList.length; a++) {

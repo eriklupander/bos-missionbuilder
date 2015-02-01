@@ -1,4 +1,17 @@
 var statics = new function() {
+
+    var airfields = [];
+
+    this.loadAirfields = function() {
+        rest.loadAirfields(function(data) {
+            airfields = data;
+        });
+    }
+
+    this.getAirfields = function() {
+        return airfields;
+    }
+
     this.getAltitudes = function() {
         var arr = new Array();
         arr.push(500);

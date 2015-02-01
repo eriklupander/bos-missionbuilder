@@ -3,6 +3,41 @@
  */
 var renderer = new function() {
 
+    this.renderAirfields = function(viewport, context) {
+        if(statics.getAirfields().length == 0) {
+            return;
+        }
+
+        for(var a = 0; a < statics.getAirfields().length; a++) {
+            var airfield = statics.getAirfields()[a];
+            var coords = coordTranslator.worldToImageInViewport(airfield.x, airfield.z, viewport, maprenderer.mapWidth, maprenderer.mapHeight);
+
+            // Primitive occlusion culling
+            if(coords.x < 0 || coords.y < 0 || coords.x > maprenderer.mapWidth || coords.y >  maprenderer.mapHeight) continue;
+
+            drawAirfield(coords.x, coords.y, airfield.name, context);
+        }
+    }
+
+    var drawAirfield = function(x, y, name, context) {
+        context.save();
+        context.beginPath();
+        context.arc(x, y, 12, 0, 2*Math.PI, false);
+        context.fillStyle = 'green';
+        context.globalAlpha = 0.1;
+        context.fill();
+        context.globalAlpha = 0.5;
+        context.lineWidth = 1;
+        context.strokeStyle = 'green';
+        context.stroke();
+        context.globalAlpha = 1;
+       // context.font = '12pt Open Sans';
+       // context.textAlign = 'center';
+
+      //  context.fillText(name, x, y+12+12);
+        context.restore();
+    }
+
     this.renderTriggerZones = function(metadata, zoom, viewport, context) {
         if(!util.notNull(state.getCurrentMission())) return;
 
@@ -92,13 +127,19 @@ var renderer = new function() {
     }
 
     this.renderFlightObjects = function(viewport, context) {
-        if(!(util.notNull(state.getCurrentMission()) && util.notNull(state.getCurrentMission().axis))) return;
+        if(!(util.notNull(state.getCurrentMission()) && util.notNull(state.getCurrentMission().sides[state.getCurrentCountry()])))
+            return;
+
+
         context.save();
-        var unitGroups = state.getCurrentCountry() == 201 ? state.getCurrentMission().axis.unitGroups : state.getCurrentMission().allies.unitGroups;
+        var unitGroups = state.getCurrentMission().sides[state.getCurrentCountry()].unitGroups;
         if(unitGroups.length > 0) {
             for(var a = 0; a < unitGroups.length; a++) {
                 var ug = unitGroups[a];
                 var coord = coordTranslator.worldToImageInViewport(ug.x, ug.z, viewport, maprenderer.mapWidth, maprenderer.mapHeight);
+                // Primitive occlusion culling
+                if(coord.x < 0 || coord.y < 0 || coord.x > maprenderer.mapWidth || coord.y >  maprenderer.mapHeight) continue;
+
                 drawUnitGroup(coord.x, coord.y, ug, context);
 
                 for(var b = 0; b < ug.waypoints.length; b++) {

@@ -26,7 +26,9 @@ public class MissionWriter {
     public String generateMission(GeneratedMission gm) throws IOException {
         List<GameEntity> entities = new ArrayList<>();
         entities.addAll(gm.getAreaAttackCommands());
+        entities.addAll(gm.getAttackTargetCommands());
         entities.addAll(gm.getCoverCommands());
+        entities.addAll(gm.getTakeOffCommands());
         entities.addAll(gm.getLandCommands());
         entities.addAll(gm.getTimers());
         entities.addAll(gm.getTranslatorIcons());

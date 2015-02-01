@@ -23,6 +23,16 @@ public class CommandCover extends GameEntity {
         getTargets().add(targetObject.getMCU_TR_Entity().getId().intValue());
     }
 
+    public CommandCover(Float x, Float y, Float z, Integer executingObjectId, Integer targetObjectId) {
+        setId(GlobalId.nextLong());
+        setName("command Cover");
+        setXPos(x);
+        setYPos(y);
+        setZPos(z);
+        getObjects().add(executingObjectId);
+        getTargets().add(targetObjectId);
+    }
+
     public Integer getCoverGroup() {
         return CoverGroup;
     }

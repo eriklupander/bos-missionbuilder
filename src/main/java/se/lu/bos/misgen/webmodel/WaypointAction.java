@@ -1,5 +1,10 @@
 package se.lu.bos.misgen.webmodel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import se.lu.bos.misgen.helper.ObjectGroup;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -11,7 +16,7 @@ import java.util.Set;
  */
 public class WaypointAction {
     private ActionType actionType;
-    private Set<Integer> targetClientId;
+    private Long targetClientId;
 
     public ActionType getActionType() {
         return actionType;
@@ -21,11 +26,11 @@ public class WaypointAction {
         this.actionType = actionType;
     }
 
-    public Set<Integer> getTargetClientId() {
+    public Long getTargetClientId() {
         return targetClientId;
     }
 
-    public void setTargetClientId(Set<Integer> targetClientId) {
+    public void setTargetClientId(Long targetClientId) {
         this.targetClientId = targetClientId;
     }
 }

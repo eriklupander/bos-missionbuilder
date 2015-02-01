@@ -6,13 +6,13 @@ import se.lu.bos.misgen.util.Util;
 /**
  * Created with IntelliJ IDEA.
  * User: Erik
- * Date: 2015-01-04
- * Time: 17:18
+ * Date: 2015-02-01
+ * Time: 22:18
  * To change this template use File | Settings | File Templates.
  */
-public class CommandLand extends GameEntity {
+public class CommandTakeOff  extends GameEntity {
 
-    public CommandLand(float x, float y, float z, Integer gameEntityToLandId) {
+    public CommandTakeOff(float x, float y, float z, Integer gameEntityToLandId) {
         setId(GlobalId.nextLong());
         setXPos(x);
         setYPos(y);
@@ -20,7 +20,7 @@ public class CommandLand extends GameEntity {
         getObjects().add(gameEntityToLandId);
     }
 
-    public CommandLand(float x, float y, float z, GameEntity gameEntityToLand) {
+    public CommandTakeOff(float x, float y, float z, GameEntity gameEntityToLand) {
         setId(GlobalId.nextLong());
         setXPos(x);
         setYPos(y);
@@ -28,9 +28,11 @@ public class CommandLand extends GameEntity {
         getObjects().add(gameEntityToLand.getMCU_TR_Entity().getId().intValue());
     }
 
+
+
     @Override
     public String toString() {
-        return  "MCU_CMD_Land\r\n{\r\n" +
+        return  "MCU_CMD_TakeOff\r\n{\r\n" +
 
                 "  Index = " + getId() + ";\r\n" +
                 "  Name = \"" + Name + "\";\r\n" +

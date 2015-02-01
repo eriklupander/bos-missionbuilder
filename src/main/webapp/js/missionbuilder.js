@@ -6,6 +6,16 @@ var missionbuilder = new function() {
         maprenderer.renderMap();
     }
 
+    this.exportMissionAsText = function() {
+        if(!(util.notNull(state.getCurrentMission()) && util.notNull(state.getCurrentMission().serverId))) {
+            alert("Please load a mission first");
+            return;
+        }
+        rest.exportMissionAsText(state.getCurrentMission().serverId, function(data) {
+            window.prompt("Copy to clipboard: Ctrl+C, Enter", data);
+        });
+    }
+
     this.selectCurrentCountry = function(countryCode) {
         state.setCurrentCountry(countryCode);
 
@@ -25,6 +35,27 @@ var missionbuilder = new function() {
 
     this.openCreateDialog = function() {
         $('#createMissionModal').modal({backdrop:'static'});
+    }
+
+    this.editMission = function() {
+        var src = $('#mission-edit-tpl').html();
+        var template = Handlebars.compile(src);
+        var html    = template(state.getCurrentMission());
+        $('#edit-mission-body').html(html);
+        $('#editMissionModal').modal({backdrop:'static'});
+    }
+
+    this.saveMission = function() {
+
+        state.getCurrentMission().name = $('#edit-mission-name').val();
+        state.getCurrentMission().date = $('#edit-mission-date').val();
+        state.getCurrentMission().time = $('#edit-mission-time').val();
+        state.getCurrentMission().description = $('#edit-mission-desc').val();
+
+        rest.updateMission(state.getCurrentMission(), function(data) {
+            state.setCurrentMission(data);
+            maprenderer.redraw();
+        });
     }
 
     this.openLoadMissionDialog = function() {
@@ -123,7 +154,7 @@ var missionbuilder = new function() {
         var currentMission = state.getCurrentMission();
         state.pushMissionState(currentMission);
 
-        var side = countryId == 201 ? currentMission.axis : currentMission.allies;
+        var side = currentMission.sides[state.getCurrentCountry()];
         side.unitGroups.push(unitGroup);
         rest.updateMission(currentMission, function(data) {
 
@@ -153,7 +184,7 @@ var missionbuilder = new function() {
         var currentMission = state.getCurrentMission();
         state.pushMissionState(currentMission);
 
-        var side = countryId == 201 ? currentMission.axis : currentMission.allies;
+        var side = currentMission.sides[state.getCurrentCountry()];
         side.unitGroups.push(unitGroup);
         rest.updateMission(currentMission, function(data) {
 
@@ -351,6 +382,8 @@ var missionbuilder = new function() {
                         var html    = template(obj);
                         $('#object-properties').html(html);
                         util.bindTextField('waypoint-edit-name', obj, 'name');
+
+                        // Slider for speed
                         $('#waypoint-edit-speed').slider().on('slide', function(ev){
                             $('#speed-text').text(ev.value);
                             obj.speed = ev.value;
@@ -363,9 +396,46 @@ var missionbuilder = new function() {
                                     maprenderer.redraw();
                                 })
                             });
+
+                        // Slider for altitude
+                        $('#waypoint-edit-altitude').slider().on('slide', function(ev){
+                            $('#y-text').text(ev.value);
+                            obj.y = ev.value;
+                            maprenderer.redraw();
+                        }).on('slideStop', function(ev){
+                                $('#y-text').text(ev.value + ' meters');
+                                obj.y = ev.value;
+                                rest.updateMission(state.getCurrentMission(), function(data) {
+                                    state.setCurrentMission(data);
+                                    maprenderer.redraw();
+                                })
+                            });
+
+                        // Slider for action radius/area
+                        $('#waypoint-edit-radius').slider().on('slide', function(ev){
+                            $('#action-radius-text').text(ev.value);
+                            obj.area = ev.value;
+                            maprenderer.redraw();
+                        }).on('slideStop', function(ev){
+                                $('#action-radius-text').text(ev.value + ' meters');
+                                obj.area = ev.value;
+                                rest.updateMission(state.getCurrentMission(), function(data) {
+                                    state.setCurrentMission(data);
+                                    maprenderer.redraw();
+                                })
+                            });
+
                         rest.getActionTypes( function(data) {
                             util.populateSelect('waypoint-edit-action', obj, 'action.actionType', data);
                         });
+                        var keyval = $.map(state.getUnitGroupsForAllSides(), function(item) {
+                            return {
+                                "value" : item.clientId,
+                                "name" : item.name
+                            };
+                        });
+                        util.populateSelectKeyVal('waypoint-edit-action-target', obj, 'action.targetClientId', keyval);
+
                         break;
                 }
             }
@@ -376,10 +446,10 @@ var missionbuilder = new function() {
         $('#delete').unbind().click(function() {
             if(confirm("Do you want to delete this object?")) {
                 if(util.notNull(state.getSelectedUnitGroup())) {
-                    for(var a = 0; a < state.getCurrentMission().axis.unitGroups.length; a++) {
-                        if(state.getCurrentMission().axis.unitGroups[a].clientId === obj.clientId) {
+                    for(var a = 0; a < state.getCurrentMission().sides[state.getCurrentCountry()].unitGroups.length; a++) {
+                        if(state.getCurrentMission().sides[state.getCurrentCountry()].unitGroups[a].clientId === obj.clientId) {
 
-                            state.getCurrentMission().axis.unitGroups.splice(a, 1);
+                            state.getCurrentMission().sides[state.getCurrentCountry()].unitGroups.splice(a, 1);
                             state.setSelectedUnitGroup(null);
                             rest.updateMission(state.getCurrentMission(), function(data) {
                                 console.log("Deleted object and saved mission");
@@ -406,8 +476,8 @@ var missionbuilder = new function() {
                         }
                     }
                 } else if(util.notNull(state.getSelectedWaypoint())) {
-                    for(var a = 0; a < state.getCurrentMission().axis.unitGroups.length; a++) {
-                        var ugroup = state.getCurrentMission().axis.unitGroups[a];
+                    for(var a = 0; a < state.getCurrentMission().sides[state.getCurrentCountry()].unitGroups.length; a++) {
+                        var ugroup = state.getCurrentMission().sides[state.getCurrentCountry()].unitGroups[a];
 
                         for(var b = 0; b < ugroup.waypoints.length; b++) {
                             if(ugroup.waypoints[b].clientId == obj.clientId) {

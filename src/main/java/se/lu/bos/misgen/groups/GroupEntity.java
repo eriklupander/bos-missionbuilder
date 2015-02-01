@@ -10,6 +10,7 @@ package se.lu.bos.misgen.groups;
 public class GroupEntity {
 
     private float xPos; // From south to north??
+    private float yPos = 0.0f; // altitude, probably only useful for airfields?
     private float zPos; // From west to east
 
     private String data; // This should the full object from { to }
@@ -24,12 +25,29 @@ public class GroupEntity {
         this.data = data;
     }
 
+    public GroupEntity(GroupEntityType groupEntityType, Float xPos, Float yPos, Float zPos, String data) {
+
+        this.groupEntityType = groupEntityType;
+        this.xPos = xPos;
+        this.yPos = yPos;
+        this.zPos = zPos;
+        this.data = data;
+    }
+
     public float getxPos() {
         return xPos;
     }
 
     public void setxPos(float xPos) {
         this.xPos = xPos;
+    }
+
+    public float getyPos() {
+        return yPos;
+    }
+
+    public void setyPos(float yPos) {
+        this.yPos = yPos;
     }
 
     public float getzPos() {

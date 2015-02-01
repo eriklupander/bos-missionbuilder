@@ -2,6 +2,10 @@ var rest = new function() {
 
     var BASE = "/rest/missionbuilder";
 
+    this.exportMissionAsText = function(missionServerId, callback) {
+        $.getJSON(BASE + "/mission/" + missionServerId + "/export", callback);
+    }
+
     this.createMission = function(mission, callback) {
         $.ajax({
                 method : 'POST',
@@ -58,5 +62,7 @@ var rest = new function() {
         $.getJSON(BASE + "/mission/" + serverId, callback);
     }
 
-
+    this.loadAirfields = function(callback) {
+        $.getJSON(BASE + "/airfields", callback);
+    }
 }

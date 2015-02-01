@@ -33,13 +33,15 @@ var util = new function() {
             $('#' + id).append('<option value="'+value.value+'">'+value.name+'</option>');
         });
         $('#' + id).unbind().change(function() {
-            obj[field] = $('#' + id).val();
+            var newValue = $('#' + id).val();
+
+            setValueOnProperty(obj, field, newValue);
             rest.updateMission(state.getCurrentMission(), function(data) {
                 state.setCurrentMission(data);
                 console.log("Saved mission after property change.");
             })
         });
-        util.setSelectedSelectItem(id, obj[field]);
+        util.setSelectedSelectItem(id, getValueOnProperty(obj, field));
     }
 
     this.bindTextField = function(id, obj, field) {

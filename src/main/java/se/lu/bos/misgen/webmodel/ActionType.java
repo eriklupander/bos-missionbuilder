@@ -8,5 +8,5 @@ package se.lu.bos.misgen.webmodel;
  * To change this template use File | Settings | File Templates.
  */
 public enum ActionType {
-    FLY, ATTACK_TARGET, ATTACK_AREA, START, LAND;
+    FLY, ATTACK_TARGET, ATTACK_AREA, COVER, START, LAND;
 }

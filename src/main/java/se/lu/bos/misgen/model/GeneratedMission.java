@@ -34,13 +34,17 @@ public class GeneratedMission {
     private List<TranslatorIcon> translatorIcons = new ArrayList<>();
 
     private List<CommandAttackArea> areaAttackCommands = new ArrayList<>();
+    private List<CommandAttackTarget> attackTargetCommands = new ArrayList<>();
     private List<CommandCover> coverCommands = new ArrayList<>();
+    private List<CommandTakeOff> takeOffCommands = new ArrayList<>();
     private List<CommandLand> landCommands = new ArrayList<>();
 
     private List<GroupEntity> airfields = new ArrayList<>();
     private List<GroupEntity> bridges = new ArrayList<>();
     private List<GroupEntity> towns = new ArrayList<>();
     private List<GroupEntity> railwayStations = new ArrayList<>();
+
+
 
     public Float getBoundaryLowerX() {
         return boundaryLowerX;
@@ -192,5 +196,21 @@ public class GeneratedMission {
 
     public void setRailwayStations(List<GroupEntity> railwayStations) {
         this.railwayStations = railwayStations;
+    }
+
+    public List<CommandAttackTarget> getAttackTargetCommands() {
+        return attackTargetCommands;
+    }
+
+    public void setAttackTargetCommands(List<CommandAttackTarget> attackTargetCommands) {
+        this.attackTargetCommands = attackTargetCommands;
+    }
+
+    public List<CommandTakeOff> getTakeOffCommands() {
+        return takeOffCommands;
+    }
+
+    public void setTakeOffCommands(List<CommandTakeOff> takeOffCommands) {
+        this.takeOffCommands = takeOffCommands;
     }
 }

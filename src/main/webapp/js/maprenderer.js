@@ -272,6 +272,9 @@ var maprenderer = new function() {
         if(state.getFilter('trigger')) {
             renderer.renderTriggerZones(metadata, zoom, viewport, ctx);
         }
+        if(state.getFilter('airfields')) {
+            renderer.renderAirfields(viewport, ctx);
+        }
 
        // renderer.renderFlightMapVectorized(viewport, ctx, sData);
        // renderer.renderKillsOnMapVectorized(viewport, ctx, sData);

@@ -25,6 +25,8 @@ public class StaticGroupReader {
         switch(groupEntityType) {
             case AIRFIELD:
                 return parseAirfields(readGroupFromFile(fileName));
+            case AIRFIELD_ICONS:
+                return parseAirfieldIcons(readGroupFromFile(fileName));
             case BRIDGE:
                 return parseBridges(readGroupFromFile(fileName));
             case TOWN:
@@ -35,6 +37,20 @@ public class StaticGroupReader {
                 return parseTrainStations(readGroupFromFile(fileName));
         }
         return null;
+    }
+
+    private List<GroupEntity> parseAirfieldIcons(String src) {
+        String[] airfieldIcons = src.split("}\r\n");
+        List<String> strings = Arrays.asList(airfieldIcons);
+        List<GroupEntity> remapped = strings.parallelStream()
+                .map(s -> s += "}\r\n")
+                .map(s ->
+                    new GroupEntity(GroupEntityType.AIRFIELD_ICONS, parseXPos(s), parseYPos(s), parseZPos(s), s)
+                )
+                .collect(Collectors.toList());
+
+        return remapped;
+
     }
 
     private List<GroupEntity> parseStalinGradCity(String s) {
@@ -159,6 +175,7 @@ public class StaticGroupReader {
     }
 
     Pattern xp = Pattern.compile("(XPos = )(\\d*\\.?\\d*)");
+    Pattern yp = Pattern.compile("(YPos = )(\\d*\\.?\\d*)");
     Pattern zp = Pattern.compile("(ZPos = )(\\d*\\.?\\d*)");
 
     private Float parseXPos(String src) {
@@ -169,6 +186,13 @@ public class StaticGroupReader {
         throw new IllegalArgumentException("Could not parse xpos from row '" + src + "'");
     }
 
+    private Float parseYPos(String src) {
+        Matcher m = yp.matcher(src);
+        if(m.find()) {
+            return Float.parseFloat(m.group(2));
+        }
+        throw new IllegalArgumentException("Could not parse ypos from row '" + src + "'");
+    }
 
     private Float parseZPos(String src) {
         Matcher m = zp.matcher(src);

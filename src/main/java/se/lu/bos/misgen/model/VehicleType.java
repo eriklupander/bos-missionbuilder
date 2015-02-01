@@ -13,6 +13,15 @@ import java.util.stream.Collectors;
  */
 public enum VehicleType {
 
+    BM13(101, "LuaScripts\\WorldObjects\\vehicles\\bm13.txt", "graphics\\vehicles\\zis\\bm13.mgm"),
+    ZIS3_GUN(101, "LuaScripts\\WorldObjects\\vehicles\\zis3gun.txt", "graphics\\artillery\\zis3gun\\zis3gun.mgm"),
+    DHSK(101, "LuaScripts\\WorldObjects\\vehicles\\dshk.txt", "graphics\\artillery\\dshk\\dshk.mgm"),
+    T34(101, "LuaScripts\\WorldObjects\\vehicles\\t34-76stz.txt", "graphics\\artillery\\t34-76stz\\t34-76stz.mgm"),
+
+    MG34_AA(201, "LuaScripts\\WorldObjects\\vehicles\\mg34-aa.txt", "graphics\\artillery\\mg34-aa\\mg34-aa.mgm"),
+    FORD_G917(201, "LuaScripts\\WorldObjects\\vehicles\\ford-g917.txt", "graphics\\vehicles\\ford\\ford-g917.mgm"),
+    OPEL_BLITZ(201, "LuaScripts\\WorldObjects\\vehicles\\opel-blitz.txt", "graphics\\vehicles\\opel\\opel-blitz.mgm"),
+    STUG4(201, "LuaScripts\\WorldObjects\\vehicles\\stug40l43", "graphics\\vehicles\\stug40l43\\stug40l43.mgm"),
     PZIII(201, "LuaScripts\\WorldObjects\\vehicles\\pziii-l.txt", "graphics\\vehicles\\pziii-l\\pziii-l.mgm"),
     SDKFZ251(201, "LuaScripts\\WorldObjects\\vehicles\\sdkfz251-1c.txt", "graphics\\vehicles\\sdkfz251\\sdkfz251-1c.mgm"),
     FLAK37(201, "LuaScripts\\WorldObjects\\vehicles\\flak37.txt", "graphics\\artillery\\flak37\\flak37.mgm"),

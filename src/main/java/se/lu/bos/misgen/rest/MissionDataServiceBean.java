@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import se.lu.bos.misgen.groups.ClientAirfieldParser;
+import se.lu.bos.misgen.groups.GroupEntity;
+import se.lu.bos.misgen.groups.StaticGroupsFactory;
 import se.lu.bos.misgen.model.GeneratedMission;
 import se.lu.bos.misgen.model.PlaneType;
 import se.lu.bos.misgen.model.StaticObjectType;
@@ -20,10 +23,7 @@ import se.lu.bos.misgen.model.VehicleType;
 import se.lu.bos.misgen.nosql.ElasticSearchServer;
 import se.lu.bos.misgen.serializer.MissionConverter;
 import se.lu.bos.misgen.serializer.MissionWriter;
-import se.lu.bos.misgen.webmodel.ActionType;
-import se.lu.bos.misgen.webmodel.ClientMission;
-import se.lu.bos.misgen.webmodel.FormationType;
-import se.lu.bos.misgen.webmodel.UnitGroup;
+import se.lu.bos.misgen.webmodel.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ public class MissionDataServiceBean {
         try {
             ClientMission clientMission = mapper.readValue(json, ClientMission.class);
 
-            GeneratedMission generatedMission = MissionConverter.convert(clientMission);
+            GeneratedMission generatedMission = new MissionConverter().convert(clientMission);
             String missionFileBody = new MissionWriter().generateMission(generatedMission);
             return new ResponseEntity(missionFileBody, HttpStatus.OK);
         } catch (IOException e) {
@@ -206,5 +206,12 @@ public class MissionDataServiceBean {
     @RequestMapping(method = RequestMethod.GET, value = "/formationTypes", produces = "application/json")
     public ResponseEntity<List<FormationType>> getFormationTypes() {
         return new ResponseEntity(FormationType.values(), HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/airfields", produces = "application/json")
+    public ResponseEntity<List<FormationType>> getAirfields() throws IOException {
+        List<ClientAirfield> airfields = ClientAirfieldParser.build();
+
+        return new ResponseEntity(airfields, HttpStatus.OK);
     }
 }

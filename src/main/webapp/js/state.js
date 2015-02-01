@@ -27,7 +27,8 @@ var state = new function() {
         'plane_group' : true,
         'ground_group' : true,
         'static_object' : true,
-        'trigger' : true
+        'trigger' : true,
+        'airfields' : true
     }
 
     this.getState = function() {
@@ -36,6 +37,20 @@ var state = new function() {
 
     this.setState = function(nState) {
         state = nState;
+    }
+
+    this.getUnitGroupsForAllSides = function() {
+        var ussr = currentMission.sides[101].unitGroups;
+        var germany = currentMission.sides[201].unitGroups;
+        return ussr.concat(germany);
+    }
+
+    this.getUnitGroupsForOtherSide = function() {
+        var countryId = 201;
+        if(currentCountry == 201) {
+            countryId = 101;
+        }
+        return currentMission.sides[countryId].unitGroups;
     }
 
     this.setLocation = function(location) {
@@ -63,9 +78,9 @@ var state = new function() {
 
         // Re-set the unit group
         if(util.notNull(selectedUnitGroup)) {
-            for(var a = 0; a < currentMission.axis.unitGroups.length; a++) {
-                if(currentMission.axis.unitGroups[a].clientId === selectedUnitGroup.clientId) {
-                    selectedUnitGroup = currentMission.axis.unitGroups[a];
+            for(var a = 0; a < currentMission.sides[currentCountry].unitGroups.length; a++) {
+                if(currentMission.sides[currentCountry].unitGroups[a].clientId === selectedUnitGroup.clientId) {
+                    selectedUnitGroup = currentMission.sides[currentCountry].unitGroups[a];
                     break;
                 }
             }

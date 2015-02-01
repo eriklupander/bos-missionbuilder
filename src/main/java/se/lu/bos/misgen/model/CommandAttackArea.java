@@ -47,6 +47,19 @@ public class CommandAttackArea extends GameEntity {
         getObjects().add(executingObject.getMCU_TR_Entity().getId().intValue());
     }
 
+    public CommandAttackArea(Float xPos, Float yPos, Float zPos, int areaSize, int attackGround, int attackAir, int attackGTargets, Integer executingObjectId) {
+        setId(GlobalId.nextLong());
+        setName("command AttackArea");
+        setXPos(xPos);
+        setYPos(yPos);
+        setZPos(zPos);
+        setAttackArea(areaSize);
+        setAttackGround(attackGround);
+        setAttackAir(attackAir);
+        setAttackGTargets(attackGTargets);
+        getObjects().add(executingObjectId);
+    }
+
     public Integer getAttackGround() {
         return AttackGround;
     }
