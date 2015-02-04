@@ -6,6 +6,7 @@ import se.lu.bos.misgen.helper.ObjectGroup;
 import javax.print.attribute.AttributeSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -44,7 +45,18 @@ public class GeneratedMission {
     private List<GroupEntity> towns = new ArrayList<>();
     private List<GroupEntity> railwayStations = new ArrayList<>();
 
+    // Means Airfield {..} entties with MCU_TR_Entity attached. Useful for AI landing or something
+    private List<Airfield> airfieldEntities = new ArrayList<>();
 
+    private Map<Integer, String> localization;
+
+    public Map<Integer, String> getLocalization() {
+        return localization;
+    }
+
+    public void setLocalization(Map<Integer, String> localization) {
+        this.localization = localization;
+    }
 
     public Float getBoundaryLowerX() {
         return boundaryLowerX;
@@ -212,5 +224,13 @@ public class GeneratedMission {
 
     public void setTakeOffCommands(List<CommandTakeOff> takeOffCommands) {
         this.takeOffCommands = takeOffCommands;
+    }
+
+    public List<Airfield> getAirfieldEntities() {
+        return airfieldEntities;
+    }
+
+    public void setAirfieldEntities(List<Airfield> airfieldEntities) {
+        this.airfieldEntities = airfieldEntities;
     }
 }

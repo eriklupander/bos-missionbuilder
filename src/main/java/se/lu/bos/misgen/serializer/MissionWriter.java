@@ -49,6 +49,8 @@ public class MissionWriter {
         buf.append("\r\n\r\n\r\n");
         sortedEntities.stream().forEach(e -> buf.append(e.toString()));
         buf.append("\r\n\r\n\r\n");
+        gm.getAirfieldEntities().stream().forEach(e -> buf.append(e.toString()).append("\r\n"));
+        buf.append("\r\n");
         gm.getAirfields().stream().forEach(e -> buf.append(e.getData()).append("\r\n"));
         gm.getTowns().stream().forEach(e -> buf.append(e.getData()).append("\r\n"));
       //  gm.getBridges().stream().forEach(e -> buf.append(e.getData()).append("\r\n"));

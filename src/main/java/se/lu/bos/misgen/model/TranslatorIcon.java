@@ -42,7 +42,7 @@ public class TranslatorIcon extends GameEntity {
     private Integer OppositeAirplanes = 1; //will be visible only for Order team
 
     private Integer  OrderAirplanes = 1; // will be visible only for Opposite team
-    private Integer  IconId = 0; //icon type
+    private Integer  IconId = 12; //icon type
     private Integer  RColor = 255; //red color component
     private Integer GColor = 25; // green color component
     private Integer  BColor = 25; // blue color component

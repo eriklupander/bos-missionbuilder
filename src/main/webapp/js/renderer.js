@@ -3,6 +3,19 @@
  */
 var renderer = new function() {
 
+    this.renderSelectionBox = function(context) {
+        var box = state.getSelectionBox();
+        context.beginPath();
+        context.rect(box.topX, box.topY, box.bottomX, box.bottomY);
+        context.fillStyle = 'red';
+        context.globalAlpha = 0.1;
+        context.fill();
+        context.lineWidth = 1;
+        context.strokeStyle = 'black';
+        context.stroke();
+        context.globalAlpha = 1;
+    }
+
     this.renderAirfields = function(viewport, context) {
         if(statics.getAirfields().length == 0) {
             return;

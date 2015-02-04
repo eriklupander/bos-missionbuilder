@@ -6,6 +6,15 @@ var rest = new function() {
         $.getJSON(BASE + "/mission/" + missionServerId + "/export", callback);
     }
 
+    this.exportMissionToDisk = function(missionServerId, callback) {
+        $.ajax({
+            method : 'PUT',
+            url : BASE + "/mission/" + missionServerId + "/export",
+            processData: false,
+            success : callback
+        });
+    }
+
     this.createMission = function(mission, callback) {
         $.ajax({
                 method : 'POST',
@@ -52,6 +61,10 @@ var rest = new function() {
 
     this.getFormationTypes = function(callback) {
         $.getJSON(BASE + "/formationTypes", callback);
+    }
+
+    this.getLoadouts = function(planeType, callback) {
+        $.getJSON(BASE + "/loadouts/" + planeType, callback);
     }
 
     this.getMissions = function(callback) {

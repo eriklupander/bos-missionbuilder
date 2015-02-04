@@ -65,7 +65,8 @@ var maprenderer = new function() {
             startYY=parseInt(e.clientY-canvasOffset.top);
 
             // Test select
-            var hitBox = coordTranslator.calculateHitBox(imageX+startXX*zoom, imageY+startYY*zoom, metadata, 32);
+            var hitBox = coordTranslator.calculateHitBox(imageX+startXX*zoom, imageY+startYY*zoom, metadata, 16, zoom);
+
             // TODO implement rendering of hitbox to help troubleshoot...
 
             if(state.getState() == state.NORMAL) {
@@ -157,7 +158,7 @@ var maprenderer = new function() {
                 case state.NORMAL:
 
                     // Test select
-                    var hitBox = coordTranslator.calculateHitBox(imageX+startXX*zoom, imageY+startYY*zoom, metadata, 32);
+                    var hitBox = coordTranslator.calculateHitBox(imageX+startXX*zoom, imageY+startYY*zoom, metadata, 16, zoom);
                     var hit = coordTranslator.ifUnitGroupSelected(hitBox, metadata, missionbuilder.objectSelected);
                     if(!hit) {
                         // TODO unify to use "drag target" or "selected object" only.
@@ -274,6 +275,9 @@ var maprenderer = new function() {
         }
         if(state.getFilter('airfields')) {
             renderer.renderAirfields(viewport, ctx);
+        }
+        if(util.notNull(state.getSelectionBox())) {
+            renderer.renderSelectionBox(ctx);
         }
 
        // renderer.renderFlightMapVectorized(viewport, ctx, sData);

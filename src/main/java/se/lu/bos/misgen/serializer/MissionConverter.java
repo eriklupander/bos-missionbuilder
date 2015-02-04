@@ -2,6 +2,7 @@ package se.lu.bos.misgen.serializer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.lu.bos.misgen.groups.ClientAirfieldParser;
 import se.lu.bos.misgen.groups.StaticGroupsFactory;
 import se.lu.bos.misgen.helper.ObjectGroup;
 import se.lu.bos.misgen.model.*;
@@ -27,7 +28,14 @@ public class MissionConverter {
 
     private Map<Long, ObjectGroup> groupMap = new HashMap<>();
 
+    private Map<Integer, String> localization = new HashMap<>();
+    private List<ClientAirfield> clientAirfields;
+    private Integer lcId = 0;
+
     public GeneratedMission convert(ClientMission cm) throws IOException {
+
+        clientAirfields = ClientAirfieldParser.build();
+
         GeneratedMission gm = new GeneratedMission();
         gm.setMissionOptions(buildMissionOptions(cm));
 
@@ -38,6 +46,8 @@ public class MissionConverter {
         gm.getAirfields().addAll(StaticGroupsFactory.getAirFieldGroupEntities());
 
         buildObjectGroups(cm, gm);
+
+        gm.setLocalization(localization);
 
         return gm;
     }
@@ -51,43 +61,83 @@ public class MissionConverter {
 
         List<WayPoint> allWaypoints = new ArrayList<>();
 
-        Stream<UnitGroup> all = Stream.concat(germany.getUnitGroups().stream(), ussr.getUnitGroups().stream());
+        Stream<UnitGroup> all = rebuildStream(ussr, germany);
 
         List<ObjectGroup> airGroups = all.filter(ug -> ug.getGroupType().equals("AIR_GROUP"))
                 .map(ug -> {
 
-                    ObjectGroup objectGroup = GroupFactory.buildPlaneGroup(ug.getAiLevel() == 0, ug.getSize(), PlaneType.valueOf(ug.getType()), ug.getY() != 0, ug.getX(), ug.getY(), ug.getZ(), ug.getyOri());
+                    ObjectGroup objectGroup = GroupFactory.buildPlaneGroup(ug.getAiLevel() == 0, ug.getSize(), PlaneType.valueOf(ug.getType()), ug.getY() != 0, ug.getX(), ug.getY(), ug.getZ(), ug.getyOri(), ug.getLoadout());
                     groupMap.put(ug.getClientId(), objectGroup);
-                    //generateWaypoints(ug, objectGroup, gm, cm);
+
                     return objectGroup;
                 })
                 .collect(Collectors.toList());
 
         // Ugly, rebuild stream from scratch
-        all = Stream.concat(germany.getUnitGroups().stream(), ussr.getUnitGroups().stream());
+        all = rebuildStream(ussr, germany);
         List<ObjectGroup> vehicleGroups = all.filter(ug -> ug.getGroupType().equals("GROUND_GROUP"))
                 .map(ug -> {
 
                     ObjectGroup objectGroup = GroupFactory.buildVehicleGroup(ug.getSize(), VehicleType.valueOf(ug.getType()), ug.getX(), ug.getY(), ug.getZ(), ug.getyOri());
                     groupMap.put(ug.getClientId(), objectGroup);
-                    //generateWaypoints(ug, objectGroup, gm, cm);
                     return objectGroup;
                 })
                 .collect(Collectors.toList());
 
 
         // Next, run through the UnitGroups again but this time we want to generate waypoints and commands.
-        all = Stream.concat(germany.getUnitGroups().stream(), ussr.getUnitGroups().stream());
+        all = rebuildStream(ussr, germany);
         all.forEach( ug -> {
              // Find the corresponding objectGroup
             ObjectGroup objectGroup = groupMap.get(ug.getClientId());
-            generateWaypoints(ug, objectGroup, gm, cm);
+            if(ug.getWaypoints().size() > 0) {
+                generateWaypoints(ug, objectGroup, gm, cm);
+            } else {
+                // Do we need a mission begin translator if there are no waypoints at all?
+            }
+
         });
 
 
         gm.getObjectGroups().addAll(airGroups);
         gm.getObjectGroups().addAll(vehicleGroups);
         gm.getWayPoints().addAll(allWaypoints);
+
+        all = rebuildStream(ussr, germany);
+
+        addIconsForPlayerRoute(gm, all);
+    }
+
+    private Stream<UnitGroup> rebuildStream(Side ussr, Side germany) {
+        return Stream.concat(germany.getUnitGroups().stream(), ussr.getUnitGroups().stream());
+    }
+
+    private void addIconsForPlayerRoute(GeneratedMission gm, Stream<UnitGroup> unitGroupStream) {
+
+        List<TranslatorIcon> icons = unitGroupStream
+                .filter(ug -> ug.getAiLevel() == 0)
+                .flatMap(ug -> ug.getWaypoints().stream())
+                .map(wp -> {
+                    TranslatorIcon ti = new TranslatorIcon(wp.getX(), wp.getY(), wp.getZ());
+                    lcId++;
+                    ti.setLCName(lcId);
+                    localization.put(lcId, wp.getName());
+                    lcId++;
+                    ti.setLCDesc(lcId);
+                    localization.put(lcId, "Waypoint");
+                    return ti;
+                })
+                .collect(Collectors.toList());
+
+        // Link icons to form route
+        for(int a = 0; a < icons.size(); a++) {
+            if(a+1 < icons.size()) {
+                TranslatorIcon icon = icons.get(a);
+                icon.getTargets().add(icons.get(a+1).getId().intValue());
+            }
+        }
+
+         gm.getTranslatorIcons().addAll(icons);
     }
 
     private void generateWaypoints(UnitGroup ug, ObjectGroup og, GeneratedMission gm, ClientMission cm) {
@@ -126,7 +176,7 @@ public class MissionConverter {
                         gm.getAreaAttackCommands().add(attackAreaCmd);
                         eWp.getTargets().clear();
                         eWp.getTargets().add(attackAreaCmd.getId().intValue());
-                        // TODO How the hell do we get the group to continue after attacking??
+
                         break;
                     case COVER:
 
@@ -169,6 +219,17 @@ public class MissionConverter {
                         gm.getLandCommands().add(cmdLand);
                         eWp.getTargets().add(cmdLand.getId().intValue());
                         eWp.setYPos(0.0f);
+                        // TODO A Land command for AI seems to work MUCH better if there is an "Airfield" entity present.
+                        // A: Determine how to extract/find the airfield entities with landing vectors etc.
+                        final ClientAirfield closest = findClosestAirfield(eWp.getXPos(), eWp.getZPos());
+                        // B: Use the waypoint position and find the closest airfield and add it.
+                        Airfield airfield = new Airfield(closest.getX(), closest.getY(), closest.getZ(), closest.getName());
+
+                        // Only add once if there are several flights using same land airfield.
+                        if(gm.getAirfieldEntities().stream().filter(ae -> ae.getName().equals(closest.getName())).count() == 0) {
+                            gm.getAirfieldEntities().add(airfield);
+                        }
+
                         break;
                     default:
                         log.warn("ActionType " + wp.getAction().getActionType() + " not implemented yet...");
@@ -179,16 +240,56 @@ public class MissionConverter {
         }
         for (int a = 0; a < generatedWaypoints.size() - 1; a++) {
             WayPoint wayPoint = generatedWaypoints.get(a);
-            wayPoint.getTargets().add(generatedWaypoints.get(a+1).getId().intValue());
+
+            // If the waypoint does NOT have a command associated at this waypoint, just add the next waypoint if applicable.
+            if(wayPoint.getTargets().size() == 0) {
+                wayPoint.getTargets().add(generatedWaypoints.get(a+1).getId().intValue());
+            } else {
+                // If we have a command, add a timer so we resume the route after the action has been performed. Or something...
+                if(a < generatedWaypoints.size() - 1) {
+                    Timer attackCompleteTimer = new Timer(wayPoint.getXPos(), wayPoint.getYPos(), wayPoint.getZPos());
+                    attackCompleteTimer.setTime(600);
+                    attackCompleteTimer.getTargets().add(generatedWaypoints.get(a+1).getId().intValue());
+                    gm.getTimers().add(attackCompleteTimer);
+                }
+            }
+
         }
 
         gm.getWayPoints().addAll(generatedWaypoints);
     }
 
+    private ClientAirfield findClosestAirfield(Float xPos, Float zPos) {
+        if(clientAirfields.size() == 0) {
+            return null;
+        }
+
+        return clientAirfields.stream().min(new Comparator<ClientAirfield>() {
+            @Override
+            public int compare(ClientAirfield o1, ClientAirfield o2) {
+                Double len1 = Math.sqrt(Math.abs(o1.getX() - xPos) * Math.abs(o1.getX() - xPos) +
+                        Math.abs(o1.getZ() - zPos) * Math.abs(o1.getZ() - zPos));
+                Double len2 = Math.sqrt(Math.abs(o2.getX() - xPos) * Math.abs(o2.getX() - xPos) +
+                        Math.abs(o2.getZ() - zPos) * Math.abs(o2.getZ() - zPos));
+
+                return len1.compareTo(len2);
+            }
+        }).get();
+    }
+
+//    private GameEntity findAttackAreaCommand(GeneratedMission gm, Integer id) {
+//
+//    }
+
     private MissionOptions buildMissionOptions(ClientMission cm) {
-        MissionOptions mo = new MissionOptions();
+        MissionOptions mo = MissionFactory.buildDefaultMission();
         mo.setDate(cm.getDate());
         mo.setTime(cm.getTime());
+        mo.setLCName(lcId); // Mission title, for briefing
+        localization.put(lcId, cm.getName());
+        lcId++; // 1
+        mo.setLCDesc(lcId); // Mission briefing text
+        localization.put(lcId, cm.getDescription());
 
         // TODO fix hard-coded playerconfig, currently only bf109g2 works
 

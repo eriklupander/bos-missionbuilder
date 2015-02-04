@@ -22,12 +22,12 @@ public class DemoTemplate {
 
     public static String buildDemoMission() throws IOException {
         MissionOptions missionOptions = MissionFactory.buildDefaultMission();
-        ObjectGroup planeGroup1 = GroupFactory.buildPlaneGroup(true, 3, PlaneType.BF109G2, true, 95939f, 500f, 50383f, 45f);
+        ObjectGroup planeGroup1 = GroupFactory.buildPlaneGroup(true, 3, PlaneType.BF109G2, true, 95939f, 500f, 50383f, 45f, 0);
         // ObjectGroup planeGroup1 = GroupFactory.buildPlaneGroup(true, 1, PlaneType.BF109G2, true, 131950, 500f, 253736);        // Above stalingrad
         planeGroup1.applyYOrientation(90.0f);
-        ObjectGroup planeGroup2 = GroupFactory.buildPlaneGroup(false, 4, PlaneType.BF109G2, true, 94939f, 700f, 50383f, 45f);     // TODO Add skill, -1 for random?
-        ObjectGroup yakGroup3 = GroupFactory.buildPlaneGroup(false, 4, PlaneType.YAK1, true, 96939f, 100f, 50383f, 45f);
-        ObjectGroup il2Group3 = GroupFactory.buildPlaneGroup(false, 12, PlaneType.IL2M42, true, 96939f, 500f, 55383f, 45f);
+        ObjectGroup planeGroup2 = GroupFactory.buildPlaneGroup(false, 4, PlaneType.BF109G2, true, 94939f, 700f, 50383f, 45f, 0);     // TODO Add skill, -1 for random?
+        ObjectGroup yakGroup3 = GroupFactory.buildPlaneGroup(false, 4, PlaneType.YAK1, true, 96939f, 100f, 50383f, 45f, 0);
+        ObjectGroup il2Group3 = GroupFactory.buildPlaneGroup(false, 12, PlaneType.IL2M42, true, 96939f, 500f, 55383f, 45f, 18);
         il2Group3.getObjects().forEach(ge -> ((Plane) ge).setPayloadId(49));
 
         ObjectGroup tanks = GroupFactory.buildVehicleGroup(6, VehicleType.PZIII, 96939f, 185.608f, 50383f, 90f);

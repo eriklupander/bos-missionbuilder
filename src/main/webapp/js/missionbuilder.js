@@ -16,6 +16,16 @@ var missionbuilder = new function() {
         });
     }
 
+    this.exportMissionToDisk = function() {
+        if(!(util.notNull(state.getCurrentMission()) && util.notNull(state.getCurrentMission().serverId))) {
+            alert("Please load a mission first");
+            return;
+        }
+        rest.exportMissionToDisk(state.getCurrentMission().serverId, function(data) {
+            window.prompt("Copy to clipboard: Ctrl+C, Enter", data);
+        });
+    }
+
     this.selectCurrentCountry = function(countryCode) {
         state.setCurrentCountry(countryCode);
 
@@ -331,6 +341,15 @@ var missionbuilder = new function() {
                     });
                     rest.getFormationTypes(function(data) {
                         util.populateSelect('planes-edit-group-formation', obj, 'formation', data);
+                    });
+                    rest.getLoadouts(obj['type'], function(data) {
+                        var keyvals = $.map(data, function(item) {
+                            return {
+                                "value" : item.loadoutId,
+                                "name" : item.name
+                            };
+                        });
+                        util.populateSelectKeyVal('planes-edit-group-loadout', obj, 'loadout', keyvals);
                     });
                     util.populateSelect('planes-edit-group-size', obj, 'size', statics.getGroupSizes());
                     util.populateSelect('planes-edit-group-altitude', obj, 'y', statics.getAltitudes());

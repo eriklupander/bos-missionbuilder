@@ -72,10 +72,12 @@ var coordTranslator = new function() {
         };
 	}
 
-    this.calculateHitBox = function(imageX, imageY, metadata, radius) {
+    this.calculateHitBox = function(imageX, imageY, metadata, radius, zoom) {
         var box = {};
-        var topLeft = coordTranslator.imageToWorld(imageX-radius, imageY-radius, metadata);
-        var bottomRight = coordTranslator.imageToWorld(imageX+radius, imageY+radius, metadata);
+        var r = radius*zoom;
+        //state.setSelectionBox(imageX-radius, imageY-radius, imageX+radius, imageY+radius);
+        var topLeft = coordTranslator.imageToWorld(imageX-r, imageY-r, metadata);
+        var bottomRight = coordTranslator.imageToWorld(imageX+r, imageY+r, metadata);
         box.x1 = topLeft.x;
         box.y1 = topLeft.z;
         box.x2 = bottomRight.x;

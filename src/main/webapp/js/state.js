@@ -21,6 +21,10 @@ var state = new function() {
 
     var dragTarget = null;
 
+    var selectionBox = {
+        topX :0, topY :0, bottomX :0, bottomY :0
+    }
+
     var stack = [];
 
     var filters = {
@@ -29,6 +33,17 @@ var state = new function() {
         'static_object' : true,
         'trigger' : true,
         'airfields' : true
+    }
+
+    this.setSelectionBox = function(topX, topY, bottomX, bottomY) {
+        selectionBox.topX = topX;
+        selectionBox.topY = topY;
+        selectionBox.bottomX = bottomX;
+        selectionBox.bottomY = bottomY;
+    }
+
+    this.getSelectionBox = function() {
+        return selectionBox;
     }
 
     this.getState = function() {

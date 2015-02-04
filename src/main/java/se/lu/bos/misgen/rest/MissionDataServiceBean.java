@@ -1,26 +1,22 @@
 package se.lu.bos.misgen.rest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse;
-import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import se.lu.bos.misgen.groups.ClientAirfieldParser;
-import se.lu.bos.misgen.groups.GroupEntity;
-import se.lu.bos.misgen.groups.StaticGroupsFactory;
 import se.lu.bos.misgen.model.GeneratedMission;
 import se.lu.bos.misgen.model.PlaneType;
 import se.lu.bos.misgen.model.StaticObjectType;
 import se.lu.bos.misgen.model.VehicleType;
 import se.lu.bos.misgen.nosql.ElasticSearchServer;
+import se.lu.bos.misgen.serializer.LoadoutFactory;
+import se.lu.bos.misgen.serializer.MissionFileWriter;
 import se.lu.bos.misgen.serializer.MissionConverter;
 import se.lu.bos.misgen.serializer.MissionWriter;
 import se.lu.bos.misgen.webmodel.*;
@@ -29,7 +25,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -52,6 +47,22 @@ public class MissionDataServiceBean {
 
             GeneratedMission generatedMission = new MissionConverter().convert(clientMission);
             String missionFileBody = new MissionWriter().generateMission(generatedMission);
+            return new ResponseEntity(missionFileBody, HttpStatus.OK);
+        } catch (IOException e) {
+            return new ResponseEntity(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.PUT, value="/mission/{serverId}/export", produces="text/plain")
+    public ResponseEntity<String> exportMissionToDisk(@PathVariable String serverId) {
+        String json = elasticSearchServer.getClient().prepareGet("missions", "mission", serverId).execute().actionGet().getSourceAsString();
+        try {
+            ClientMission clientMission = mapper.readValue(json, ClientMission.class);
+
+            GeneratedMission generatedMission = new MissionConverter().convert(clientMission);
+            String missionFileBody = new MissionWriter().generateMission(generatedMission);
+            new MissionFileWriter().write(clientMission.getName(), generatedMission.getLocalization(), missionFileBody);
+
             return new ResponseEntity(missionFileBody, HttpStatus.OK);
         } catch (IOException e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -213,5 +224,11 @@ public class MissionDataServiceBean {
         List<ClientAirfield> airfields = ClientAirfieldParser.build();
 
         return new ResponseEntity(airfields, HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/loadouts/{planeType}", produces = "application/json")
+    public ResponseEntity<List<FormationType>> getLoadouts(@PathVariable String planeType) throws IOException {
+        PlaneType type = PlaneType.valueOf(planeType);
+        return new ResponseEntity(LoadoutFactory.getLoadout(type), HttpStatus.OK);
     }
 }
