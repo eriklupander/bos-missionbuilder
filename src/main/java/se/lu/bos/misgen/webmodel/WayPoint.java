@@ -12,6 +12,8 @@ public class WayPoint extends MapObject {
     private Integer speed = 300;
     private String name;
     private Long clientId;
+    // Back-reference to owning unit
+    private Long unitGroupClientId;
 
     private WaypointAction action = new WaypointAction();
     private Integer priority = 1;
@@ -45,6 +47,14 @@ public class WayPoint extends MapObject {
 
     public void setClientId(Long clientId) {
         this.clientId = clientId;
+    }
+
+    public Long getUnitGroupClientId() {
+        return unitGroupClientId;
+    }
+
+    public void setUnitGroupClientId(Long unitGroupClientId) {
+        this.unitGroupClientId = unitGroupClientId;
     }
 
     public WaypointAction getAction() {

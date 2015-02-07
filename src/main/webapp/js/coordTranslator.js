@@ -19,12 +19,20 @@ var coordTranslator = new function() {
                 callback(unit);
                 return true;
             }
+
+            // Only the currently selected unit's waypoints are selectable.
+
             for(var b = 0; b < unit.waypoints.length; b++) {
-                if(coordTranslator.inHitBox(unit.waypoints[b].x, unit.waypoints[b].z, hitBox)) {
-                    callback(unit.waypoints[b]);
-                    return true;
+
+                if(util.notNull(state.getSelectedUnitGroup()) && (state.getSelectedUnitGroup().clientId == unit.clientId || unit.waypoints[b].unitGroupClientId == unit.clientId)) {
+
+                    if(coordTranslator.inHitBox(unit.waypoints[b].x, unit.waypoints[b].z, hitBox)) {
+                        callback(unit.waypoints[b]);
+                        return true;
+                    }
                 }
             }
+
         }
 
         // Try triggers

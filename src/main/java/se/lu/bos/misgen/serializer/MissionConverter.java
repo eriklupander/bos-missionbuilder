@@ -66,7 +66,7 @@ public class MissionConverter {
         List<ObjectGroup> airGroups = all.filter(ug -> ug.getGroupType().equals("AIR_GROUP"))
                 .map(ug -> {
 
-                    ObjectGroup objectGroup = GroupFactory.buildPlaneGroup(ug.getAiLevel() == 0, ug.getSize(), PlaneType.valueOf(ug.getType()), ug.getY() != 0, ug.getX(), ug.getY(), ug.getZ(), ug.getyOri(), ug.getLoadout());
+                    ObjectGroup objectGroup = GroupFactory.buildPlaneGroup(ug.getAiLevel() == 0, ug.getSize(), PlaneType.valueOf(ug.getType()), ug.getY() != 0, ug.getX(), ug.getY(), ug.getZ(), ug.getyOri(), ug.getLoadout(), ug.getName());
                     groupMap.put(ug.getClientId(), objectGroup);
 
                     return objectGroup;
@@ -154,6 +154,13 @@ public class MissionConverter {
                 missionBegin.getTargets().add(waypointTimer.getId().intValue());
                 gm.getTimers().add(waypointTimer);
                 gm.getTranslatorMissionBegins().add(missionBegin);
+
+                // For ground groups, set initial formation using a timer or something
+                if(ug.getGroupType().equals("GROUP_GROUP")) {
+                    CommandFormation cmdFormation = new CommandFormation(wp.getX(), wp.getY(), wp.getZ(), FormationType.ON_ROAD_COLUMN.getFormationCode(), 0);
+                    cmdFormation.getObjects().add(og.getLeaderId());
+                    waypointTimer.getTargets().add(cmdFormation.getId().intValue());
+                }
             }
 
             // Now, check if there is an interesting command on the waypoint.
@@ -167,15 +174,21 @@ public class MissionConverter {
                             if(eWp.getSpeed() > 30) {
                                 eWp.setSpeed(30);
                             }
+                            eWp.setPriority(2); // MEDIUM priority, will try to engage stuff if possible
                         }
+                        generatedWaypoints.add(eWp);
                         break;
                     case ATTACK_AREA:
+                        // TODO For at least artillery, a waypoint with attack_area should NOT move to the location, just
+                        // make them fire on it...
                         CommandAttackArea attackAreaCmd = new CommandAttackArea(
                                 wp.getX(), wp.getY(), wp.getZ(), wp.getArea(),
                                 0, 0, 1, og.getLeaderId());
                         gm.getAreaAttackCommands().add(attackAreaCmd);
                         eWp.getTargets().clear();
                         eWp.getTargets().add(attackAreaCmd.getId().intValue());
+
+                        generatedWaypoints.add(eWp);
 
                         break;
                     case COVER:
@@ -190,21 +203,27 @@ public class MissionConverter {
                         // Add cover target to waypoint target list. Or should this be done on the previous waypoint??
                         eWp.getTargets().add(coverCmd.getId().intValue());
 
+
+                        generatedWaypoints.add(eWp);
                         break;
                     case ATTACK_TARGET:
 
                         // We must know the targetId for the group to be covered
                         ObjectGroup targetObjectGroup2 = groupMap.get(wp.getAction().getTargetClientId());
+                        if(targetObjectGroup2 != null) {
+                            // Next, figure out the generated targetId for its entity.
+                            CommandAttackTarget attackCmd = new CommandAttackTarget(
+                                    wp.getX(), wp.getY(), wp.getZ(), 1, og.getLeaderId(), targetObjectGroup2.getLeaderId());
+                            gm.getAttackTargetCommands().add(attackCmd);
 
-                        // Next, figure out the generated targetId for its entity.
-                        CommandAttackTarget attackCmd = new CommandAttackTarget(
-                                wp.getX(), wp.getY(), wp.getZ(), 1, og.getLeaderId(), targetObjectGroup2.getLeaderId());
-                        gm.getAttackTargetCommands().add(attackCmd);
-
-                        // Add attack target to waypoint target list. Or should this be done on the previous waypoint??
-                        // TODO How do we resume route after command has completed?
-                        eWp.getTargets().clear();
-                        eWp.getTargets().add(attackCmd.getId().intValue());
+                            // Add attack target to waypoint target list. Or should this be done on the previous waypoint??
+                            // TODO How do we resume route after command has completed?
+                            eWp.getTargets().clear();
+                            eWp.getTargets().add(attackCmd.getId().intValue());
+                            generatedWaypoints.add(eWp);
+                        } else {
+                            log.warn("Got ATTACK_TARGET command, but command had no target set: " + ug.getName());
+                        }
 
 
                         break;
@@ -213,6 +232,7 @@ public class MissionConverter {
                         gm.getTakeOffCommands().add(cmdStart);
                         eWp.getTargets().add(cmdStart.getId().intValue());
                         eWp.setYPos(0.0f);
+                        generatedWaypoints.add(eWp);
                         break;
                     case LAND:
                         CommandLand cmdLand = new CommandLand(wp.getX(), wp.getY(), wp.getZ(), og.getLeaderId());
@@ -229,34 +249,90 @@ public class MissionConverter {
                         if(gm.getAirfieldEntities().stream().filter(ae -> ae.getName().equals(closest.getName())).count() == 0) {
                             gm.getAirfieldEntities().add(airfield);
                         }
-
+                        generatedWaypoints.add(eWp);
                         break;
                     default:
                         log.warn("ActionType " + wp.getAction().getActionType() + " not implemented yet...");
                 }
             }
 
-            generatedWaypoints.add(eWp);
+
         }
-        for (int a = 0; a < generatedWaypoints.size() - 1; a++) {
-            WayPoint wayPoint = generatedWaypoints.get(a);
+        WayPoint lastWaypoint = null;
+        int a = 0;
+        Iterator<WayPoint> wpIter = generatedWaypoints.iterator();
+        while(wpIter.hasNext()) {
+        //for (int a = 0; a < generatedWaypoints.size() - 1; a++) {
+            WayPoint wayPoint = wpIter.next(); //generatedWaypoints.get(a);
 
             // If the waypoint does NOT have a command associated at this waypoint, just add the next waypoint if applicable.
-            if(wayPoint.getTargets().size() == 0) {
+            if(wayPoint.getTargets().size() == 0 && a+1 < generatedWaypoints.size()) {
                 wayPoint.getTargets().add(generatedWaypoints.get(a+1).getId().intValue());
-            } else {
-                // If we have a command, add a timer so we resume the route after the action has been performed. Or something...
-                if(a < generatedWaypoints.size() - 1) {
-                    Timer attackCompleteTimer = new Timer(wayPoint.getXPos(), wayPoint.getYPos(), wayPoint.getZPos());
-                    attackCompleteTimer.setTime(600);
-                    attackCompleteTimer.getTargets().add(generatedWaypoints.get(a+1).getId().intValue());
-                    gm.getTimers().add(attackCompleteTimer);
+            } else if(a+1 < generatedWaypoints.size()) {
+
+                GameEntity attackCommand = findAttackCommand(wayPoint.getTargets().get(0).intValue(), gm);
+                if(attackCommand != null) {
+                    // Attack commands should REPLACE its originating waypoint. The previous waypoint
+                    // should retarget from THIS waypoint to the COMMAND.
+                    if(lastWaypoint != null) {
+                        if(lastWaypoint.getTargets().contains(wayPoint.getId().intValue())) {
+                            int idx = lastWaypoint.getTargets().indexOf(wayPoint.getId().intValue());
+                            lastWaypoint.getTargets().remove(idx);
+                        }
+
+                        lastWaypoint.getTargets().add(attackCommand.getId().intValue());
+
+
+                        Timer attackCompleteTimer = new Timer(lastWaypoint.getXPos(), lastWaypoint.getYPos(), lastWaypoint.getZPos());
+                        attackCompleteTimer.setTime(600);  // 10 minutes, for now.
+                        attackCompleteTimer.getTargets().add(generatedWaypoints.get(a+1).getId().intValue());
+
+                        String text = ug.getName() + " (" + ug.getType() + ") attack time period expired, resuming route";
+                        lcId++;
+                        TranslatorSubtitle subtitle = new TranslatorSubtitle(lastWaypoint.getXPos(), lastWaypoint.getYPos(), lastWaypoint.getZPos(), lcId);
+                        localization.put(lcId, text);
+                        attackCompleteTimer.getTargets().add(subtitle.getId().intValue());
+                        gm.getTranslatorSubtitles().add(subtitle);
+
+                        gm.getTimers().add(attackCompleteTimer);
+                        lastWaypoint.getTargets().add(attackCompleteTimer.getId().intValue());
+
+                        wpIter.remove();
+                        a++;
+                        continue;
+                    }
                 }
             }
 
+            // Test, add subtitle for planes
+            if(ug.getGroupType().equals("AIR_GROUP")) {
+                String text = ug.getName() + " (" + ug.getType() + ") has reached waypoint " + (a+1);
+                lcId++;
+                TranslatorSubtitle subtitle = new TranslatorSubtitle(wayPoint.getXPos(), wayPoint.getYPos(), wayPoint.getZPos(), lcId);
+                localization.put(lcId, text);
+                wayPoint.getTargets().add(subtitle.getId().intValue());
+                gm.getTranslatorSubtitles().add(subtitle);
+            }
+            lastWaypoint = wayPoint;
+            a++;
         }
 
         gm.getWayPoints().addAll(generatedWaypoints);
+    }
+
+    private GameEntity findAttackCommand(Integer id, GeneratedMission gm) {
+        return Stream.concat(gm.getAreaAttackCommands().stream(), gm.getAttackTargetCommands().stream()).filter(ac -> ac.getId().intValue() == id.intValue()).findFirst().orElse(null);
+    }
+
+    private CommandAttackArea findCommandAttackArea(Integer id, GeneratedMission gm) {
+
+        Optional<CommandAttackArea> first = gm.getAreaAttackCommands().stream().filter(aac -> aac.getId().intValue() == id.intValue()).findFirst();
+        if(first.isPresent()) {
+            return first.get();
+        } else {
+            return null;
+        }
+
     }
 
     private ClientAirfield findClosestAirfield(Float xPos, Float zPos) {

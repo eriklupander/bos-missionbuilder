@@ -151,7 +151,7 @@ var renderer = new function() {
                 var ug = unitGroups[a];
                 var coord = coordTranslator.worldToImageInViewport(ug.x, ug.z, viewport, maprenderer.mapWidth, maprenderer.mapHeight);
                 // Primitive occlusion culling
-                if(coord.x < 0 || coord.y < 0 || coord.x > maprenderer.mapWidth || coord.y >  maprenderer.mapHeight) continue;
+                //if(coord.x < 0 || coord.y < 0 || coord.x > maprenderer.mapWidth || coord.y >  maprenderer.mapHeight) continue;
 
                 drawUnitGroup(coord.x, coord.y, ug, context);
 
@@ -163,7 +163,7 @@ var renderer = new function() {
                         lastCoord = coordTranslator.worldToImageInViewport(ug.waypoints[b-1].x, ug.waypoints[b-1].z, viewport, maprenderer.mapWidth, maprenderer.mapHeight);
                     }
                     var isSelectedWaypoint = waypoint == state.getSelectedWaypoint();
-                    drawWaypoint(wpCoord.x, wpCoord.y, lastCoord.x, lastCoord.y, coord.x, coord.y, b, isSelectedWaypoint, context);
+                    drawWaypoint(wpCoord.x, wpCoord.y, lastCoord.x, lastCoord.y, coord.x, coord.y, b, isSelectedWaypoint, ug.clientId, waypoint, context);
                 }
 
             }
@@ -171,8 +171,9 @@ var renderer = new function() {
         context.restore();
     }
 
-    var drawWaypoint = function(x, y, x2, y2, ugx, ugy, index, isSelectedWaypoint, context) {
-
+    var drawWaypoint = function(x, y, x2, y2, ugx, ugy, index, isSelectedWaypoint, unitGroupClientId, waypoint, context) {
+        var alpha = util.notNull(state.getSelectedUnitGroup()) && unitGroupClientId == state.getSelectedUnitGroup().clientId ? 0.9 : 0.2;
+        context.globalAlpha = alpha;
         if(index == 0) {
             // First, draw line from parent object.
             context.moveTo(ugx, ugy);
@@ -194,9 +195,9 @@ var renderer = new function() {
         context.beginPath();
         context.arc(x, y, 10, 0, 2 * Math.PI, false);
         context.fillStyle = 'red';
-        context.globalAlpha = 0.8;
+        context.globalAlpha = alpha;
         context.fill();
-        context.globalAlpha = 1.0;
+        context.globalAlpha = alpha;
         if(isSelectedWaypoint) {
             context.lineWidth = 5;
         } else {

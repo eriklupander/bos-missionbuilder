@@ -15,11 +15,11 @@ import se.lu.bos.misgen.model.VehicleType;
  */
 public class GroupFactory {
 
-    public static ObjectGroup buildPlaneGroup(boolean playerGroup, int numberOfPlanes, PlaneType planeType, boolean startInAir, float x, float y, float z, float yOri, Integer payloadId) {
+    public static ObjectGroup buildPlaneGroup(boolean playerGroup, int numberOfPlanes, PlaneType planeType, boolean startInAir, float x, float y, float z, float yOri, Integer payloadId, String baseName) {
 
         ObjectGroup objectGroup = new ObjectGroup();
         for(int a = 0; a < numberOfPlanes; a++) {
-            objectGroup.getObjects().add(PlaneFactory.buildPlane(playerGroup, planeType, a, 2, x, y, z, yOri, payloadId));
+            objectGroup.getObjects().add(PlaneFactory.buildPlane(playerGroup, planeType, a, 2, x, y, z, yOri, payloadId, baseName));
         }
         objectGroup.getObjects().stream().forEach( o -> {
             if(startInAir) {

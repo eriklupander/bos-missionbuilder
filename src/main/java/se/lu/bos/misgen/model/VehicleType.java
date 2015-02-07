@@ -24,7 +24,7 @@ public enum VehicleType {
     MG34_AA(201, "LuaScripts\\WorldObjects\\vehicles\\mg34-aa.txt", "graphics\\artillery\\mg34-aa\\mg34-aa.mgm"),
     FORD_G917(201, "LuaScripts\\WorldObjects\\vehicles\\ford-g917.txt", "graphics\\vehicles\\ford\\ford-g917.mgm"),
     OPEL_BLITZ(201, "LuaScripts\\WorldObjects\\vehicles\\opel-blitz.txt", "graphics\\vehicles\\opel\\opel-blitz.mgm"),
-    STUG4(201, "LuaScripts\\WorldObjects\\vehicles\\stug40l43", "graphics\\vehicles\\stug40l43\\stug40l43.mgm"),
+    STUG4(201, "LuaScripts\\WorldObjects\\vehicles\\stug40l43.txt", "graphics\\vehicles\\stug40l43\\stug40l43.mgm"),
     PZIII(201, "LuaScripts\\WorldObjects\\vehicles\\pziii-l.txt", "graphics\\vehicles\\pziii-l\\pziii-l.mgm"),
     SDKFZ251(201, "LuaScripts\\WorldObjects\\vehicles\\sdkfz251-1c.txt", "graphics\\vehicles\\sdkfz251\\sdkfz251-1c.mgm"),
     FLAK37(201, "LuaScripts\\WorldObjects\\vehicles\\flak37.txt", "graphics\\artillery\\flak37\\flak37.mgm"),

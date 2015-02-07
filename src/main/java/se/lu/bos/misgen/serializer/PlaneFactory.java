@@ -13,9 +13,9 @@ import se.lu.bos.misgen.model.PlaneType;
  * To change this template use File | Settings | File Templates.
  */
 public class PlaneFactory {
-    public static Plane buildPlane(boolean playerGroup, PlaneType planeType, int numInGroup, int aiLevel, float x, float y, float z, float yOri, Integer payloadId) {
+    public static Plane buildPlane(boolean playerGroup, PlaneType planeType, int numInGroup, int aiLevel, float x, float y, float z, float yOri, Integer payloadId, String baseName) {
         Plane p = new Plane(x, y, z, yOri);
-        p.setName("Plane " + numInGroup);
+        p.setName(baseName + " " + (numInGroup+1) + " (" + planeType.name() + ")");
         p.getMCU_TR_Entity().setName(p.getName());
         p.setScript(planeType.getScript());
         p.setModel(planeType.getModel());

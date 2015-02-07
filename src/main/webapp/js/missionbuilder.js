@@ -248,7 +248,7 @@ var missionbuilder = new function() {
             state.setSelectedTriggerZone(null);
         } else if(object.objectType == 'WAYPOINT') {
             state.setSelectedWaypoint(object);
-            state.setSelectedUnitGroup(null);
+            //state.setSelectedUnitGroup(null);      // TEST - do not deselect unit group when selecting waypoint.
             state.setSelectedTriggerZone(null);
         }  else if(object.objectType == 'TRIGGER') {
             state.setSelectedWaypoint(null);
@@ -297,6 +297,7 @@ var missionbuilder = new function() {
                 y:y,
                 z:worldZ,
                 clientId:new Date().getTime(),
+                unitGroupClientId:state.getSelectedUnitGroup().clientId,
                 speed:300,     // TODO Fix speed depending on air or ground unit
                 action:{"actionType":"FLY"}
             }

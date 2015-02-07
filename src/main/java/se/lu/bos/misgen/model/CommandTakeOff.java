@@ -12,20 +12,20 @@ import se.lu.bos.misgen.util.Util;
  */
 public class CommandTakeOff  extends GameEntity {
 
-    public CommandTakeOff(float x, float y, float z, Integer gameEntityToLandId) {
+    public CommandTakeOff(float x, float y, float z, Integer gameEntityToStartId) {
         setId(GlobalId.nextLong());
         setXPos(x);
         setYPos(y);
         setZPos(z);
-        getObjects().add(gameEntityToLandId);
+        getObjects().add(gameEntityToStartId);
     }
 
-    public CommandTakeOff(float x, float y, float z, GameEntity gameEntityToLand) {
+    public CommandTakeOff(float x, float y, float z, GameEntity gameEntityToStart) {
         setId(GlobalId.nextLong());
         setXPos(x);
         setYPos(y);
         setZPos(z);
-        getObjects().add(gameEntityToLand.getMCU_TR_Entity().getId().intValue());
+        getObjects().add(gameEntityToStart.getMCU_TR_Entity().getId().intValue());
     }
 
 
