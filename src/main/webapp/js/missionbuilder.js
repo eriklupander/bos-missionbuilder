@@ -6,6 +6,45 @@ var missionbuilder = new function() {
         maprenderer.renderMap();
     }
 
+    this.downloadMissionFile = function() {
+        if(!(util.notNull(state.getCurrentMission()) && util.notNull(state.getCurrentMission().serverId))) {
+            alert("Please load a mission first");
+            return;
+        }
+
+        $.fileDownload(BASEPATH + '/mission/' + state.getCurrentMission().serverId + '/downloadmission', {
+            successCallback: function (url) {
+
+                alert('You just got a file download dialog or ribbon for this URL :' + url);
+            },
+            failCallback: function (html, url) {
+
+                alert('Your file download just failed for this URL:' + url + '\r\n' +
+                    'Here was the resulting error HTML: \r\n' + html
+                );
+            }
+        });
+    }
+
+    this.downloadLocalizationFile = function() {
+        if(!(util.notNull(state.getCurrentMission()) && util.notNull(state.getCurrentMission().serverId))) {
+            alert("Please load a mission first");
+            return;
+        }
+        $.fileDownload(BASEPATH + '/mission/' + state.getCurrentMission().serverId + '/downloadlocalization', {
+            successCallback: function (url) {
+
+                alert('You just got a file download dialog or ribbon for this URL :' + url);
+            },
+            failCallback: function (html, url) {
+
+                alert('Your file download just failed for this URL:' + url + '\r\n' +
+                    'Here was the resulting error HTML: \r\n' + html
+                );
+            }
+        });
+    }
+
     this.exportMissionAsText = function() {
         if(!(util.notNull(state.getCurrentMission()) && util.notNull(state.getCurrentMission().serverId))) {
             alert("Please load a mission first");
@@ -90,6 +129,12 @@ var missionbuilder = new function() {
             $('#mission-name').text(data.name);
             $('#rightmenu').removeClass('hidden');
             $('#country-select').removeClass('hidden');
+
+            $('#missionFileLink').html('<a target="_blank" href="' + BASEPATH + '/mission/' + state.getCurrentMission().serverId + '/downloadmission">Download mission</a>');
+            $('#missionFileLink').removeClass('hidden');
+
+            $('#localizationFileLink').html('<a target="_blank" href="' + BASEPATH + '/mission/' + state.getCurrentMission().serverId + '/downloadlocalization">Download localization</a>');
+            $('#localizationFileLink').removeClass('hidden');
         });
     }
 
@@ -100,12 +145,14 @@ var missionbuilder = new function() {
             var template = Handlebars.compile(src);
             var html    = template(data);
             $('#air-group-type').html(html);
-
-//            for(var a = 0 ; a < data.length; a++) {
-//                $(unitSelect).append('<option value="' + data[a] + '">' + data[a] + '</option>');
-//            }
         });
+
         $('#createUnitGroupModal').modal({backdrop:'static'});
+        $('#create-unit-group-altitude').slider().on('slide', function(ev){
+            $('#ycreate-text').text(ev.value);
+        }).on('slideStop', function(ev){
+                $('#ycreate-text').text(ev.value + ' meters');
+            });
         $("#map").css("cursor", "");
         $('#clickOnMapDiv').addClass('hidden');
         state.setState(state.NORMAL);
@@ -128,20 +175,47 @@ var missionbuilder = new function() {
         state.setLocation(screenToWorld);
     };
 
-    this.openCreateStaticObjectDialog = function (screenToWorld) {
+    this.openCreateStaticGroupDialog = function (screenToWorld) {
 
-        rest.getVehicleTypes(state.getCurrentCountry(), function(data) {
-            var unitSelect = $('#create-static-object-group-type');
-            $(unitSelect).empty();
-            for(var a = 0 ; a < data.length; a++) {
-                $(unitSelect).append('<option value="' + data[a] + '">' + data[a] + '</option>');
-            }
+        rest.getStaticObjectTypes(state.getCurrentCountry(), function(data) {
+            var src = $('#static-objects-types-tpl').html();
+            var template = Handlebars.compile(src);
+            var html = template(data);
+            $('#create-static-object-group-type').html(html);
         });
         $('#createStaticObjectGroupModal').modal({backdrop:'static'});
         $("#map").css("cursor", "");
         $('#clickOnMapDiv').addClass('hidden');
         state.setState(state.NORMAL);
         state.setLocation(screenToWorld);
+    };
+
+    this.addStaticObjectGroupToMission = function() {
+        var countryId = state.getCurrentCountry();
+        var staticObjectGroup = {
+            x : state.getX(),
+            y : 0,
+            z : state.getZ(),
+            countryId : countryId,
+            type : $('#create-static-object-type').val(),
+            name : $('#create-static-object-group-name').val(),
+            size : $('#create-static-object-group-size').val(),
+            description : $('#create-static-object-group-desc').val(),
+            yOri : 90,
+            groupType : "STATIC_OBJECT_GROUP",
+            objectType : "STATIC_OBJECT",
+            clientId : new Date().getTime()
+        }
+
+        var currentMission = state.getCurrentMission();
+        state.pushMissionState(currentMission);
+
+        var side = currentMission.sides[state.getCurrentCountry()];
+        side.staticObjectGroups.push(staticObjectGroup);
+        rest.updateMission(currentMission, function(data) {
+            state.setCurrentMission(data);
+            maprenderer.redraw();
+        });
     };
 
     this.addGroundUnitGroupToMission = function() {
@@ -239,6 +313,19 @@ var missionbuilder = new function() {
         state.setState(state.MAP_WAITING_FOR_CLICK_GROUND_GROUP);
     }
 
+
+    this.addStaticObjectGroup = function() {
+        $('#clickOnMapDiv').removeClass('hidden');
+        $("#map").css("cursor", "crosshair");
+        $(document).on('mousemove', function(e){
+            $('#clickOnMapDiv').css({
+                left:  e.pageX,
+                top:   e.pageY
+            });
+        });
+        state.setState(state.MAP_WAITING_FOR_CLICK_STATIC_OBJECT_GROUP);
+    }
+
     this.objectSelected = function(object) {
         // TODO fix the differentiated selected stuff. Use unified selectedObject thing instead.
         state.setDragTarget(object);
@@ -246,14 +333,22 @@ var missionbuilder = new function() {
             state.setSelectedUnitGroup(object);
             state.setSelectedWaypoint(null);
             state.setSelectedTriggerZone(null);
+            state.setSelectedStaticObjectGroup(null);
         } else if(object.objectType == 'WAYPOINT') {
             state.setSelectedWaypoint(object);
             //state.setSelectedUnitGroup(null);      // TEST - do not deselect unit group when selecting waypoint.
             state.setSelectedTriggerZone(null);
+            state.setSelectedStaticObjectGroup(null);
         }  else if(object.objectType == 'TRIGGER') {
             state.setSelectedWaypoint(null);
             state.setSelectedUnitGroup(null);
             state.setSelectedTriggerZone(object);
+            state.setSelectedStaticObjectGroup(null);
+        } else if(object.objectType == 'STATIC_OBJECT') {
+            state.setSelectedWaypoint(null);
+            state.setSelectedUnitGroup(null);
+            state.setSelectedTriggerZone(null);
+            state.setSelectedStaticObjectGroup(object);
         }
 
         maprenderer.redraw();
@@ -353,7 +448,19 @@ var missionbuilder = new function() {
                         util.populateSelectKeyVal('planes-edit-group-loadout', obj, 'loadout', keyvals);
                     });
                     util.populateSelect('planes-edit-group-size', obj, 'size', statics.getGroupSizes());
-                    util.populateSelect('planes-edit-group-altitude', obj, 'y', statics.getAltitudes());
+                    //util.populateSelect('planes-edit-group-altitude', obj, 'y', statics.getAltitudes());
+                    $('#planes-edit-group-altitude').slider().on('slide', function(ev){
+                        $('#y-text').text(ev.value);
+                        obj.y = ev.value;
+                        maprenderer.redraw();
+                    }).on('slideStop', function(ev){
+                            $('#y-text').text(ev.value);
+                            obj.y = ev.value;
+                            rest.updateMission(state.getCurrentMission(), function(data) {
+                                state.setCurrentMission(data);
+                                maprenderer.redraw();
+                            })
+                        });
                     util.populateSelectKeyVal('planes-edit-group-skill', obj, 'aiLevel', statics.getSkills());
                     break;
                 case "GROUND_GROUP":
@@ -454,6 +561,7 @@ var missionbuilder = new function() {
                                 "name" : item.name
                             };
                         });
+                        keyval.splice(0, 0, {"value":-1, "name":"No object selected"});     // Insert a no value selected at index 0
                         util.populateSelectKeyVal('waypoint-edit-action-target', obj, 'action.targetClientId', keyval);
 
                         break;
@@ -480,7 +588,6 @@ var missionbuilder = new function() {
                         }
                     }
                 } else if(util.notNull(state.getSelectedTriggerZone())) {
-
 
                     // Also do triggers if not unit or waypoint
                     for(var a = 0; a < state.getCurrentMission().triggerZones.length; a++) {

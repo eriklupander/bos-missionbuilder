@@ -4,6 +4,7 @@ var state = new function() {
 
     this.MAP_WAITING_FOR_CLICK_AIR_GROUP = "MAP_WAITING_FOR_CLICK_AIR_GROUP";
     this.MAP_WAITING_FOR_CLICK_GROUND_GROUP = "MAP_WAITING_FOR_CLICK_GROUND_GROUP";
+    this.MAP_WAITING_FOR_CLICK_STATIC_OBJECT_GROUP = "MAP_WAITING_FOR_CLICK_STATIC_OBJECT_GROUP";
     this.MAP_WAITING_FOR_CLICK_TRIGGER = "MAP_WAITING_FOR_CLICK_TRIGGER";
     this.MAP_WAITING_FOR_CLICK_TRIGGER_RADIUS = "MAP_WAITING_FOR_CLICK_TRIGGER_RADIUS";
     this.NORMAL = "NORMAL";
@@ -14,6 +15,7 @@ var state = new function() {
     var selectedLocation = null;
     var currentMission = null;
     var selectedUnitGroup = null;
+    var selectedStaticObjectGroup = null;
     var selectedWaypoint = null;
     var selectedTriggerZone = null;
 
@@ -100,6 +102,14 @@ var state = new function() {
                 }
             }
         }
+    }
+
+    this.getSelectedStaticObjectGroup = function() {
+        return selectedStaticObjectGroup;
+    }
+
+    this.setSelectedStaticObjectGroup = function(sog) {
+        selectedStaticObjectGroup = sog;
     }
 
     this.getSelectedUnitGroup = function() {

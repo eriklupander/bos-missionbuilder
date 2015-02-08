@@ -168,6 +168,15 @@ var renderer = new function() {
 
             }
         }
+
+        var staticObjectGroups = state.getCurrentMission().sides[state.getCurrentCountry()].staticObjectGroups;
+        if(staticObjectGroups.length > 0) {
+            for(var a = 0; a < staticObjectGroups.length; a++) {
+                var sog = staticObjectGroups[a];
+                var coord = coordTranslator.worldToImageInViewport(sog.x, sog.z, viewport, maprenderer.mapWidth, maprenderer.mapHeight);
+                drawStaticObjectGroup(coord.x, coord.y, sog, context);
+            }
+        }
         context.restore();
     }
 
@@ -214,6 +223,34 @@ var renderer = new function() {
         context.fillText(""+ (index+1), x, y+4);
 
 
+    }
+
+    var drawStaticObjectGroup  = function(x, y, staticObjectGroup, context) {
+        context.beginPath();
+        context.arc(x, y, 20, 0, 2 * Math.PI, false);
+        context.fillStyle = 'purple';
+        context.globalAlpha = 0.8;
+        context.fill();
+        context.globalAlpha = 1.0;
+        if(util.notNull(state.getSelectedStaticObjectGroup()) && staticObjectGroup.clientId == state.getSelectedStaticObjectGroup().clientId) {
+            context.lineWidth = 6;
+        } else {
+            context.lineWidth = 3;
+        }
+
+        context.strokeStyle = '#222222';
+        context.stroke();
+
+        context.font = '12pt Open Sans';
+        context.textAlign = 'center';
+
+        context.fillText(staticObjectGroup.type, x, y+20+16);
+
+        context.font = '10pt Open Sans';
+        context.textAlign = 'center';
+
+        context.fillStyle = 'white';
+        context.fillText("S", x, y+4);
     }
 
     var drawUnitGroup = function(x, y, unitGroup, context) {

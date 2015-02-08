@@ -6,6 +6,24 @@ var rest = new function() {
         $.getJSON(BASE + "/mission/" + missionServerId + "/export", callback);
     }
 
+    this.downloadMissionFile = function(missionServerId, callback) {
+        $.ajax({
+            method : 'GET',
+            url : BASE + "/mission/" + missionServerId + "/downloadmission",
+            processData: false,
+            success : callback
+        });
+    }
+
+    this.downloadLocalizationFile = function(missionServerId, callback) {
+        $.ajax({
+            method : 'GET',
+            url : BASE + "/mission/" + missionServerId + "/downloadlocalization",
+            processData: false,
+            success : callback
+        });
+    }
+
     this.exportMissionToDisk = function(missionServerId, callback) {
         $.ajax({
             method : 'PUT',
@@ -52,7 +70,7 @@ var rest = new function() {
     }
 
     this.getStaticObjectTypes = function(countryId, callback) {
-        $.getJSON(BASE + "/vehicleTypes/" + countryId, callback);
+        $.getJSON(BASE + "/staticObjectTypes/" + countryId, callback);
     }
 
     this.getActionTypes = function(callback) {

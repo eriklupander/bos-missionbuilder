@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 
 <head>
 
@@ -57,8 +58,19 @@
                     <li>
                         <a href="#" onclick="missionbuilder.openLoadMissionDialog();">Load Mission</a>
                     </li>
+                    <!--
                     <li>
-                        <a href="#" onclick="missionbuilder.exportMissionAsText();">Export Mission</a>
+                        <a href="#" onclick="missionbuilder.downloadMissionFile();">Download .Mission file</a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="missionbuilder.downloadLocalizationFile();">Download .eng file</a>
+                    </li>
+                    -->
+                    <li id="missionFileLink" class="hidden">
+
+                    </li>
+                    <li id="localizationFileLink" class="hidden">
+
                     </li>
                     <li>
                         <a href="#" onclick="missionbuilder.exportMissionToDisk();">Export Mission to Disk</a>
@@ -102,7 +114,7 @@
         <ul class="nav navbar-right top-nav">
 
             <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> John Smith <b class="caret"></b></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> [[${#httpServletRequest.remoteUser}]] <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                     <!--
                     <li>
@@ -117,7 +129,10 @@
                     <li class="divider"></li>
                     -->
                     <li>
-                        <a href="#"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
+                        <a href="#" th:action="@{/logout}"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
+                        <!-- <form th:action="@{/logout}" method="post">
+                            <input type="submit" value="Sign Out"/>
+                        </form>           -->
                     </li>
                 </ul>
             </li>
@@ -135,6 +150,9 @@
                 </li>
                 <li id="menu-add-ground-group" class="menuitem">
                     <a href="#" onclick="missionbuilder.addGroundGroup();"><i class="fa fa-fw fa-plus-circle"></i> Add ground unit</a>
+                </li>
+                <li id="menu-add-static-object-group" class="menuitem">
+                    <a href="#" onclick="missionbuilder.addStaticObjectGroup();"><i class="fa fa-fw fa-plus-circle"></i> Add static object group</a>
                 </li>
                 <li id="menu-add-waypoint" class="menuitem hidden">
                     <a href="#" onclick="missionbuilder.addWaypoint();"><i class="fa fa-fw fa-times-circle-o"></i> Add waypoint</a>
@@ -181,6 +199,7 @@
 
 <!-- jQuery -->
 <script src="js/jquery-1.11.0.min.js"></script>
+<script src="js/jquery.fileDownload.js"></script>
 
 <!-- Bootstrap Core JavaScript -->
 <script src="js/bootstrap.min.js"></script>
@@ -317,7 +336,13 @@
                     <input id="create-unit-group-name" class="form-control">
                 </div>
                 <div class="form-group">
-                    <label>Starting altitude</label>
+                    <label>Starting altitude</label>     <br/>
+                    <input id="create-unit-group-altitude" type="text" class="slider" style="width:570px;" value=""
+                           data-slider-min="0" data-slider-max="10000" data-slider-step="10" data-slider-value="1500"
+                           data-slider-orientation="horizontal" data-slider-selection="after" data-slider-tooltip="hide">
+                    <br/>
+                    <div id="ycreate-text">1500 meters</div>
+                    <!--
                     <select id="create-unit-group-altitude" class="form-control">
                         <option value="500">500 m</option>
                         <option value="1000">1000 m</option>
@@ -329,7 +354,9 @@
                         <option value="7000">7000 m</option>
                         <option value="9000">9000 m</option>
                         <option value="0">Ground</option>
+
                     </select>
+                    -->
                 </div>
                 <div class="form-group">
                     <label>Number of units in group</label>
@@ -489,10 +516,8 @@
                 <h4 class="modal-title">Create Static Object Group</h4>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label>Object type</label>
-                    <select id="create-static-object-group-type" class="form-control">
-                    </select>
+                <div class="form-group" id="create-static-object-group-type">
+
                 </div>
                 <div class="form-group">
                     <label>Object/Group name</label>
@@ -595,6 +620,15 @@
     </select>
 </script>
 
+<script id="static-objects-types-tpl" type="text/x-handlebars-template">
+    <label>Static object type</label>
+    <select  class="form-control" id="create-static-object-type">
+        {{#each this}}
+        <option value="{{this}}">{{this}}</option>
+        {{/each}}
+    </select>
+</script>
+
 <script id="planes-edit-tpl" type="text/x-handlebars-template">
     <h4>Edit {{name}}</h4>
     <div class="propertyelement">
@@ -608,8 +642,14 @@
     </div>
     <div class="propertyelement">
         <label>Altitude</label>
+        <input id="planes-edit-group-altitude" type="text" class="slider" style="width:200px;" value=""
+               data-slider-min="0" data-slider-max="10000" data-slider-step="10" data-slider-value="{{y}}"
+               data-slider-orientation="horizontal" data-slider-selection="after" data-slider-tooltip="hide">
+        <div id="y-text" class="text-center">{{y}} meters</div>
+        <!--
         <select  class="form-control" id="planes-edit-group-altitude">
         </select>
+        -->
     </div>
     <div class="propertyelement">
         <label>Heading (0-359)</label>

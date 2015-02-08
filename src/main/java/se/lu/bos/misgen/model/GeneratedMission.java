@@ -26,6 +26,7 @@ public class GeneratedMission {
     private MissionOptions missionOptions;
     private List<Timer> timers = new ArrayList<>();
     private List<ObjectGroup> objectGroups = new ArrayList<>();
+    private List<StaticObject> staticObjects = new ArrayList<>();
 
     private List<WayPoint> wayPoints = new ArrayList<>();
     private List<Effect> effects = new ArrayList<>();
@@ -232,5 +233,13 @@ public class GeneratedMission {
 
     public void setAirfieldEntities(List<Airfield> airfieldEntities) {
         this.airfieldEntities = airfieldEntities;
+    }
+
+    public List<StaticObject> getStaticObjects() {
+        return staticObjects;
+    }
+
+    public void setStaticObjects(List<StaticObject> staticObjects) {
+        this.staticObjects = staticObjects;
     }
 }

@@ -1,12 +1,18 @@
 package se.lu.bos.misgen.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.IOUtils;
 import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import se.lu.bos.misgen.groups.ClientAirfieldParser;
@@ -21,6 +27,9 @@ import se.lu.bos.misgen.serializer.MissionConverter;
 import se.lu.bos.misgen.serializer.MissionWriter;
 import se.lu.bos.misgen.webmodel.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,10 +43,63 @@ import java.util.stream.Collectors;
 @RequestMapping("/rest/missionbuilder")
 public class MissionDataServiceBean {
 
+    private final static Logger log = LoggerFactory.getLogger(MissionDataServiceBean.class);
+
     private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     ElasticSearchServer elasticSearchServer;
+
+    @RequestMapping(method = RequestMethod.GET, value="/mission/{serverId}/downloadmission", produces = "application/octet-stream")
+    public void downloadMission(@PathVariable String serverId, HttpServletResponse response) {
+
+        String json = elasticSearchServer.getClient().prepareGet("missions", "mission", serverId).execute().actionGet().getSourceAsString();
+        try {
+            ClientMission clientMission = mapper.readValue(json, ClientMission.class);
+
+            GeneratedMission generatedMission = new MissionConverter().convert(clientMission);
+            String missionFileBody = new MissionWriter().generateMission(generatedMission);
+
+//            org.apache.commons.io.IOUtils.write(missionFileBody, response.getOutputStream());
+//
+            //response.setContentType("application/force-download");
+//            response.setHeader("Content-Disposition", "attachment; filename=" + clientMission.getName().replaceAll(" ", "") + ".Mission");
+//            response.flushBuffer();
+            IOUtils.write(missionFileBody,
+                    response.getOutputStream()
+            );
+
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", "attachment; filename=" + clientMission.getName().replaceAll(" ", "") + ".Mission");
+            response.flushBuffer();
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            throw new RuntimeException("IOError writing file to output stream");
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value="/mission/{serverId}/downloadlocalization", produces = "application/octet-stream")
+    public void downloadLocalization(@PathVariable String serverId, HttpServletResponse response) {
+        String json = elasticSearchServer.getClient().prepareGet("missions", "mission", serverId).execute().actionGet().getSourceAsString();
+        try {
+            ClientMission clientMission = mapper.readValue(json, ClientMission.class);
+            GeneratedMission generatedMission = new MissionConverter().convert(clientMission);
+
+            StringBuilder buf = new StringBuilder();
+            generatedMission.getLocalization().entrySet().stream().forEach(entry -> buf.append(entry.getKey()).append(":").append(entry.getValue() != null ? entry.getValue() : "").append("\r\n"));
+            IOUtils.write(buf.toString(),
+                    response.getOutputStream()
+                    , "UTF-16LE"
+            );
+
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", "attachment; filename=" + clientMission.getName().replaceAll(" ", "") + ".eng");
+            response.flushBuffer();
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            throw new RuntimeException("IOError writing file to output stream");
+        }
+    }
 
     @RequestMapping(method = RequestMethod.GET, value="/mission/{serverId}/export", produces="text/plain")
     public ResponseEntity<String> exportMissionAsText(@PathVariable String serverId) {
@@ -209,7 +271,7 @@ public class MissionDataServiceBean {
     @RequestMapping(method = RequestMethod.GET, value = "/staticObjectTypes/{countryCode}", produces = "application/json")
     public ResponseEntity<List<StaticObjectType>> getStaticObjectTypes(@PathVariable Integer countryCode) {
         return new ResponseEntity(Arrays.asList(StaticObjectType.values()).stream()
-                .filter(pt -> pt.getCountry() == countryCode)
+                .filter(pt -> pt.getCountry() == countryCode || pt.getCountry() == 0)
                 .collect(Collectors.toList()), HttpStatus.OK);
     }
 

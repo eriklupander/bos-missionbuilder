@@ -55,4 +55,23 @@ public class Util {
         }
         return buf.toString();
     }
+
+    /**
+     * Given the base point x,z - this method returns an offset position based on the yOri and the index. index = 0 returns same.
+     *
+     * Example. Index 2 == 200 meter offset. 90 degrees. We stack to the "right". This means that we will return x = x, z = z+2*100;
+     *
+     * @param index
+     * @param x
+     * @param z
+     * @param yOri
+     * @return
+     */
+    public static Float[] getOffsetFormationLine(int index, Float x, Float z, Float yOri) {
+        Float[] pos = new Float[2];
+
+        pos[0] = new Double(x + ((100*index) * Math.sin(Math.toRadians(yOri)))).floatValue();
+        pos[1] = new Double(z + ((100*index) * Math.cos(Math.toRadians(yOri)))).floatValue();
+        return pos;
+    }
 }

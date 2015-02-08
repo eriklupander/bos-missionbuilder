@@ -14,6 +14,7 @@ public class Side {
 
     private String name;
     private List<UnitGroup> unitGroups = new ArrayList<UnitGroup>();
+    private List<StaticObjectGroup> staticObjectGroups = new ArrayList<>();
 
     public Side() {
 
@@ -37,5 +38,13 @@ public class Side {
 
     public void setUnitGroups(List<UnitGroup> unitGroups) {
         this.unitGroups = unitGroups;
+    }
+
+    public List<StaticObjectGroup> getStaticObjectGroups() {
+        return staticObjectGroups;
+    }
+
+    public void setStaticObjectGroups(List<StaticObjectGroup> staticObjectGroups) {
+        this.staticObjectGroups = staticObjectGroups;
     }
 }

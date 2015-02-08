@@ -120,6 +120,13 @@ var maprenderer = new function() {
                             metadata));
                     }
                     break;
+                case state.MAP_WAITING_FOR_CLICK_STATIC_OBJECT_GROUP:
+                    if(Math.abs(e.clientX - mouseDownX) < 6 && Math.abs(e.clientY - mouseDownY) < 6) {
+                        missionbuilder.openCreateStaticGroupDialog(coordTranslator.imageToWorld(
+                            imageX+startXX*zoom, imageY+startYY*zoom,
+                            metadata));
+                    }
+                    break;
                 case state.MAP_WAITING_FOR_CLICK_TRIGGER:
                     if(Math.abs(e.clientX - mouseDownX) < 6 && Math.abs(e.clientY - mouseDownY) < 6) {
                         var coords = coordTranslator.imageToWorld(
@@ -268,6 +275,7 @@ var maprenderer = new function() {
         ctx.drawImage(buffer, imageX, imageY, maprenderer.mapWidth*zoom, maprenderer.mapHeight*zoom, 0, 0, maprenderer.mapWidth, maprenderer.mapHeight);
         var viewport = calcViewPortWorldCoordinates();
         renderer.renderFlightObjects(viewport, ctx);
+
         renderer.renderPlacingWaypoint(mouseX-canvasOffset.left, mouseY-canvasOffset.top, viewport, ctx);
         renderer.renderPlacingTriggerZone(metadata, zoom, viewport, ctx);
         if(state.getFilter('trigger')) {

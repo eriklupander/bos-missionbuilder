@@ -8,6 +8,7 @@ import se.lu.bos.misgen.helper.ObjectGroup;
 import se.lu.bos.misgen.model.*;
 import se.lu.bos.misgen.model.Timer;
 import se.lu.bos.misgen.model.WayPoint;
+import se.lu.bos.misgen.util.Util;
 import se.lu.bos.misgen.webmodel.*;
 
 import java.io.IOException;
@@ -46,10 +47,44 @@ public class MissionConverter {
         gm.getAirfields().addAll(StaticGroupsFactory.getAirFieldGroupEntities());
 
         buildObjectGroups(cm, gm);
+        buildStaticObjectGroups(cm, gm);
 
         gm.setLocalization(localization);
 
         return gm;
+    }
+
+    private void buildStaticObjectGroups(ClientMission cm, GeneratedMission gm) {
+        Side ussr = cm.getSides().get(101);
+        Side germany = cm.getSides().get(201);
+
+        ussr.getStaticObjectGroups().forEach(sog -> sog.setCountryCode(101));
+        germany.getStaticObjectGroups().forEach(sog -> sog.setCountryCode(201));
+        Stream<StaticObjectGroup> all = rebuildStaticObjectStream(ussr, germany);
+
+        List<StaticObject> blocks = all.flatMap(sog -> {
+
+            List<StaticObject> sogs = new ArrayList<>();
+
+            for (int a = 0; a < sog.getSize(); a++) {
+                StaticObjectType type = StaticObjectType.valueOf(sog.getType());
+                StaticObject so = new StaticObject(sog.getX(), sog.getY(), sog.getZ(), sog.getyOri());
+                so.setModel(type.getModel());
+                so.setScript(type.getScript());
+                so.setLinkTrId(0);
+                so.setName("Block");
+
+                // Apply positioning offset within group. Use the yOri to always have static object form a line.
+                Float[] newPositions = Util.getOffsetFormationLine(a, sog.getX(), sog.getZ(), sog.getyOri());
+                so.setXPos(newPositions[0]);
+                so.setZPos(newPositions[1]);
+                sogs.add(so);
+            }
+
+            return sogs.stream();
+        }).collect(Collectors.toList());
+
+        gm.getStaticObjects().addAll(blocks);
     }
 
     private void buildObjectGroups(ClientMission cm, GeneratedMission gm) {
@@ -110,6 +145,10 @@ public class MissionConverter {
 
     private Stream<UnitGroup> rebuildStream(Side ussr, Side germany) {
         return Stream.concat(germany.getUnitGroups().stream(), ussr.getUnitGroups().stream());
+    }
+
+    private Stream<StaticObjectGroup> rebuildStaticObjectStream(Side ussr, Side germany) {
+        return Stream.concat(germany.getStaticObjectGroups().stream(), ussr.getStaticObjectGroups().stream());
     }
 
     private void addIconsForPlayerRoute(GeneratedMission gm, Stream<UnitGroup> unitGroupStream) {
