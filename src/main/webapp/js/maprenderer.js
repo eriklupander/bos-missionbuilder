@@ -72,14 +72,21 @@ var maprenderer = new function() {
             if(state.getState() == state.NORMAL) {
                 if(util.notNull(state.getCurrentMission())) {
                     var result = coordTranslator.ifUnitGroupSelected(hitBox, metadata, missionbuilder.objectSelected);
-                    if(!result) {
-                        // TODO unify to use "drag target" or "selected object" only.
-                        state.setSelectedUnitGroup(null);
-                        state.setSelectedWaypoint(null);
-                        state.setSelectedTriggerZone(null);
-                        state.setDragTarget(null);
-                        state.setSelectedStaticObjectGroup(null);
+                    if(result) {
+                        // Allow drag of unit
+
+                        state.setState(state.DRAGGING_UNIT);
+                    } else {
+                        state.setState(state.NORMAL);
                     }
+//                    if(!result) {
+//                        // TODO unify to use "drag target" or "selected object" only.
+//                        state.setSelectedUnitGroup(null);
+//                        state.setSelectedWaypoint(null);
+//                        state.setSelectedTriggerZone(null);
+//                        state.setDragTarget(null);
+//                        state.setSelectedStaticObjectGroup(null);
+//                    }
                 }
             } else if(state.getState() == state.PLACING_WAYPOINT) {
                 var worldCoords = coordTranslator.imageToWorld(

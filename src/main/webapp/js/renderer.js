@@ -3,6 +3,30 @@
  */
 var renderer = new function() {
 
+    var images = {};
+    var numImages = 0;
+
+    var sources = {
+        "101": 'images/101.png',
+        "201": 'images/201.png',
+        "bf109" : 'images/bf109.png'
+    };
+
+
+    // get num of sources
+    for(var src in sources) {
+        numImages++;
+    }
+    for(var src in sources) {
+        images[src] = new Image();
+        images[src].onload = function() {
+//            if(++loadedImages >= numImages) {
+//                callback(images);
+//            }
+        };
+        images[src].src = sources[src];
+    }
+
     this.renderSelectionBox = function(context) {
         var box = state.getSelectionBox();
         context.beginPath();
@@ -295,37 +319,24 @@ var renderer = new function() {
         context.font = '10pt Open Sans';
         context.fillText(unitGroup.size, x-18, y-18);
 
-        var imageObj = new Image();
+       // var imageObj = new Image();
         var scale = 0.5;
         var rotation = 0;
 
-        imageObj.onload = function() {
-
-
-            context.save();
-            context.translate(x,y);
-           // context.translate(imageObj.width/2, imageObj.height/2);
-            context.rotate(rotation * TO_RADIANS);
-            context.scale(scale, scale);
-            context.drawImage(imageObj, -imageObj.width/2, -imageObj.height/2);
-            context.restore();
-
-        };
+        var src = '';
         if(type == 'AIR_GROUP') {
             rotation = unitGroup.yOri;
-            imageObj.src = 'images/bf109.png';
+            src = 'bf109';
         } else {
+            src = state.getCurrentCountry();
             scale = 0.4;
-            imageObj.src = 'images/' + state.getCurrentCountry() + '.png';
         }
-
-
-//        context.font = '10pt Open Sans';
-//        context.textAlign = 'center';
-//
-//        context.fillStyle = 'white';
-//        context.fillText(type == 'AIR_GROUP' ? "A" : "G", x, y+4);
-
+        context.save();
+        context.translate(x,y);
+        context.rotate(rotation * TO_RADIANS);
+        context.scale(scale, scale);
+        context.drawImage(images[src], -images[src].width/2, -images[src].height/2);
+        context.restore();
     }
 
     this.renderKillsOnMapVectorized = function(viewport, context, data) {
