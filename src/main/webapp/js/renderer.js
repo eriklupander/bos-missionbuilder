@@ -222,6 +222,13 @@ var renderer = new function() {
         context.fillStyle = 'white';
         context.fillText(""+ (index+1), x, y+4);
 
+        // For waypoints with a non-fly command, print it..
+        if(util.notNull(waypoint.action) && util.notNull(waypoint.action.actionType) && waypoint.action.actionType != 'FLY') {
+            context.font = '8pt Open Sans';
+            context.textAlign = 'center';
+            context.fillStyle = 'black';
+            context.fillText(waypoint.action.actionType, x, y+22);
+        }
 
     }
 
@@ -253,6 +260,8 @@ var renderer = new function() {
         context.fillText("S", x, y+4);
     }
 
+    var TO_RADIANS = Math.PI/180;
+
     var drawUnitGroup = function(x, y, unitGroup, context) {
 
         var type = unitGroup.groupType;
@@ -260,11 +269,16 @@ var renderer = new function() {
         context.beginPath();
         context.arc(x, y, 20, 0, 2 * Math.PI, false);
         context.fillStyle = type == 'AIR_GROUP' ? 'blue' : 'green';
-        context.globalAlpha = 0.8;
+
+        if(type == 'AIR_GROUP') {
+            context.globalAlpha = 0.2;
+        } else {
+            context.globalAlpha = 0.7;
+        }
         context.fill();
         context.globalAlpha = 1.0;
         if(util.notNull(state.getSelectedUnitGroup()) && unitGroup.clientId == state.getSelectedUnitGroup().clientId) {
-            context.lineWidth = 6;
+            context.lineWidth = 5;
         } else {
             context.lineWidth = 3;
         }
@@ -274,14 +288,43 @@ var renderer = new function() {
 
         context.font = '12pt Open Sans';
         context.textAlign = 'center';
-
+        context.fillStyle = 'black';
         context.fillText(unitGroup.type, x, y+20+16);
 
-        context.font = '10pt Open Sans';
-        context.textAlign = 'center';
 
-        context.fillStyle = 'white';
-        context.fillText(type == 'AIR_GROUP' ? "A" : "G", x, y+4);
+        context.font = '10pt Open Sans';
+        context.fillText(unitGroup.size, x-18, y-18);
+
+        var imageObj = new Image();
+        var scale = 0.5;
+        var rotation = 0;
+
+        imageObj.onload = function() {
+
+
+            context.save();
+            context.translate(x,y);
+           // context.translate(imageObj.width/2, imageObj.height/2);
+            context.rotate(rotation * TO_RADIANS);
+            context.scale(scale, scale);
+            context.drawImage(imageObj, -imageObj.width/2, -imageObj.height/2);
+            context.restore();
+
+        };
+        if(type == 'AIR_GROUP') {
+            rotation = unitGroup.yOri;
+            imageObj.src = 'images/bf109.png';
+        } else {
+            scale = 0.4;
+            imageObj.src = 'images/' + state.getCurrentCountry() + '.png';
+        }
+
+
+//        context.font = '10pt Open Sans';
+//        context.textAlign = 'center';
+//
+//        context.fillStyle = 'white';
+//        context.fillText(type == 'AIR_GROUP' ? "A" : "G", x, y+4);
 
     }
 

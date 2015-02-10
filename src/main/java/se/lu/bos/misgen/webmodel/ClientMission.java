@@ -25,6 +25,9 @@ public class ClientMission {
 
     private List<TriggerZone> triggerZones = new ArrayList<>();
 
+    private Boolean generateAAAAtAirfields = true;
+    private Boolean generateAAAAtBridges = false;
+
     private ClientMission() {
         sides.put(101, new Side("USSR"));
         sides.put(201, new Side("Germany"));
@@ -92,5 +95,21 @@ public class ClientMission {
 
     public void setTriggerZones(List<TriggerZone> triggerZones) {
         this.triggerZones = triggerZones;
+    }
+
+    public Boolean getGenerateAAAAtAirfields() {
+        return generateAAAAtAirfields;
+    }
+
+    public void setGenerateAAAAtAirfields(Boolean generateAAAAtAirfields) {
+        this.generateAAAAtAirfields = generateAAAAtAirfields;
+    }
+
+    public Boolean getGenerateAAAAtBridges() {
+        return generateAAAAtBridges;
+    }
+
+    public void setGenerateAAAAtBridges(Boolean generateAAAAtBridges) {
+        this.generateAAAAtBridges = generateAAAAtBridges;
     }
 }

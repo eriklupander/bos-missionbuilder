@@ -34,7 +34,7 @@ var state = new function() {
         'ground_group' : true,
         'static_object' : true,
         'trigger' : true,
-        'airfields' : true
+        'airfields' : false
     }
 
     this.setSelectionBox = function(topX, topY, bottomX, bottomY) {
@@ -110,6 +110,13 @@ var state = new function() {
 
     this.setSelectedStaticObjectGroup = function(sog) {
         selectedStaticObjectGroup = sog;
+        if(selectedStaticObjectGroup != null) {
+            missionbuilder.handleObjectSelected(selectedStaticObjectGroup);
+        } else {
+            if(noneSelected()) {
+                $('#object-properties').addClass('hidden');
+            }
+        }
     }
 
     this.getSelectedUnitGroup = function() {
@@ -172,7 +179,7 @@ var state = new function() {
     }
 
     var noneSelected = function() {
-        return selectedTriggerZone == null && selectedUnitGroup == null && selectedWaypoint == null;
+        return selectedTriggerZone == null && selectedUnitGroup == null && selectedWaypoint == null && selectedStaticObjectGroup == null;
     }
 
     this.setCurrentCountry = function(countryCode) {

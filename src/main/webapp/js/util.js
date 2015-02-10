@@ -22,6 +22,7 @@ var util = new function() {
             rest.updateMission(state.getCurrentMission(), function(data) {
                 state.setCurrentMission(data);
                 console.log("Saved mission after property change.");
+                maprenderer.redraw();
             })
         });
         util.setSelectedSelectItem(id, getValueOnProperty(obj, field));
@@ -39,6 +40,7 @@ var util = new function() {
             rest.updateMission(state.getCurrentMission(), function(data) {
                 state.setCurrentMission(data);
                 console.log("Saved mission after property change.");
+                maprenderer.redraw();
             })
         });
         util.setSelectedSelectItem(id, getValueOnProperty(obj, field));
@@ -56,7 +58,7 @@ var util = new function() {
     }
 
     this.bindTextArea = function(id, obj, field) {
-        $('#' + id).on('focusout', function() {
+        $('#' + id).on('change', function() {
             obj[field] = $('#' + id).val();
             rest.updateMission(state.getCurrentMission(), function(data) {
                 state.setCurrentMission(data);

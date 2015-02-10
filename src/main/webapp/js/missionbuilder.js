@@ -91,6 +91,17 @@ var missionbuilder = new function() {
         var template = Handlebars.compile(src);
         var html    = template(state.getCurrentMission());
         $('#edit-mission-body').html(html);
+        if(state.getCurrentMission().generateAAAAtAirfields == true) {
+            $('#edit-mission-gen-airfield-aaa').attr('checked', 'checked');
+        } else {
+            $('#edit-mission-gen-airfield-aaa').removeAttr('checked');
+        }
+        if(state.getCurrentMission().generateAAAAtBridges == true) {
+            $('#edit-mission-gen-bridge-aaa').attr('checked', 'checked');
+        } else {
+            $('#edit-mission-gen-bridge-aaa').removeAttr('checked');
+        }
+
         $('#editMissionModal').modal({backdrop:'static'});
     }
 
@@ -100,6 +111,8 @@ var missionbuilder = new function() {
         state.getCurrentMission().date = $('#edit-mission-date').val();
         state.getCurrentMission().time = $('#edit-mission-time').val();
         state.getCurrentMission().description = $('#edit-mission-desc').val();
+        state.getCurrentMission().generateAAAAtAirfields = $('#edit-mission-gen-airfield-aaa').prop('checked');
+        state.getCurrentMission().generateAAAAtBridges = $('#edit-mission-gen-bridge-aaa').prop('checked');
 
         rest.updateMission(state.getCurrentMission(), function(data) {
             state.setCurrentMission(data);
@@ -284,7 +297,9 @@ var missionbuilder = new function() {
             "name": $('#create-mission-name').val(),
             "description": $('#create-mission-desc').val(),
             "date": $('#create-mission-date').val(),
-            "time": $('#create-mission-time').val()
+            "time": $('#create-mission-time').val(),
+            "generateAAAAtAirfields": $('#create-mission-gen-airfield-aaa').prop('checked'),
+            "generateAAAAtBridges": $('#create-mission-gen-bridge-aaa').prop('checked')
         }
         rest.createMission(mission, handleMissionCreateResponse);
     }
@@ -480,6 +495,18 @@ var missionbuilder = new function() {
                     util.populateSelect('ground-group-edit-group-size', obj, 'size', statics.getGroupSizes());
                     util.populateSelectKeyVal('ground-group-edit-group-skill', obj, 'aiLevel', statics.getSkills());
                     break;
+                case "STATIC_OBJECT_GROUP":
+                    var src = $('#static-object-group-edit-tpl').html();
+                    var template = Handlebars.compile(src);
+                    var html    = template(obj);
+                    $('#object-properties').html(html);
+                    util.bindTextField('static-object-group-edit-name', obj, 'name');
+                    rest.getStaticObjectTypes(state.getCurrentCountry(), function(data) {
+                        util.populateSelect('static-object-group-edit-type', obj, 'type', data);
+                    });
+                    util.populateSelect('static-object-group-edit-size', obj, 'size', statics.getGroupSizes());
+                    util.bindTextField('static-object-group-edit-heading', obj, 'yOri');
+                    break;
             }
 
             if(!util.notNull(obj.groupType)) {
@@ -618,6 +645,20 @@ var missionbuilder = new function() {
                                 });
                                 return;
                             }
+                        }
+                    }
+                } else if(util.notNull(state.getSelectedStaticObjectGroup())) {
+                    for(var a = 0; a < state.getCurrentMission().sides[state.getCurrentCountry()].staticObjectGroups.length; a++) {
+                        var sog =  state.getCurrentMission().sides[state.getCurrentCountry()].staticObjectGroups[a];
+                        if(state.getSelectedStaticObjectGroup().clientId == sog.clientId) {
+                            state.getCurrentMission().sides[state.getCurrentCountry()].staticObjectGroups.splice(a, 1);
+                            state.setSelectedStaticObjectGroup(null);
+                            rest.updateMission(state.getCurrentMission(), function(data) {
+                                state.setCurrentMission(data);
+                                console.log("Deleted static object group and saved mission");
+                                maprenderer.redraw();
+                            });
+                            return;
                         }
                     }
                 }

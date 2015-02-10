@@ -49,9 +49,56 @@ public class MissionConverter {
         buildObjectGroups(cm, gm);
         buildStaticObjectGroups(cm, gm);
 
+        if(cm.getGenerateAAAAtAirfields()) {
+            gm.getAirfieldEntities().stream().forEach(af -> {
+                gm.getObjectGroups().addAll(generateAAA(af));
+            });
+        }
+
         gm.setLocalization(localization);
 
         return gm;
+    }
+
+    private Collection<ObjectGroup> generateAAA(Airfield airfield) {
+        // Let's create 4 light and 2 heavy AAA guns spread around the airfield centre point by 500 meters
+        ObjectGroup lightAAA = new ObjectGroup();
+        for(int a = 0; a < 4; a++) {
+            Vehicle vehicle = VehicleFactory.buildVehicle(VehicleType.FLAK37, 4, 2, airfield.getXPos(), 0, airfield.getZPos(), 0);
+            switch(a) {
+                case 0:
+                    vehicle.setXPos(vehicle.getXPos()+500);
+                    break;
+                case 1:
+                    vehicle.setZPos(vehicle.getZPos() - 500);
+                    break;
+                case 2:
+                    vehicle.setXPos(vehicle.getXPos()-500);
+                    break;
+                case 3:
+                    vehicle.setZPos(vehicle.getZPos()+500);
+                    break;
+            }
+            lightAAA.getObjects().add(vehicle);
+        }
+
+        ObjectGroup heavyAAA = GroupFactory.buildVehicleGroup(2, VehicleType.FLAK38, airfield.getXPos(), airfield.getYPos(), airfield.getZPos(), 0);
+        for(int a = 0; a < 4; a++) {
+            Vehicle v = (Vehicle) heavyAAA.getObjects().get(0);
+            switch(a) {
+                case 0:
+                    v.setXPos(v.getXPos()+350);
+                    break;
+                case 1:
+                    v.setZPos(v.getZPos() - 350);
+                    break;
+            }
+        }
+
+        List<ObjectGroup> aaa = new ArrayList<>();
+        aaa.add(lightAAA);
+        aaa.add(heavyAAA);
+        return aaa;
     }
 
     private void buildStaticObjectGroups(ClientMission cm, GeneratedMission gm) {

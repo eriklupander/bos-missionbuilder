@@ -44,6 +44,16 @@ var coordTranslator = new function() {
                 return true;
             }
         }
+
+        // Try static objects
+        var sogs = state.getCurrentMission().sides[state.getCurrentCountry()].staticObjectGroups;
+        for(var a = 0; a < sogs.length; a++) {
+            var sog = sogs[a];
+            if(coordTranslator.inHitBox(sog.x, sog.z, hitBox)) {
+                callback(sog);
+                return true;
+            }
+        }
         return false;
     }
 

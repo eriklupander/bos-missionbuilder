@@ -78,6 +78,7 @@ var maprenderer = new function() {
                         state.setSelectedWaypoint(null);
                         state.setSelectedTriggerZone(null);
                         state.setDragTarget(null);
+                        state.setSelectedStaticObjectGroup(null);
                     }
                 }
             } else if(state.getState() == state.PLACING_WAYPOINT) {
