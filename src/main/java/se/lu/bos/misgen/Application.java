@@ -1,5 +1,6 @@
 package se.lu.bos.misgen;
 
+import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.realm.text.PropertiesRealm;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
@@ -24,6 +25,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import se.lu.bos.misgen.nosql.ElasticSearchServer;
+import se.lu.bos.misgen.sec.ElasticSearchAuthenticatingRealm;
+import se.lu.bos.misgen.sec.LoginPageFilter;
 
 import javax.persistence.EntityManagerFactory;
 import javax.servlet.Filter;
@@ -35,7 +38,7 @@ import java.util.Properties;
 //@EnableCaching
 
 @EnableScheduling
-@EnableAutoConfiguration
+@EnableAutoConfiguration(exclude = { org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration.class})
 @EnableTransactionManagement
 @ComponentScan
 public class Application {
@@ -163,15 +166,23 @@ public class Application {
 //
     @Bean(initMethod = "start", name = "esServer", destroyMethod = "stop")
     public ElasticSearchServer esServer() {
-        Map<String,String> configuration = new HashMap<>();
-        configuration.put("location","classpath:elasticsearch-server.properties");
-        configuration.put("localOverride", "true");
-      //  configuration.put("path.conf", "${webapp.root}/WEB-INF/config");
-        return new ElasticSearchServer(configuration);
+        if(esServer == null) {
+            Map<String,String> configuration = new HashMap<>();
+            configuration.put("location","classpath:elasticsearch-server.properties");
+            configuration.put("localOverride", "true");
+            //  configuration.put("path.conf", "${webapp.root}/WEB-INF/config");
+            ElasticSearchServer ess = new ElasticSearchServer(configuration);
+            esServer = ess;
+        }
+
+        return esServer;
     }
 
+    private static ElasticSearchServer esServer;
 
-
+     public static ElasticSearchServer getESServer() {
+         return esServer;
+     }
 
 
 
@@ -187,20 +198,23 @@ public class Application {
     public ShiroFilterFactoryBean shiroFilter() {
         ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
         shiroFilter.setLoginUrl("/login.jsp");
-        shiroFilter.setSuccessUrl("/index.html");
-        shiroFilter.setUnauthorizedUrl("/forbidden.html");
+        shiroFilter.setSuccessUrl("/index.jsp");
+        shiroFilter.setUnauthorizedUrl("/login.jsp");
         Map<String, String> filterChainDefinitionMapping = new HashMap<String, String>();
-       // filterChainDefinitionMapping.put("/", "anon");
-        filterChainDefinitionMapping.put("/", "authc,roles[guest]");
-        filterChainDefinitionMapping.put("/admin", "authc,roles[admin]");
+        filterChainDefinitionMapping.put("/index.jsp", "authc");
+        filterChainDefinitionMapping.put("/login.jsp", "authc");
+        filterChainDefinitionMapping.put("/logout.jsp", "logout");
+        filterChainDefinitionMapping.put("/**", "anon");
+       // filterChainDefinitionMapping.put("/admin", "authc,roles[admin]");
         shiroFilter.setFilterChainDefinitionMap(filterChainDefinitionMapping);
         shiroFilter.setSecurityManager(securityManager());
+
         Map<String, Filter> filters = new HashMap<String, Filter>();
         filters.put("anon", new AnonymousFilter());
         filters.put("authc", new FormAuthenticationFilter());
         filters.put("logout", new LogoutFilter());
-        filters.put("roles", new RolesAuthorizationFilter());
-        filters.put("user", new UserFilter());
+       // filters.put("roles", new RolesAuthorizationFilter());
+       // filters.put("user", new UserFilter());
         shiroFilter.setFilters(filters);
         System.out.println(shiroFilter.getFilters().size());
         return shiroFilter;
@@ -213,13 +227,16 @@ public class Application {
         return securityManager;
     }
 
-    @Bean(name = "realm")
+    @Bean(name = "elasticSearchRealm")
     @DependsOn("lifecycleBeanPostProcessor")
-    public PropertiesRealm realm() {
-        PropertiesRealm propertiesRealm = new PropertiesRealm();
+    public ElasticSearchAuthenticatingRealm realm() {
+        ElasticSearchAuthenticatingRealm propertiesRealm = new ElasticSearchAuthenticatingRealm();
+       // propertiesRealm.setCredentialsMatcher(new HashedCredentialsMatcher());
         propertiesRealm.init();
         return propertiesRealm;
     }
+
+
 
     @Bean
     public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {

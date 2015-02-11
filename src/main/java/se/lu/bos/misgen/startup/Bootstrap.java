@@ -54,23 +54,27 @@ public class Bootstrap {
     private List<User> getUsers() {
         List<User> esData = new ArrayList<>();
 
-        SearchResponse response = elasticSearchServer.getClient().prepareSearch("users")
-                .setTypes("user")
-                .setQuery(QueryBuilders.matchAllQuery())
-                .execute()
-                .actionGet();
+        try {
+            SearchResponse response = elasticSearchServer.getClient().prepareSearch("users")
+                    .setTypes("user")
+                    .setQuery(QueryBuilders.matchAllQuery())
+                    .execute()
+                    .actionGet();
 
-        List<User> collect = Arrays.asList(response.getHits().getHits()).stream()
-                .map(hit -> {
-                    try {
-                        return objectMapper.readValue(hit.getSourceAsString(), User.class);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e.getMessage());
+            List<User> collect = Arrays.asList(response.getHits().getHits()).stream()
+                    .map(hit -> {
+                        try {
+                            return objectMapper.readValue(hit.getSourceAsString(), User.class);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e.getMessage());
+                        }
                     }
-                }
 
-                ).collect(Collectors.toList());
-        esData.addAll(collect);
+                    ).collect(Collectors.toList());
+            esData.addAll(collect);
+        } catch (Exception e) {
+            log.warn("Could not query for users in the DB, returning empty list...");
+        }
         return esData;
     }
 
