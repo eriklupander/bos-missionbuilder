@@ -71,22 +71,23 @@ var maprenderer = new function() {
 
             if(state.getState() == state.NORMAL) {
                 if(util.notNull(state.getCurrentMission())) {
-                    var result = coordTranslator.ifUnitGroupSelected(hitBox, metadata, missionbuilder.objectSelected);
-                    if(result) {
-                        // Allow drag of unit
-
-                        state.setState(state.DRAGGING_UNIT);
-                    } else {
+                    var result = coordTranslator.ifUnitGroupSelected(hitBox, metadata, function(obj) {state.setDragTarget(obj)});
+                    if(result && util.notNull(state.getSelectedUnitGroup())) {
+////                        // Allow drag of unit
                         state.setState(state.NORMAL);
+//
+                    } else {
+//                       // state.setState(state.DRAGGING_UNIT);
+                        state.deselectAll();
                     }
-//                    if(!result) {
-//                        // TODO unify to use "drag target" or "selected object" only.
-//                        state.setSelectedUnitGroup(null);
-//                        state.setSelectedWaypoint(null);
-//                        state.setSelectedTriggerZone(null);
-//                        state.setDragTarget(null);
-//                        state.setSelectedStaticObjectGroup(null);
-//                    }
+////                    if(!result) {
+////                        // TODO unify to use "drag target" or "selected object" only.
+////                        state.setSelectedUnitGroup(null);
+////                        state.setSelectedWaypoint(null);
+////                        state.setSelectedTriggerZone(null);
+////                        state.setDragTarget(null);
+////                        state.setSelectedStaticObjectGroup(null);
+////                    }
                 }
             } else if(state.getState() == state.PLACING_WAYPOINT) {
                 var worldCoords = coordTranslator.imageToWorld(
@@ -177,10 +178,12 @@ var maprenderer = new function() {
                     var hit = coordTranslator.ifUnitGroupSelected(hitBox, metadata, missionbuilder.objectSelected);
                     if(!hit) {
                         // TODO unify to use "drag target" or "selected object" only.
-                        state.setSelectedUnitGroup(null);
-                        state.setSelectedWaypoint(null);
-                        state.setSelectedTriggerZone(null);
-                        state.setDragTarget(null);
+//                        state.setSelectedUnitGroup(null);
+//                        state.setSelectedWaypoint(null);
+//                        state.setSelectedTriggerZone(null);
+//                        state.setSelectedStaticObjectGroup(null);
+//                        state.setDragTarget(null);
+                        state.deselectAll();
                     }
                     break;
             }

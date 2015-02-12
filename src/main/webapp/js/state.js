@@ -1,6 +1,6 @@
 var state = new function() {
 
-    var state = "NORMAL";
+    var appstate;
 
     this.MAP_WAITING_FOR_CLICK_AIR_GROUP = "MAP_WAITING_FOR_CLICK_AIR_GROUP";
     this.MAP_WAITING_FOR_CLICK_GROUND_GROUP = "MAP_WAITING_FOR_CLICK_GROUND_GROUP";
@@ -12,6 +12,9 @@ var state = new function() {
     this.PLACING_WAYPOINT = "PLACING_WAYPOINT";
     this.PLACING_TRIGGER = "PLACING_TRIGGER";
 
+
+
+
     var selectedLocation = null;
     var currentMission = null;
     var selectedUnitGroup = null;
@@ -19,9 +22,23 @@ var state = new function() {
     var selectedWaypoint = null;
     var selectedTriggerZone = null;
 
+    var dragTarget = null;
+
+    this.deselectAll = function() {
+        selectedUnitGroup = null;
+        selectedStaticObjectGroup = null;
+        selectedWaypoint = null;
+        selectedTriggerZone = null;
+        dragTarget = null;
+        this.setState(state.NORMAL);
+        $('#clickOnMapDiv').addClass('hidden');
+        $("#map").css("cursor", "");
+        maprenderer.redraw();
+    }
+
     var currentCountry = 201;
 
-    var dragTarget = null;
+
 
     var selectionBox = {
         topX :0, topY :0, bottomX :0, bottomY :0
@@ -49,11 +66,11 @@ var state = new function() {
     }
 
     this.getState = function() {
-        return state;
+        return appstate;
     }
 
     this.setState = function(nState) {
-        state = nState;
+        appstate = nState;
     }
 
     this.getUnitGroupsForAllSides = function() {
@@ -97,7 +114,7 @@ var state = new function() {
         if(util.notNull(selectedUnitGroup)) {
             for(var a = 0; a < currentMission.sides[currentCountry].unitGroups.length; a++) {
                 if(currentMission.sides[currentCountry].unitGroups[a].clientId === selectedUnitGroup.clientId) {
-                    selectedUnitGroup = currentMission.sides[currentCountry].unitGroups[a];
+                    currentMission.sides[currentCountry].unitGroups[a] = selectedUnitGroup;
                     break;
                 }
             }
@@ -130,7 +147,7 @@ var state = new function() {
             missionbuilder.handleObjectSelected(unitGroup);
 
             $('#object-properties').removeClass('hidden');
-            $('#object-properties').css('top',50+$('#rightmenu').height() + 'px');
+          //  $('#object-properties').css('top',50+$('#rightmenu').height() + 'px');
         } else {
             if(noneSelected()) {
                 $('#object-properties').addClass('hidden');

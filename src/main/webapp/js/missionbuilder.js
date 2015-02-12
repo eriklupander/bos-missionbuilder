@@ -477,6 +477,18 @@ var missionbuilder = new function() {
                             })
                         });
                     util.populateSelectKeyVal('planes-edit-group-skill', obj, 'aiLevel', statics.getSkills());
+
+                    // Bind save button
+//                    $('#save').unbind().click(function(_obj) {
+//                           return function() {
+//                               rest.updateMission(state.getCurrentMission(), function(data) {
+//                                   state.setSelectedUnitGroup(null);
+//                                   state.setCurrentMission(data);
+//                                   $('#object-properties').addClass('hidden');
+//                                   maprenderer.redraw();
+//                               })
+//                           }
+//                    }(obj));
                     break;
                 case "GROUND_GROUP":
                     var src = $('#ground-group-edit-tpl').html();
@@ -595,8 +607,14 @@ var missionbuilder = new function() {
                 }
             }
             $('#object-properties').removeClass('hidden');
-            $('#object-properties').css('top',50+$('#rightmenu').height() + 'px');
+            $('#object-properties h4').drags();
+            //$('#object-properties').css('top',50+$('#rightmenu').height() + 'px');
         }
+
+        $('#close').unbind().click(function() {
+            $('#object-properties').addClass('hidden');
+            state.deselectAll();
+        });
 
         $('#delete').unbind().click(function() {
             if(confirm("Do you want to delete this object?")) {
