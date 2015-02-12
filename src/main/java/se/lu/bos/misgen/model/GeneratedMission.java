@@ -3,7 +3,6 @@ package se.lu.bos.misgen.model;
 import se.lu.bos.misgen.groups.GroupEntity;
 import se.lu.bos.misgen.helper.ObjectGroup;
 
-import javax.print.attribute.AttributeSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

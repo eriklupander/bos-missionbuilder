@@ -1,8 +1,6 @@
 package se.lu.bos.misgen.util;
 
 import se.lu.bos.misgen.model.OnEvent;
-import se.lu.bos.misgen.model.OnReport;
-import se.lu.bos.misgen.model.WindLayer;
 
 import java.util.List;
 

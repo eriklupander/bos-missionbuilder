@@ -1,14 +1,12 @@
 package se.lu.bos.misgen;
 
-import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
-import org.apache.shiro.realm.text.PropertiesRealm;
+import org.apache.shiro.authc.credential.DefaultPasswordService;
+import org.apache.shiro.authc.credential.PasswordMatcher;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.filter.authc.AnonymousFilter;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.apache.shiro.web.filter.authc.LogoutFilter;
-import org.apache.shiro.web.filter.authc.UserFilter;
-import org.apache.shiro.web.filter.authz.RolesAuthorizationFilter;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -26,7 +24,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import se.lu.bos.misgen.nosql.ElasticSearchServer;
 import se.lu.bos.misgen.sec.ElasticSearchAuthenticatingRealm;
-import se.lu.bos.misgen.sec.LoginPageFilter;
 
 import javax.persistence.EntityManagerFactory;
 import javax.servlet.Filter;
@@ -231,7 +228,12 @@ public class Application {
     @DependsOn("lifecycleBeanPostProcessor")
     public ElasticSearchAuthenticatingRealm realm() {
         ElasticSearchAuthenticatingRealm propertiesRealm = new ElasticSearchAuthenticatingRealm();
-       // propertiesRealm.setCredentialsMatcher(new HashedCredentialsMatcher());
+
+        DefaultPasswordService defaultPasswordService = new DefaultPasswordService();
+        PasswordMatcher passwordMatcher = new PasswordMatcher();
+        passwordMatcher.setPasswordService(defaultPasswordService);
+        propertiesRealm.setCredentialsMatcher(passwordMatcher);
+
         propertiesRealm.init();
         return propertiesRealm;
     }

@@ -1,7 +1,6 @@
 package se.lu.bos.misgen.serializer;
 
 import org.apache.commons.io.IOUtils;
-import se.lu.bos.misgen.model.GeneratedMission;
 
 import java.io.File;
 import java.io.FileOutputStream;

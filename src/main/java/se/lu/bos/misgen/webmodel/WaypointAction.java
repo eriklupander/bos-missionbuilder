@@ -1,12 +1,5 @@
 package se.lu.bos.misgen.webmodel;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import se.lu.bos.misgen.helper.ObjectGroup;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 /**
  * Created with IntelliJ IDEA.
  * User: eriklupander

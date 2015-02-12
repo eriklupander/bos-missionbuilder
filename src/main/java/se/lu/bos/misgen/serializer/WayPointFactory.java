@@ -1,6 +1,5 @@
 package se.lu.bos.misgen.serializer;
 
-import se.lu.bos.misgen.helper.WayPointType;
 import se.lu.bos.misgen.model.GameEntity;
 import se.lu.bos.misgen.model.WayPoint;
 

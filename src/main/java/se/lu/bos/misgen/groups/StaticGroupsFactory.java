@@ -7,8 +7,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.testng.Assert.assertNotNull;
-
 /**
  * Created with IntelliJ IDEA.
  * User: Erik

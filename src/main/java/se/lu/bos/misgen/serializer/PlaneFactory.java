@@ -1,7 +1,5 @@
 package se.lu.bos.misgen.serializer;
 
-import se.lu.bos.misgen.helper.GlobalId;
-import se.lu.bos.misgen.model.MCUTREntity;
 import se.lu.bos.misgen.model.Plane;
 import se.lu.bos.misgen.model.PlaneType;
 

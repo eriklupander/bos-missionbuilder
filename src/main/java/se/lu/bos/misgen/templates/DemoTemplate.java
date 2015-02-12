@@ -1,9 +1,9 @@
 package se.lu.bos.misgen.templates;
 
+import se.lu.bos.misgen.groups.StaticGroupsFactory;
 import se.lu.bos.misgen.helper.ObjectGroup;
 import se.lu.bos.misgen.helper.OnEventId;
 import se.lu.bos.misgen.model.*;
-import se.lu.bos.misgen.groups.StaticGroupsFactory;
 import se.lu.bos.misgen.serializer.GroupFactory;
 import se.lu.bos.misgen.serializer.MissionFactory;
 import se.lu.bos.misgen.serializer.MissionWriter;

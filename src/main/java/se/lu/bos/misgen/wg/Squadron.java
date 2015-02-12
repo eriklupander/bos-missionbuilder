@@ -2,7 +2,7 @@ package se.lu.bos.misgen.wg;
 
 import se.lu.bos.misgen.model.PlaneType;
 
-import java.lang.String;import java.util.ArrayList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**

@@ -1,16 +1,13 @@
 package se.lu.bos.misgen.serializer;
 
 import se.lu.bos.misgen.groups.StaticGroupsFactory;
-import se.lu.bos.misgen.helper.ObjectGroup;
 import se.lu.bos.misgen.model.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created with IntelliJ IDEA.
