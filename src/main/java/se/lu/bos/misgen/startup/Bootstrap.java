@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import se.lu.bos.misgen.dao.UserDao;
 import se.lu.bos.misgen.nosql.ElasticSearchServer;
 import se.lu.bos.misgen.sec.User;
 
@@ -35,6 +36,9 @@ public class Bootstrap {
     @Autowired
     ElasticSearchServer elasticSearchServer;
 
+    @Autowired
+    UserDao userDao;
+
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @PostConstruct
@@ -44,7 +48,7 @@ public class Bootstrap {
             List<User> esData = getUsers();
 
             if(!esData.stream().anyMatch(u -> u.getUsername().equals("test"))) {
-                createDefaultUser();
+                userDao.createUser("test", "test"); // TODO read these from properties file instead for production usage.
             }
         } catch (Exception e) {
             log.error("Error occurred checking or creating default user: " + e.getMessage());
@@ -78,20 +82,5 @@ public class Bootstrap {
         return esData;
     }
 
-    private void createDefaultUser() throws JsonProcessingException {
-        String username = "test";
-        String password = new DefaultPasswordService().encryptPassword("test");
-        User defaultUser = new User();
-        defaultUser.setUsername(username);
-        defaultUser.setPassword(password);
-
-        String json = objectMapper.writeValueAsString(defaultUser);
-        IndexResponse indexResponse = elasticSearchServer.getClient().prepareIndex("users", "user")
-                .setSource(json)
-                .setId(defaultUser.getUsername())
-                .execute()
-                .actionGet();
-        log.info("Successfully created default BoS missionparser user.");
-    }
 
 }

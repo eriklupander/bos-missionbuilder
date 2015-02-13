@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap-theme.min.css">
     <style>
-        body{padding-top:20px;}
+        body{padding-top:20px;background-color: #333;}
     </style>
 </head>
 <body>
@@ -36,7 +36,9 @@
                             <input class="btn btn-lg btn-success btn-block" type="submit" value="Login">
                         </fieldset>
                     </form>
+                    <p>Not registered? <a href="/registration.jsp">Click here</a> to register.</p>
                 </div>
+            </div>
             </div>
         </div>
     </div>

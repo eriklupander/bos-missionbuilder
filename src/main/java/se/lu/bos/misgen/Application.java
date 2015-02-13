@@ -22,6 +22,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import se.lu.bos.misgen.nosql.ElasticSearchServer;
 import se.lu.bos.misgen.sec.ElasticSearchAuthenticatingRealm;
 
@@ -37,6 +38,7 @@ import java.util.Properties;
 @EnableScheduling
 @EnableAutoConfiguration(exclude = { org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration.class})
 @EnableTransactionManagement
+@EnableWebMvc
 @ComponentScan
 public class Application {
 
@@ -201,6 +203,7 @@ public class Application {
         filterChainDefinitionMapping.put("/index.jsp", "authc");
         filterChainDefinitionMapping.put("/login.jsp", "authc");
         filterChainDefinitionMapping.put("/logout.jsp", "logout");
+        filterChainDefinitionMapping.put("/reg", "anon");
         filterChainDefinitionMapping.put("/**", "anon");
        // filterChainDefinitionMapping.put("/admin", "authc,roles[admin]");
         shiroFilter.setFilterChainDefinitionMap(filterChainDefinitionMapping);
