@@ -41,7 +41,9 @@
                     <label>Generate AAA at airfields</label>
                     <input id="create-mission-gen-airfield-aaa" class="checkbox" type="checkbox" value="true" checked>  <br/>
                     <label>Generate AAA at bridges</label>
-                    <input id="create-mission-gen-bridge-aaa" class="checkbox" type="checkbox" value="false">
+                    <input id="create-mission-gen-bridge-aaa" class="checkbox" type="checkbox" value="false">   <br/>
+                    <label>Include Stalingrad City buildings</label>
+                    <input id="create-mission-include-stalingrad" class="checkbox" type="checkbox" value="true" checked>
                 </div>
                 <div class="form-group">
                     <label>Mission briefing</label>

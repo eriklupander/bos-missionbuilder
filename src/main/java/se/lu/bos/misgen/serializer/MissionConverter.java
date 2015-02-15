@@ -1,8 +1,10 @@
 package se.lu.bos.misgen.serializer;
 
+import javafx.geometry.Rectangle2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.lu.bos.misgen.groups.ClientAirfieldParser;
+import se.lu.bos.misgen.groups.GroupEntity;
 import se.lu.bos.misgen.groups.StaticGroupsFactory;
 import se.lu.bos.misgen.helper.ObjectGroup;
 import se.lu.bos.misgen.model.*;
@@ -13,6 +15,7 @@ import se.lu.bos.misgen.webmodel.*;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,6 +36,8 @@ public class MissionConverter {
     private List<ClientAirfield> clientAirfields;
     private Integer lcId = 0;
 
+
+
     public GeneratedMission convert(ClientMission cm) throws IOException {
 
         clientAirfields = ClientAirfieldParser.build();
@@ -40,7 +45,7 @@ public class MissionConverter {
         GeneratedMission gm = new GeneratedMission();
         gm.setMissionOptions(buildMissionOptions(cm));
 
-        // TODO determine mission bounds, until then don't load towns at all
+
 
         gm.getBridges().addAll(StaticGroupsFactory.getReadBridgeGroupEntities());
         gm.getRailwayStations().addAll(StaticGroupsFactory.getRailwayStationGroupEntities());
@@ -51,20 +56,44 @@ public class MissionConverter {
 
         if(cm.getGenerateAAAAtAirfields()) {
             gm.getAirfieldEntities().stream().forEach(af -> {
-                gm.getObjectGroups().addAll(generateAAA(af));
+                gm.getObjectGroups().addAll(generateAAA(af.getXPos(), af.getYPos(), af.getZPos(), 4, 2));
+            });
+        }
+
+        if(cm.getGenerateAAAAtBridges()) {
+            gm.getBridges().stream().forEach(ge -> {
+                gm.getObjectGroups().addAll(generateAAA(ge.getxPos(), ge.getyPos(), ge.getzPos(), 2, 2));
             });
         }
 
         gm.setLocalization(localization);
 
+        // TODO determine mission bounds, until then don't load towns at all
+        Float[] bounds = findBounds(gm);
+        List<GroupEntity> townEntities = StaticGroupsFactory.getReadTownGroupEntities(bounds[0], bounds[1], bounds[2], bounds[3]);
+        gm.getTowns().addAll(townEntities);
+
+        if(cm.getIncludeStalingradCity()) {
+            gm.getTowns().addAll(StaticGroupsFactory.getStalingradGroupEntities());
+        }
+
         return gm;
     }
 
-    private Collection<ObjectGroup> generateAAA(Airfield airfield) {
+    private Float[] findBounds(GeneratedMission gm) {
+        Float minX = Stream.concat(gm.getWayPoints().stream(), gm.getObjectGroups().stream()).min( (wo1, wo2) -> wo1.getXPos().compareTo(wo2.getXPos())).get().getXPos();
+        Float maxX = Stream.concat(gm.getWayPoints().stream(), gm.getObjectGroups().stream()).max((wo1, wo2) -> wo1.getXPos().compareTo(wo2.getXPos())).get().getXPos();
+        Float minZ = Stream.concat(gm.getWayPoints().stream(), gm.getObjectGroups().stream()).min( (wo1, wo2) -> wo1.getZPos().compareTo(wo2.getZPos())).get().getZPos();
+        Float maxZ = Stream.concat(gm.getWayPoints().stream(), gm.getObjectGroups().stream()).max( (wo1, wo2) -> wo1.getZPos().compareTo(wo2.getZPos())).get().getZPos();
+
+        return new Float[] {minX-10000f, minZ-10000f, maxX+10000f, maxZ+10000f};
+    }
+
+    private Collection<ObjectGroup> generateAAA(float xPos, float yPos, float zPos, int light, int heavy) {
         // Let's create 4 light and 2 heavy AAA guns spread around the airfield centre point by 500 meters
         ObjectGroup lightAAA = new ObjectGroup();
-        for(int a = 0; a < 4; a++) {
-            Vehicle vehicle = VehicleFactory.buildVehicle(VehicleType.FLAK37, 4, 2, airfield.getXPos(), 0, airfield.getZPos(), 0);
+        for(int a = 0; a < light; a++) {
+            Vehicle vehicle = VehicleFactory.buildVehicle(VehicleType.FLAK37, 4, 2, xPos, yPos, zPos, 0);
             switch(a) {
                 case 0:
                     vehicle.setXPos(vehicle.getXPos()+500);
@@ -82,8 +111,8 @@ public class MissionConverter {
             lightAAA.getObjects().add(vehicle);
         }
 
-        ObjectGroup heavyAAA = GroupFactory.buildVehicleGroup(2, VehicleType.FLAK38, airfield.getXPos(), airfield.getYPos(), airfield.getZPos(), 0);
-        for(int a = 0; a < 4; a++) {
+        ObjectGroup heavyAAA = GroupFactory.buildVehicleGroup(2, VehicleType.FLAK38, xPos, yPos, zPos, 0);
+        for(int a = 0; a < heavy; a++) {
             Vehicle v = (Vehicle) heavyAAA.getObjects().get(0);
             switch(a) {
                 case 0:
@@ -242,11 +271,11 @@ public class MissionConverter {
                 gm.getTranslatorMissionBegins().add(missionBegin);
 
                 // For ground groups, set initial formation using a timer or something
-                if(ug.getGroupType().equals("GROUP_GROUP")) {
-                    CommandFormation cmdFormation = new CommandFormation(wp.getX(), wp.getY(), wp.getZ(), FormationType.ON_ROAD_COLUMN.getFormationCode(), 0);
-                    cmdFormation.getObjects().add(og.getLeaderId());
-                    waypointTimer.getTargets().add(cmdFormation.getId().intValue());
-                }
+//                if(ug.getGroupType().equals("GROUP_GROUP")) {
+//                    CommandFormation cmdFormation = new CommandFormation(wp.getX(), wp.getY(), wp.getZ(), FormationType.ON_ROAD_COLUMN.getFormationCode(), 0);
+//                    cmdFormation.getObjects().add(og.getLeaderId());
+//                    waypointTimer.getTargets().add(cmdFormation.getId().intValue());
+//                }
             }
 
             // Now, check if there is an interesting command on the waypoint.

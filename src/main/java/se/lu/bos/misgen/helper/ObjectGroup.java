@@ -1,6 +1,7 @@
 package se.lu.bos.misgen.helper;
 
 import se.lu.bos.misgen.model.GameEntity;
+import se.lu.bos.misgen.model.WorldObject;
 import se.lu.bos.misgen.util.Util;
 
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import java.util.List;
  * Time: 20:56
  * To change this template use File | Settings | File Templates.
  */
-public class ObjectGroup {
+public class ObjectGroup implements WorldObject {
 
     // Group members should use these coords as base location.
     private Float XPos = 95946.699f;  // North/South
@@ -95,12 +96,12 @@ public class ObjectGroup {
         return null;
     }
 
-    public void applyPosition(float x, float y, float z) {
+    public void applyPosition(float x, float y, float z, float yOri) {
         for(int a = 0; a < objects.size(); a++) {
             GameEntity o = objects.get(a);
-            o.setXPos(x+ Util.getOffset(a));
-            o.setYPos(y);
-            o.setZPos(z+Util.getOffset(a));
+            Float[] newPos = Util.getOffsetFormationLine(a, x, z, yOri);
+            o.setXPos(newPos[0]);
+            o.setZPos(newPos[1]);
             o.setXOri(getXOri());
             o.setYOri(getYOri());
             o.setZOri(getZOri());

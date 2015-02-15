@@ -226,15 +226,15 @@ var renderer = new function() {
         }
 
         context.beginPath();
-        context.arc(x, y, 10, 0, 2 * Math.PI, false);
+        context.arc(x, y, 8, 0, 2 * Math.PI, false);
         context.fillStyle = 'red';
         context.globalAlpha = alpha;
         context.fill();
         context.globalAlpha = alpha;
         if(isSelectedWaypoint) {
-            context.lineWidth = 5;
+            context.lineWidth = 4;
         } else {
-             context.lineWidth = 3;
+             context.lineWidth = 2;
         }
 
         context.strokeStyle = '#550000';

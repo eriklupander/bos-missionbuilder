@@ -61,33 +61,23 @@ var maprenderer = new function() {
             mouseDownY = startY;
             mouseDown = true;
 
-            startXX=parseInt(e.clientX-canvasOffset.left);
-            startYY=parseInt(e.clientY-canvasOffset.top);
-
+            startXX=parseInt(e.offsetX);
+            startYY=parseInt(e.offsetY);
             // Test select
             var hitBox = coordTranslator.calculateHitBox(imageX+startXX*zoom, imageY+startYY*zoom, metadata, 16, zoom);
 
-            // TODO implement rendering of hitbox to help troubleshoot...
 
             if(state.getState() == state.NORMAL) {
                 if(util.notNull(state.getCurrentMission())) {
                     var result = coordTranslator.ifUnitGroupSelected(hitBox, metadata, function(obj) {state.setDragTarget(obj)});
                     if(result && util.notNull(state.getSelectedUnitGroup())) {
-////                        // Allow drag of unit
+                      // Allow drag of unit
                         state.setState(state.NORMAL);
-//
+
                     } else {
-//                       // state.setState(state.DRAGGING_UNIT);
-                        state.deselectAll();
+                        // TODO TODO TODO If a unit IS selected, but the mouseDown did NOT occur on an object, we must block any dragging.
+
                     }
-////                    if(!result) {
-////                        // TODO unify to use "drag target" or "selected object" only.
-////                        state.setSelectedUnitGroup(null);
-////                        state.setSelectedWaypoint(null);
-////                        state.setSelectedTriggerZone(null);
-////                        state.setDragTarget(null);
-////                        state.setSelectedStaticObjectGroup(null);
-////                    }
                 }
             } else if(state.getState() == state.PLACING_WAYPOINT) {
                 var worldCoords = coordTranslator.imageToWorld(
@@ -111,8 +101,9 @@ var maprenderer = new function() {
         $("#map").mouseup(function (e) {
             mouseDown = false;
 
-            startXX=parseInt(e.clientX-canvasOffset.left);
-            startYY=parseInt(e.clientY-canvasOffset.top);
+            startXX=parseInt(e.offsetX);
+            startYY=parseInt(e.offsetY);
+            // TODO FIX KLDUGE ERROR: If the screen is scrolled down, the YY offset does not match anymore!!! It changes :(
 
             switch(state.getState()) {
                 case state.MAP_WAITING_FOR_CLICK_AIR_GROUP:
@@ -177,12 +168,6 @@ var maprenderer = new function() {
                     var hitBox = coordTranslator.calculateHitBox(imageX+startXX*zoom, imageY+startYY*zoom, metadata, 16, zoom);
                     var hit = coordTranslator.ifUnitGroupSelected(hitBox, metadata, missionbuilder.objectSelected);
                     if(!hit) {
-                        // TODO unify to use "drag target" or "selected object" only.
-//                        state.setSelectedUnitGroup(null);
-//                        state.setSelectedWaypoint(null);
-//                        state.setSelectedTriggerZone(null);
-//                        state.setSelectedStaticObjectGroup(null);
-//                        state.setDragTarget(null);
                         state.deselectAll();
                     }
                     break;
@@ -229,21 +214,6 @@ var maprenderer = new function() {
             x1 : coordTranslator.MAX_X, z1 : coordTranslator.MAX_Z
         }
 
-        var upperBounds = {
-            x1 : 0, z1 : 0
-        }
-
-//        if(data.flightTrack.length > 1) {
-//            for(var a = 0; a < data.flightTrack.length; a++) {
-//                var fp = data.flightTrack[a];
-//                if(fp.x > upperBounds.x1) {upperBounds.x1 = fp.x;}
-//                if(fp.z > upperBounds.z1) {upperBounds.z1 = fp.z;}
-//                if(fp.x < lowerBounds.x1) {lowerBounds.x1 = fp.x;}
-//                if(fp.z < lowerBounds.z1) {lowerBounds.z1 = fp.z;}
-//            }
-//        }
-
-        var startPos = coordTranslator.worldToImage(lowerBounds.x1, lowerBounds.z1, {"xd":xd, "zd":zd});
         imageX = maprenderer.mapWidth/1.5;
         imageY = maprenderer.mapHeight/1.5;
 
@@ -298,9 +268,6 @@ var maprenderer = new function() {
         if(util.notNull(state.getSelectionBox())) {
             renderer.renderSelectionBox(ctx);
         }
-
-       // renderer.renderFlightMapVectorized(viewport, ctx, sData);
-       // renderer.renderKillsOnMapVectorized(viewport, ctx, sData);
     }
 
     var toWorldCoordY = function(pixel) {
@@ -337,10 +304,13 @@ var maprenderer = new function() {
 
         startY = mouseY;
         if(!mouseDown && state.getState() == state.PLACING_WAYPOINT) {
-            console.log("Placing waypoint at " + mouseX + " / " + mouseY);
             draw();
             return;
         }
+        if(mouseDown && state.getState() == state.PLACING_WAYPOINT) {
+            return;
+        }
+
         if(!mouseDown && state.getState() == state.MAP_WAITING_FOR_CLICK_TRIGGER_RADIUS) {
 
             if(util.notNull(state.getSelectedTriggerZone())) {
@@ -363,8 +333,8 @@ var maprenderer = new function() {
             // Update unit world x/z from mouse change..err
 
             state.setState(state.DRAGGING_UNIT);
-            var startXX=parseInt(e.clientX-canvasOffset.left);
-            var startYY=parseInt(e.clientY-canvasOffset.top);
+            var startXX=parseInt(e.offsetX);
+            var startYY=parseInt(e.offsetY);
 
             var ug = state.getDragTarget();
             var worldPos = coordTranslator.imageToWorld(imageX+startXX*zoom, imageY+startYY*zoom, metadata);
@@ -418,7 +388,6 @@ var maprenderer = new function() {
 
                 draw();
             }
-
         }
     }
 }

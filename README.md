@@ -10,3 +10,8 @@ This software can be run by individual users on their local machines, but the lo
 License: MIT license
 Frameworks Web: jQuery, Handlebars, Twitter Bootstrap
 Frameworks Server: Spring Boot, ElasticSearch, Java 8
+
+# TODO
+Fix map drag, select etc. behaviour.
+Fix bug where one cannot seect again after a select due to state.STATE problem.
+

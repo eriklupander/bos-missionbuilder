@@ -66,12 +66,14 @@
                         <a href="#" onclick="missionbuilder.downloadLocalizationFile();">Download .eng file</a>
                     </li>
                     -->
+                    <!--
                     <li id="missionFileLink" class="hidden">
 
                     </li>
                     <li id="localizationFileLink" class="hidden">
 
                     </li>
+                    -->
                     <li>
                         <a href="#" onclick="missionbuilder.exportMissionToDisk();">Export Mission to Disk</a>
                     </li>
@@ -128,11 +130,15 @@
                     </li>
                     <li class="divider"></li>
                     -->
+                    <!--  COMMENT IN AGAIN ONCE WE ENABLE PROPER SECURITY FOR A WEB-BASED INSTALL
                     <li>
                         <a href="/logout.jsp"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
-                        <!-- <form th:action="@{/logout}" method="post">
-                            <input type="submit" value="Sign Out"/>
-                        </form>           -->
+
+                    </li>
+                    -->
+                    <li>
+                        <a href="#"><i class="fa fa-fw fa-power-off"></i> Log Out (disabled)</a>
+
                     </li>
                 </ul>
             </li>
@@ -157,10 +163,11 @@
                 <li id="menu-add-waypoint" class="menuitem hidden">
                     <a href="#" onclick="missionbuilder.addWaypoint();"><i class="fa fa-fw fa-times-circle-o"></i> Add waypoint</a>
                 </li>
+                <!--
                 <li id="menu-add-trigger-zone" class="menuitem">
                     <a href="#" onclick="missionbuilder.addTriggerZone();"><i class="fa fa-fw fa-exclamation"></i> Add trigger zone</a>
                 </li>
-
+                -->
             </ul>
 
 

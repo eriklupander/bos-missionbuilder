@@ -27,6 +27,7 @@ public class ClientMission {
 
     private Boolean generateAAAAtAirfields = true;
     private Boolean generateAAAAtBridges = false;
+    private boolean includeStalingradCity = true;
 
     private ClientMission() {
         sides.put(101, new Side("USSR"));
@@ -111,5 +112,17 @@ public class ClientMission {
 
     public void setGenerateAAAAtBridges(Boolean generateAAAAtBridges) {
         this.generateAAAAtBridges = generateAAAAtBridges;
+    }
+
+    public boolean getIncludeStalingradCity() {
+        return includeStalingradCity;
+    }
+
+    public boolean isIncludeStalingradCity() {
+        return includeStalingradCity;
+    }
+
+    public void setIncludeStalingradCity(boolean includeStalingradCity) {
+        this.includeStalingradCity = includeStalingradCity;
     }
 }

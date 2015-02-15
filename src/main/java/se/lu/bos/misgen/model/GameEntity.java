@@ -12,7 +12,7 @@ import java.util.List;
  * Time: 00:26
  * To change this template use File | Settings | File Templates.
  */
-public abstract class GameEntity extends BaseEntity {
+public abstract class GameEntity extends BaseEntity implements WorldObject {
 
     protected String Name = "Rabe";
     //protected Integer Index = 1622;

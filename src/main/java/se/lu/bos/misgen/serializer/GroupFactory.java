@@ -32,7 +32,7 @@ public class GroupFactory {
                 o.getMCU_TR_Entity().getTargets().add(objectGroup.getObjects().get(0).getMCU_TR_Entity().getId().intValue());
             }
         });
-        objectGroup.applyPosition(x, y, z);
+        objectGroup.applyPosition(x, y, z, yOri);
 
         return objectGroup;
     }
@@ -50,7 +50,7 @@ public class GroupFactory {
                 o.getMCU_TR_Entity().getTargets().add(objectGroup.getObjects().get(0).getMCU_TR_Entity().getId().intValue());
             }
         });
-        objectGroup.applyPosition(x, y, z);
+        objectGroup.applyPosition(x, y, z, yOri);
 
         return objectGroup;
     }

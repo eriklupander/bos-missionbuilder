@@ -43,11 +43,13 @@
         <label>Heading (0-359)</label>
         <input id="planes-edit-group-heading" class="form-control" type="text" value="{{yOri}}"/>
     </div>
+    <!--
     <div class="propertyelement">
         <label>Formation</label>
         <select  class="form-control" id="planes-edit-group-formation">
         </select>
     </div>
+    -->
     <div class="propertyelement">
         <label>Number of units</label>
         <select  class="form-control" id="planes-edit-group-size">
@@ -68,7 +70,7 @@
         <textarea id="planes-edit-group-description" class="form-control">{{description}}</textarea>
     </div>
     <div class="text-center propertyelement">
-        <button class="btn btn-info" id="close"><i class="fa fa-save"></i> Close</button>
+        <button class="btn btn-info" id="close"><i class="fa fa-close"></i> Close</button>
         <button class="btn btn-danger" id="delete"><i class="fa fa-remove"></i> Delete unit</button>
     </div>
 
@@ -89,11 +91,13 @@
         <label>Heading (0-359)</label>
         <input id="ground-group-edit-group-heading" class="form-control" type="text" value="{{yOri}}"/>
     </div>
+    <!--
     <div class="propertyelement">
         <label>Formation</label>
         <select  class="form-control" id="ground-group-edit-group-formation">
         </select>
     </div>
+    -->
     <div class="propertyelement">
         <label>Number of units</label>
         <select  class="form-control" id="ground-group-edit-group-size">
@@ -110,7 +114,7 @@
         <textarea id="ground-group-edit-group-description" class="form-control">{{description}}</textarea>
     </div>
     <div class="text-center propertyelement">
-        <button class="btn btn-info" id="close"><i class="fa fa-save"></i> Close</button>
+        <button class="btn btn-info" id="close"><i class="fa fa-close"></i> Close</button>
         <button class="btn btn-danger" id="delete"><i class="fa fa-remove"></i> Delete group</button>
     </div>
 
@@ -134,7 +138,7 @@
     </div>
 
     <div class="text-center propertyelement">
-        <button class="btn btn-info" id="close"><i class="fa fa-save"></i> Close</button>
+        <button class="btn btn-info" id="close"><i class="fa fa-close"></i> Close</button>
         <button class="btn btn-danger" id="delete"><i class="fa fa-remove"></i> Delete trigger</button>
     </div>
 </script>
@@ -165,8 +169,8 @@
     </div>
 
     <div class="text-center propertyelement">
-        <button class="btn btn-info" id="close"><i class="fa fa-save"></i> Close</button>
-        <button class="btn btn-danger" id="delete"><i class="fa fa-remove"></i> Delete static object group</button>
+        <button class="btn btn-info" id="close"><i class="fa fa-close"></i> Close</button>
+        <button class="btn btn-danger" id="delete"><i class="fa fa-remove"></i> Delete</button>
     </div>
 </script>
 
@@ -216,7 +220,7 @@
     </div>
 
     <div class="text-center propertyelement">
-        <button class="btn btn-info" id="close"><i class="fa fa-save"></i> Close</button>
+        <button class="btn btn-info" id="close"><i class="fa fa-close"></i> Close</button>
         <button class="btn btn-danger" id="delete"><i class="fa fa-remove"></i> Delete</button>
     </div>
 </script>
@@ -239,7 +243,9 @@
         <label>Generate AAA at airfields</label>
         <input id="edit-mission-gen-airfield-aaa" class="checkbox" type="checkbox" value="true">  <br/>
         <label>Generate AAA at bridges</label>
-        <input id="edit-mission-gen-bridge-aaa" class="checkbox" type="checkbox" value="true">
+        <input id="edit-mission-gen-bridge-aaa" class="checkbox" type="checkbox" value="true"> <br/>
+        <label>Include Stalingrad buildings</label>
+        <input id="edit-mission-gen-include-stalingrad" class="checkbox" type="checkbox" value="true">
     </div>
     <div class="form-group">
         <label>Mission briefing</label>

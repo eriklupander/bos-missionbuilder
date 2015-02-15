@@ -1,18 +1,9 @@
 package se.lu.bos.misgen;
 
-import org.apache.shiro.authc.credential.DefaultPasswordService;
-import org.apache.shiro.authc.credential.PasswordMatcher;
-import org.apache.shiro.spring.LifecycleBeanPostProcessor;
-import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
-import org.apache.shiro.web.filter.authc.AnonymousFilter;
-import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
-import org.apache.shiro.web.filter.authc.LogoutFilter;
-import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -24,10 +15,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import se.lu.bos.misgen.nosql.ElasticSearchServer;
-import se.lu.bos.misgen.sec.ElasticSearchAuthenticatingRealm;
 
 import javax.persistence.EntityManagerFactory;
-import javax.servlet.Filter;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
@@ -183,71 +172,64 @@ public class Application {
          return esServer;
      }
 
-
-
-
-
-
-
-
-
-
-
-    @Bean(name = "shiroFilter")
-    public ShiroFilterFactoryBean shiroFilter() {
-        ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
-        shiroFilter.setLoginUrl("/login.jsp");
-        shiroFilter.setSuccessUrl("/index.jsp");
-        shiroFilter.setUnauthorizedUrl("/login.jsp");
-        Map<String, String> filterChainDefinitionMapping = new HashMap<String, String>();
-        filterChainDefinitionMapping.put("/index.jsp", "authc");
-        filterChainDefinitionMapping.put("/login.jsp", "authc");
-        filterChainDefinitionMapping.put("/logout.jsp", "logout");
-        filterChainDefinitionMapping.put("/reg", "anon");
-        filterChainDefinitionMapping.put("/**", "anon");
-       // filterChainDefinitionMapping.put("/admin", "authc,roles[admin]");
-        shiroFilter.setFilterChainDefinitionMap(filterChainDefinitionMapping);
-        shiroFilter.setSecurityManager(securityManager());
-
-        Map<String, Filter> filters = new HashMap<String, Filter>();
-        filters.put("anon", new AnonymousFilter());
-        filters.put("authc", new FormAuthenticationFilter());
-        filters.put("logout", new LogoutFilter());
-       // filters.put("roles", new RolesAuthorizationFilter());
-       // filters.put("user", new UserFilter());
-        shiroFilter.setFilters(filters);
-        System.out.println(shiroFilter.getFilters().size());
-        return shiroFilter;
-    }
-
-    @Bean(name = "securityManager")
-    public org.apache.shiro.mgt.SecurityManager securityManager() {
-        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-        securityManager.setRealm(realm());
-        return securityManager;
-    }
-
-    @Bean(name = "elasticSearchRealm")
-    @DependsOn("lifecycleBeanPostProcessor")
-    public ElasticSearchAuthenticatingRealm realm() {
-        ElasticSearchAuthenticatingRealm propertiesRealm = new ElasticSearchAuthenticatingRealm();
-
-        DefaultPasswordService defaultPasswordService = new DefaultPasswordService();
-        PasswordMatcher passwordMatcher = new PasswordMatcher();
-        passwordMatcher.setPasswordService(defaultPasswordService);
-        propertiesRealm.setCredentialsMatcher(passwordMatcher);
-
-        propertiesRealm.init();
-        return propertiesRealm;
-    }
-
-
-
-    @Bean
-    public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
-        return new LifecycleBeanPostProcessor();
-    }
-
-
+//
+//
+//
+//
+//
+//
+//    @Bean(name = "shiroFilter")
+//    public ShiroFilterFactoryBean shiroFilter() {
+//        ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
+//        shiroFilter.setLoginUrl("/login.jsp");
+//        shiroFilter.setSuccessUrl("/index.jsp");
+//        shiroFilter.setUnauthorizedUrl("/login.jsp");
+//        Map<String, String> filterChainDefinitionMapping = new HashMap<String, String>();
+//        filterChainDefinitionMapping.put("/index.jsp", "authc");
+//        filterChainDefinitionMapping.put("/login.jsp", "authc");
+//        filterChainDefinitionMapping.put("/logout.jsp", "logout");
+//        filterChainDefinitionMapping.put("/**", "anon");
+//       // filterChainDefinitionMapping.put("/admin", "authc,roles[admin]");
+//        shiroFilter.setFilterChainDefinitionMap(filterChainDefinitionMapping);
+//        shiroFilter.setSecurityManager(securityManager());
+//
+//        Map<String, Filter> filters = new HashMap<String, Filter>();
+//        filters.put("anon", new AnonymousFilter());
+//        filters.put("authc", new FormAuthenticationFilter());
+//        filters.put("logout", new LogoutFilter());
+//       // filters.put("roles", new RolesAuthorizationFilter());
+//       // filters.put("user", new UserFilter());
+//        shiroFilter.setFilters(filters);
+//        System.out.println(shiroFilter.getFilters().size());
+//        return shiroFilter;
+//    }
+//
+//    @Bean(name = "securityManager")
+//    public org.apache.shiro.mgt.SecurityManager securityManager() {
+//        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+//        securityManager.setRealm(realm());
+//        return securityManager;
+//    }
+//
+//    @Bean(name = "elasticSearchRealm")
+//    @DependsOn("lifecycleBeanPostProcessor")
+//    public ElasticSearchAuthenticatingRealm realm() {
+//        ElasticSearchAuthenticatingRealm propertiesRealm = new ElasticSearchAuthenticatingRealm();
+//
+//        DefaultPasswordService defaultPasswordService = new DefaultPasswordService();
+//        PasswordMatcher passwordMatcher = new PasswordMatcher();
+//        passwordMatcher.setPasswordService(defaultPasswordService);
+//        propertiesRealm.setCredentialsMatcher(passwordMatcher);
+//
+//        propertiesRealm.init();
+//        return propertiesRealm;
+//    }
+//
+//
+//
+//    @Bean
+//    public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
+//        return new LifecycleBeanPostProcessor();
+//    }
 
 }

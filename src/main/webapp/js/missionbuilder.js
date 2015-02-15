@@ -6,6 +6,7 @@ var missionbuilder = new function() {
         maprenderer.renderMap();
     }
 
+    /*
     this.downloadMissionFile = function() {
         if(!(util.notNull(state.getCurrentMission()) && util.notNull(state.getCurrentMission().serverId))) {
             alert("Please load a mission first");
@@ -25,7 +26,9 @@ var missionbuilder = new function() {
             }
         });
     }
+    */
 
+    /*
     this.downloadLocalizationFile = function() {
         if(!(util.notNull(state.getCurrentMission()) && util.notNull(state.getCurrentMission().serverId))) {
             alert("Please load a mission first");
@@ -44,7 +47,8 @@ var missionbuilder = new function() {
             }
         });
     }
-
+    */
+    /*
     this.exportMissionAsText = function() {
         if(!(util.notNull(state.getCurrentMission()) && util.notNull(state.getCurrentMission().serverId))) {
             alert("Please load a mission first");
@@ -54,6 +58,7 @@ var missionbuilder = new function() {
             window.prompt("Copy to clipboard: Ctrl+C, Enter", data);
         });
     }
+    */
 
     this.exportMissionToDisk = function() {
         if(!(util.notNull(state.getCurrentMission()) && util.notNull(state.getCurrentMission().serverId))) {
@@ -61,7 +66,8 @@ var missionbuilder = new function() {
             return;
         }
         rest.exportMissionToDisk(state.getCurrentMission().serverId, function(data) {
-            window.prompt("Copy to clipboard: Ctrl+C, Enter", data);
+            //window.prompt("Copy to clipboard: Ctrl+C, Enter", data);
+            alert("Mission written to " + data);
         });
     }
 
@@ -102,6 +108,12 @@ var missionbuilder = new function() {
             $('#edit-mission-gen-bridge-aaa').removeAttr('checked');
         }
 
+        if(state.getCurrentMission().includeStalingradCity == true) {
+            $('#edit-mission-gen-include-stalingrad').attr('checked', 'checked');
+        } else {
+            $('#edit-mission-gen-include-stalingrad').removeAttr('checked');
+        }
+
         $('#editMissionModal').modal({backdrop:'static'});
     }
 
@@ -113,6 +125,7 @@ var missionbuilder = new function() {
         state.getCurrentMission().description = $('#edit-mission-desc').val();
         state.getCurrentMission().generateAAAAtAirfields = $('#edit-mission-gen-airfield-aaa').prop('checked');
         state.getCurrentMission().generateAAAAtBridges = $('#edit-mission-gen-bridge-aaa').prop('checked');
+        state.getCurrentMission().includeStalingradCity = $('#edit-mission-gen-include-stalingrad').prop('checked');
 
         rest.updateMission(state.getCurrentMission(), function(data) {
             state.setCurrentMission(data);
@@ -143,11 +156,13 @@ var missionbuilder = new function() {
             $('#rightmenu').removeClass('hidden');
             $('#country-select').removeClass('hidden');
 
+             /*   BLOCK DISABLED FOR NOW. For locally installed version use the export to disk that writes .Mission and .eng file directly to directory.
             $('#missionFileLink').html('<a target="_blank" href="' + BASEPATH + '/mission/' + state.getCurrentMission().serverId + '/downloadmission">Download mission</a>');
             $('#missionFileLink').removeClass('hidden');
 
             $('#localizationFileLink').html('<a target="_blank" href="' + BASEPATH + '/mission/' + state.getCurrentMission().serverId + '/downloadlocalization">Download localization</a>');
             $('#localizationFileLink').removeClass('hidden');
+            */
         });
     }
 
@@ -299,12 +314,14 @@ var missionbuilder = new function() {
             "date": $('#create-mission-date').val(),
             "time": $('#create-mission-time').val(),
             "generateAAAAtAirfields": $('#create-mission-gen-airfield-aaa').prop('checked'),
-            "generateAAAAtBridges": $('#create-mission-gen-bridge-aaa').prop('checked')
+            "generateAAAAtBridges": $('#create-mission-gen-bridge-aaa').prop('checked'),
+            "includeStalingradCity": $('#create-mission-include-stalingrad').prop('checked')
         }
         rest.createMission(mission, handleMissionCreateResponse);
     }
 
     this.addFlightGroup = function() {
+        $('#clickOnMapDiv').html("Select group location by clicking on map");
         $('#clickOnMapDiv').removeClass('hidden');
         $("#map").css("cursor", "crosshair");
         $(document).on('mousemove', function(e){
@@ -317,6 +334,7 @@ var missionbuilder = new function() {
     }
 
     this.addGroundGroup = function() {
+        $('#clickOnMapDiv').html("Select group location by clicking on map");
         $('#clickOnMapDiv').removeClass('hidden');
         $("#map").css("cursor", "crosshair");
         $(document).on('mousemove', function(e){
@@ -330,6 +348,7 @@ var missionbuilder = new function() {
 
 
     this.addStaticObjectGroup = function() {
+        $('#clickOnMapDiv').html("Select group location by clicking on map");
         $('#clickOnMapDiv').removeClass('hidden');
         $("#map").css("cursor", "crosshair");
         $(document).on('mousemove', function(e){
@@ -371,6 +390,7 @@ var missionbuilder = new function() {
 
     this.addWaypoint = function() {
         if(util.notNull(state.getSelectedUnitGroup())) {
+            $('#clickOnMapDiv').html('Click on map to place waypoints.<br/>Finish by pressing the ESC button.');
             $('#clickOnMapDiv').removeClass('hidden');
             $("#map").css("cursor", "crosshair");
             $(document).on('mousemove', function(e){
@@ -386,6 +406,7 @@ var missionbuilder = new function() {
     }
 
     this.addTriggerZone = function() {
+        $('#clickOnMapDiv').html('Click on map to place trigger zone.');
         $('#clickOnMapDiv').removeClass('hidden');
         $("#map").css("cursor", "crosshair");
         $(document).on('mousemove', function(e){
@@ -450,9 +471,9 @@ var missionbuilder = new function() {
                     rest.getPlaneTypes(state.getCurrentCountry(), function(data) {
                         util.populateSelect('planes-edit-group-type', obj, 'type', data);
                     });
-                    rest.getFormationTypes(function(data) {
-                        util.populateSelect('planes-edit-group-formation', obj, 'formation', data);
-                    });
+//                    rest.getFormationTypes(function(data) {
+//                        util.populateSelect('planes-edit-group-formation', obj, 'formation', data);
+//                    });
                     rest.getLoadouts(obj['type'], function(data) {
                         var keyvals = $.map(data, function(item) {
                             return {
@@ -478,17 +499,6 @@ var missionbuilder = new function() {
                         });
                     util.populateSelectKeyVal('planes-edit-group-skill', obj, 'aiLevel', statics.getSkills());
 
-                    // Bind save button
-//                    $('#save').unbind().click(function(_obj) {
-//                           return function() {
-//                               rest.updateMission(state.getCurrentMission(), function(data) {
-//                                   state.setSelectedUnitGroup(null);
-//                                   state.setCurrentMission(data);
-//                                   $('#object-properties').addClass('hidden');
-//                                   maprenderer.redraw();
-//                               })
-//                           }
-//                    }(obj));
                     break;
                 case "GROUND_GROUP":
                     var src = $('#ground-group-edit-tpl').html();
@@ -501,9 +511,9 @@ var missionbuilder = new function() {
                     rest.getVehicleTypes(state.getCurrentCountry(), function(data) {
                         util.populateSelect('ground-group-edit-group-type', obj, 'type', data);
                     });
-                    rest.getFormationTypes(function(data) {
-                        util.populateSelect('ground-group-edit-group-formation', obj, 'formation', data);
-                    });
+//                    rest.getFormationTypes(function(data) {
+//                        util.populateSelect('ground-group-edit-group-formation', obj, 'formation', data);
+//                    });
                     util.populateSelect('ground-group-edit-group-size', obj, 'size', statics.getGroupSizes());
                     util.populateSelectKeyVal('ground-group-edit-group-skill', obj, 'aiLevel', statics.getSkills());
                     break;
@@ -632,7 +642,8 @@ var missionbuilder = new function() {
                             return;
                         }
                     }
-                } else if(util.notNull(state.getSelectedTriggerZone())) {
+                }
+                if(util.notNull(state.getSelectedTriggerZone())) {
 
                     // Also do triggers if not unit or waypoint
                     for(var a = 0; a < state.getCurrentMission().triggerZones.length; a++) {
@@ -647,7 +658,8 @@ var missionbuilder = new function() {
                             return;
                         }
                     }
-                } else if(util.notNull(state.getSelectedWaypoint())) {
+                }
+                if(util.notNull(state.getSelectedWaypoint())) {
                     for(var a = 0; a < state.getCurrentMission().sides[state.getCurrentCountry()].unitGroups.length; a++) {
                         var ugroup = state.getCurrentMission().sides[state.getCurrentCountry()].unitGroups[a];
 
@@ -665,7 +677,8 @@ var missionbuilder = new function() {
                             }
                         }
                     }
-                } else if(util.notNull(state.getSelectedStaticObjectGroup())) {
+                }
+                if(util.notNull(state.getSelectedStaticObjectGroup())) {
                     for(var a = 0; a < state.getCurrentMission().sides[state.getCurrentCountry()].staticObjectGroups.length; a++) {
                         var sog =  state.getCurrentMission().sides[state.getCurrentCountry()].staticObjectGroups[a];
                         if(state.getSelectedStaticObjectGroup().clientId == sog.clientId) {
