@@ -2,15 +2,12 @@ package se.lu.bos.misgen.dao;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.elasticsearch.action.index.IndexResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.lu.bos.misgen.sec.User;
-
-import java.io.IOException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -45,7 +42,7 @@ public class UserDaoBean implements UserDao {
     public User createUser(String username, String password) {
         User newUser = new User();
         newUser.setUsername(username);
-        newUser.setPassword(new DefaultPasswordService().encryptPassword(password));
+       // newUser.setPassword(new DefaultPasswordService().encryptPassword(password));
 
         String json = null;
         try {

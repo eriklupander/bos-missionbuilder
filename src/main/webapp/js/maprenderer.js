@@ -70,13 +70,13 @@ var maprenderer = new function() {
             if(state.getState() == state.NORMAL) {
                 if(util.notNull(state.getCurrentMission())) {
                     var result = coordTranslator.ifUnitGroupSelected(hitBox, metadata, function(obj) {state.setDragTarget(obj)});
-                    if(result && util.notNull(state.getSelectedUnitGroup())) {
+                    if(result && (util.notNull(state.getSelectedUnitGroup()) || util.notNull(state.getSelectedStaticObjectGroup()))) {
                       // Allow drag of unit
                         state.setState(state.NORMAL);
-
+                        state.setDragAllowed(true);
                     } else {
                         // TODO TODO TODO If a unit IS selected, but the mouseDown did NOT occur on an object, we must block any dragging.
-
+                        state.setDragAllowed(false);
                     }
                 }
             } else if(state.getState() == state.PLACING_WAYPOINT) {
@@ -167,7 +167,7 @@ var maprenderer = new function() {
                     // Test select
                     var hitBox = coordTranslator.calculateHitBox(imageX+startXX*zoom, imageY+startYY*zoom, metadata, 16, zoom);
                     var hit = coordTranslator.ifUnitGroupSelected(hitBox, metadata, missionbuilder.objectSelected);
-                    if(!hit) {
+                    if(!hit && (util.notNull(state.getSelectedUnitGroup())  || util.notNull(state.getSelectedStaticObjectGroup()) || util.notNull(state.getSelectedWaypoint()))) {
                         state.deselectAll();
                     }
                     break;
@@ -329,7 +329,7 @@ var maprenderer = new function() {
 
 
         // DRAG OBJECT AROUND
-        if(util.notNull(state.getDragTarget())) {
+        if(util.notNull(state.getDragTarget()) && state.getDragAllowed()) {
             // Update unit world x/z from mouse change..err
 
             state.setState(state.DRAGGING_UNIT);

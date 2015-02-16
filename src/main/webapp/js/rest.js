@@ -24,12 +24,13 @@ var rest = new function() {
         });
     }
 
-    this.exportMissionToDisk = function(missionServerId, callback) {
+    this.exportMissionToDisk = function(missionServerId, callback, errorCallback) {
         $.ajax({
             method : 'PUT',
             url : BASE + "/mission/" + missionServerId + "/export",
             processData: false,
-            success : callback
+            success : callback,
+            error: errorCallback
         });
     }
 

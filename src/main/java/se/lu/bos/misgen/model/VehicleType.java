@@ -14,11 +14,13 @@ import java.util.stream.Collectors;
 public enum VehicleType {
 
     BM13(101, "LuaScripts\\WorldObjects\\vehicles\\bm13.txt", "graphics\\vehicles\\zis\\bm13.mgm"),
+    ML20(101, "LuaScripts\\WorldObjects\\vehicles\\ML20.txt", "graphics\\vehicles\\ML20\\ML20.mgm"),
     ZIS3_GUN(101, "LuaScripts\\WorldObjects\\vehicles\\zis3gun.txt", "graphics\\artillery\\zis3gun\\zis3gun.mgm"),
     DHSK(101, "LuaScripts\\WorldObjects\\vehicles\\dshk.txt", "graphics\\artillery\\dshk\\dshk.mgm"),
     T34(101, "LuaScripts\\WorldObjects\\vehicles\\t34-76stz.txt", "graphics\\artillery\\t34-76stz\\t34-76stz.mgm"),
     BA64(101, "LuaScripts\\WorldObjects\\Vehicles\\BA64.txt", "graphics\\vehicles\\BA64\\BA64.mgm"),
     BA10M(101, "LuaScripts\\WorldObjects\\Vehicles\\BA10M.txt", "graphics\\vehicles\\BA10M\\BA10M.mgm"),
+    GAZ_M(101, "LuaScripts\\WorldObjects\\Vehicles\\GAZ-M.txt", "graphics\\vehicles\\GAZ-M\\GAZ-M.mgm"),
     GAZ_AA_M4_AA(101, "LuaScripts\\WorldObjects\\Vehicles\\gaz-aa-m4-aa.txt", "graphics\\Artillery\\GAZ\\gaz-aa-m4-aa.mgm"),
 
     MG34_AA(201, "LuaScripts\\WorldObjects\\vehicles\\mg34-aa.txt", "graphics\\artillery\\mg34-aa\\mg34-aa.mgm"),

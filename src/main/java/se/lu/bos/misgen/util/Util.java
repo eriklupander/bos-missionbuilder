@@ -65,11 +65,19 @@ public class Util {
      * @param yOri
      * @return
      */
-    public static Float[] getOffsetFormationLine(int index, Float x, Float z, Float yOri) {
+    public static Float[] getOffsetFormationLine(int index, Float x, Float z, Float yOri, Integer spacingMeters) {
         Float[] pos = new Float[2];
 
-        pos[0] = new Double(x + ((30*index) * Math.sin(Math.toRadians(yOri)))).floatValue();
-        pos[1] = new Double(z + ((30*index) * Math.cos(Math.toRadians(yOri)))).floatValue();
+        pos[0] = new Double(x - ((spacingMeters*index) * Math.sin(Math.toRadians(yOri)))).floatValue();
+        pos[1] = new Double(z + ((spacingMeters*index) * Math.cos(Math.toRadians(yOri)))).floatValue();
+        return pos;
+    }
+
+    public static Float[] getOffsetFormationColumn(int index, Float x, Float z, Float yOri, Integer spacingMeters) {
+        Float[] pos = new Float[2];
+
+        pos[0] = new Double(x - ((spacingMeters*index) * Math.cos(Math.toRadians(yOri)))).floatValue();
+        pos[1] = new Double(z - ((spacingMeters*index) * Math.sin(Math.toRadians(yOri)))).floatValue();
         return pos;
     }
 }

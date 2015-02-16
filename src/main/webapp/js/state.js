@@ -13,7 +13,15 @@ var state = new function() {
     this.PLACING_TRIGGER = "PLACING_TRIGGER";
 
 
+    var dragAllowed = false;
 
+    this.setDragAllowed = function(isDragAllowed) {
+        dragAllowed = isDragAllowed;
+    }
+
+    this.getDragAllowed = function() {
+        return dragAllowed;
+    }
 
     var selectedLocation = null;
     var currentMission = null;

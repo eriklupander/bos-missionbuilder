@@ -7,6 +7,8 @@ var renderer = new function() {
     var numImages = 0;
 
     var sources = {
+        "t34": 'images/icon-t34.png',
+        "pziv": 'images/pziv.png',
         "101": 'images/101.png',
         "201": 'images/201.png',
         "bf109" : 'images/bf109.png'
@@ -328,8 +330,8 @@ var renderer = new function() {
             rotation = unitGroup.yOri;
             src = 'bf109';
         } else {
-            src = state.getCurrentCountry();
-            scale = 0.4;
+            src = state.getCurrentCountry() == 201 ? "pziv" : "t34";
+            scale = 0.6;
         }
         context.save();
         context.translate(x,y);

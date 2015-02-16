@@ -9,6 +9,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,10 +44,19 @@ public class MissionDataServiceBean {
 
     private final static Logger log = LoggerFactory.getLogger(MissionDataServiceBean.class);
 
+    private static final String DEFAULT_MISSION_DIR = "H:\\skyrim\\SteamApps\\common\\IL-2 Sturmovik Battle of Stalingrad\\data\\Missions\\Test\\";
+
     private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
+    MissionFileWriter missionFileWriter;
+
+    @Autowired
     ElasticSearchServer elasticSearchServer;
+
+
+    @Autowired
+    Environment env;
 
     @RequestMapping(method = RequestMethod.GET, value="/mission/{serverId}/downloadmission", produces = "application/octet-stream")
     public void downloadMission(@PathVariable String serverId, HttpServletResponse response) {
@@ -58,11 +68,6 @@ public class MissionDataServiceBean {
             GeneratedMission generatedMission = new MissionConverter().convert(clientMission);
             String missionFileBody = new MissionWriter().generateMission(generatedMission);
 
-//            org.apache.commons.io.IOUtils.write(missionFileBody, response.getOutputStream());
-//
-            //response.setContentType("application/force-download");
-//            response.setHeader("Content-Disposition", "attachment; filename=" + clientMission.getName().replaceAll(" ", "") + ".Mission");
-//            response.flushBuffer();
             IOUtils.write(missionFileBody,
                     response.getOutputStream()
             );
@@ -121,10 +126,15 @@ public class MissionDataServiceBean {
 
             GeneratedMission generatedMission = new MissionConverter().convert(clientMission);
             String missionFileBody = new MissionWriter().generateMission(generatedMission);
-            new MissionFileWriter().write(clientMission.getName(), generatedMission.getLocalization(), missionFileBody);
+            String path = env.getProperty("missions.directory", DEFAULT_MISSION_DIR);
+            if(!path.endsWith("/")) {
+                path = path + "/";
+            }
+            missionFileWriter.write(clientMission.getName(), generatedMission.getLocalization(), missionFileBody, path);
 
-            return new ResponseEntity(missionFileBody, HttpStatus.OK);
-        } catch (IOException e) {
+            return new ResponseEntity(path, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

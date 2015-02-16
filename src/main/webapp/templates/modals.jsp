@@ -195,7 +195,7 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
                         class="sr-only">Close</span></button>
-                <h4 class="modal-title">Create Airplane Group</h4>
+                <h4 class="modal-title">Create Ground Group</h4>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -245,6 +245,11 @@
                         <option value="2">Regular</option>
                         <option value="1">Rookie</option>
                         <option value="0">Player</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Formation</label>
+                    <select id="create-ground-unit-group-formation" class="form-control">
                     </select>
                 </div>
 

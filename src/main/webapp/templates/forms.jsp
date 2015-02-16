@@ -91,13 +91,13 @@
         <label>Heading (0-359)</label>
         <input id="ground-group-edit-group-heading" class="form-control" type="text" value="{{yOri}}"/>
     </div>
-    <!--
+
     <div class="propertyelement">
         <label>Formation</label>
         <select  class="form-control" id="ground-group-edit-group-formation">
         </select>
     </div>
-    -->
+
     <div class="propertyelement">
         <label>Number of units</label>
         <select  class="form-control" id="ground-group-edit-group-size">

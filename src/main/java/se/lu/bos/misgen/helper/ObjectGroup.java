@@ -3,6 +3,7 @@ package se.lu.bos.misgen.helper;
 import se.lu.bos.misgen.model.GameEntity;
 import se.lu.bos.misgen.model.WorldObject;
 import se.lu.bos.misgen.util.Util;
+import se.lu.bos.misgen.webmodel.FormationType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,15 +97,21 @@ public class ObjectGroup implements WorldObject {
         return null;
     }
 
-    public void applyPosition(float x, float y, float z, float yOri) {
+    public void applyPosition(float x, float y, float z, float yOri, FormationType formationType) {
         for(int a = 0; a < objects.size(); a++) {
             GameEntity o = objects.get(a);
-            Float[] newPos = Util.getOffsetFormationLine(a, x, z, yOri);
+            Float[] newPos;
+            if(formationType == FormationType.ON_ROAD_COLUMN || formationType == FormationType.COLUMN) {
+                newPos = Util.getOffsetFormationColumn(a, x, z, yOri, 50);
+            } else {
+                newPos = Util.getOffsetFormationLine(a, x, z, yOri, 50);
+            }
+
             o.setXPos(newPos[0]);
             o.setZPos(newPos[1]);
-            o.setXOri(getXOri());
-            o.setYOri(getYOri());
-            o.setZOri(getZOri());
+           // o.setXOri(getXOri());
+            o.setYOri(yOri);
+           // o.setZOri(getZOri());
 
             o.getMCU_TR_Entity().setXPos(o.getXPos());
             o.getMCU_TR_Entity().setYPos(o.getYPos());
@@ -112,9 +119,9 @@ public class ObjectGroup implements WorldObject {
         }
     }
 
-    public void applyYOrientation(float y) {
-        objects.stream().forEach(o -> o.setYOri(y));
-    }
+//    public void applyYOrientation(float y) {
+//        objects.stream().forEach(o -> o.setYOri(y));
+//    }
 
 
 }

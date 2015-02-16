@@ -8,6 +8,7 @@ import se.lu.bos.misgen.serializer.GroupFactory;
 import se.lu.bos.misgen.serializer.MissionFactory;
 import se.lu.bos.misgen.serializer.MissionWriter;
 import se.lu.bos.misgen.serializer.WayPointFactory;
+import se.lu.bos.misgen.webmodel.FormationType;
 
 import java.io.IOException;
 
@@ -22,20 +23,20 @@ public class DemoTemplate {
 
     public static String buildDemoMission() throws IOException {
         MissionOptions missionOptions = MissionFactory.buildDefaultMission();
-        ObjectGroup planeGroup1 = GroupFactory.buildPlaneGroup(true, 3, PlaneType.BF109G2, true, 95939f, 500f, 50383f, 45f, 0, "Group A");
+        ObjectGroup planeGroup1 = GroupFactory.buildPlaneGroup(true, 3, PlaneType.BF109G2, true, 95939f, 500f, 50383f, 45f, 0, "Group A", FormationType.LINE);
         // ObjectGroup planeGroup1 = GroupFactory.buildPlaneGroup(true, 1, PlaneType.BF109G2, true, 131950, 500f, 253736);        // Above stalingrad
-        planeGroup1.applyYOrientation(90.0f);
-        ObjectGroup planeGroup2 = GroupFactory.buildPlaneGroup(false, 4, PlaneType.BF109G2, true, 94939f, 700f, 50383f, 45f, 0, "Group B");     // TODO Add skill, -1 for random?
-        ObjectGroup yakGroup3 = GroupFactory.buildPlaneGroup(false, 4, PlaneType.YAK1, true, 96939f, 100f, 50383f, 45f, 0, "Group C");
-        ObjectGroup il2Group3 = GroupFactory.buildPlaneGroup(false, 12, PlaneType.IL2M42, true, 96939f, 500f, 55383f, 45f, 18, "Group D");
+        //planeGroup1.applyYOrientation(90.0f);
+        ObjectGroup planeGroup2 = GroupFactory.buildPlaneGroup(false, 4, PlaneType.BF109G2, true, 94939f, 700f, 50383f, 45f, 0, "Group B", FormationType.LINE);     // TODO Add skill, -1 for random?
+        ObjectGroup yakGroup3 = GroupFactory.buildPlaneGroup(false, 4, PlaneType.YAK1, true, 96939f, 100f, 50383f, 45f, 0, "Group C", FormationType.LINE);
+        ObjectGroup il2Group3 = GroupFactory.buildPlaneGroup(false, 12, PlaneType.IL2M42, true, 96939f, 500f, 55383f, 45f, 18, "Group D", FormationType.LINE);
         il2Group3.getObjects().forEach(ge -> ((Plane) ge).setPayloadId(49));
 
-        ObjectGroup tanks = GroupFactory.buildVehicleGroup(6, VehicleType.PZIII, 96939f, 185.608f, 50383f, 90f);
-        ObjectGroup sdkfzGroup = GroupFactory.buildVehicleGroup(4, VehicleType.SDKFZ251, 97939f, 185.608f, 50283f, 90f);
+        ObjectGroup tanks = GroupFactory.buildVehicleGroup(6, VehicleType.PZIII, 96939f, 185.608f, 50383f, 90f, FormationType.LINE);
+        ObjectGroup sdkfzGroup = GroupFactory.buildVehicleGroup(4, VehicleType.SDKFZ251, 97939f, 185.608f, 50283f, 90f, FormationType.LINE);
 
-        ObjectGroup flak37_1 = GroupFactory.buildVehicleGroup(8, VehicleType.FLAK37, 95539f, 185.608f, 53483f, 90f);
-        ObjectGroup flak37_2 = GroupFactory.buildVehicleGroup(8, VehicleType.FLAK37, 96139f, 185.608f, 50383f, 90f);
-        ObjectGroup flak38_1 = GroupFactory.buildVehicleGroup(8, VehicleType.FLAK38, 96239f, 185.608f, 51383f, 90f);
+        ObjectGroup flak37_1 = GroupFactory.buildVehicleGroup(8, VehicleType.FLAK37, 95539f, 185.608f, 53483f, 90f, FormationType.LINE);
+        ObjectGroup flak37_2 = GroupFactory.buildVehicleGroup(8, VehicleType.FLAK37, 96139f, 185.608f, 50383f, 90f, FormationType.LINE);
+        ObjectGroup flak38_1 = GroupFactory.buildVehicleGroup(8, VehicleType.FLAK38, 96239f, 185.608f, 51383f, 90f, FormationType.LINE);
 
         CommandAttackArea attackCmd = new CommandAttackArea(tanks.getXPos(), tanks.getYPos(), tanks.getZPos(), 2000, 0, 0, 1, il2Group3.getObjects().get(0));
         CommandCover yakCoverIl2 = new CommandCover(yakGroup3.getLeader(), il2Group3.getLeader());

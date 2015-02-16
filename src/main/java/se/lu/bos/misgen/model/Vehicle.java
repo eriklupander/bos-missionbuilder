@@ -41,6 +41,7 @@ public class Vehicle extends GameEntity {
         this.MCU_TR_Entity = new MCUTREntity(this);
         this.MCU_TR_Entity.setMisObjID(GlobalId.lastInt());
         this.MCU_TR_Entity.setId(GlobalId.nextLong());
+        this.MCU_TR_Entity.setYOri(yOri);
         setLinkTrId(GlobalId.lastInt());
         super.setName("Vehicle");
     }

@@ -30,7 +30,7 @@ public class CommandFormation extends GameEntity {
                                       // Plane: Right Edge Form, 4= Vehicle: On Road Column, 5= Vehicle: Off Road Column, 6= Vehicle: Off
                                     // Road User Formation, 7= Vehicle: Forward, 8= Vehicle: Backward, 9= Vehicle: Stop, 10= Vehicle: Panic
                                     // Stop, 11= Vehicle: Continue Moving, 12= Vehicle: Set Direction and Stop
-    private Integer FormationDensity = 0; //formation density 0=Dence, 1=Safe, 2=Loose
+    private Integer FormationDensity = 1; //formation density 0=Dence, 1=Safe, 2=Loose
 
     public CommandFormation(Float xPos, Float yPos, Float zPos, Integer formationType, Integer formationDensity) {
         setId(GlobalId.nextLong());

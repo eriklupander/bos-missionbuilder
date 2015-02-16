@@ -40,10 +40,15 @@ public class MissionConverter {
 
     public GeneratedMission convert(ClientMission cm) throws IOException {
 
+        List<UnitGroup> playerGroups = cm.getSides().entrySet().stream().flatMap(e -> e.getValue().getUnitGroups().stream()).filter(ug -> ug.getAiLevel() == 0).collect(Collectors.toList());
+        if(playerGroups.size() != 1) {
+            throw new RuntimeException("Can't generate mission, mission must have exactly ONE (1) group with Skill Level \"Player\". You have " + playerGroups.size() + " such Groups.");
+        }
+
         clientAirfields = ClientAirfieldParser.build();
 
         GeneratedMission gm = new GeneratedMission();
-        gm.setMissionOptions(buildMissionOptions(cm));
+        gm.setMissionOptions(buildMissionOptions(cm, playerGroups.get(0)));
 
 
 
@@ -111,7 +116,7 @@ public class MissionConverter {
             lightAAA.getObjects().add(vehicle);
         }
 
-        ObjectGroup heavyAAA = GroupFactory.buildVehicleGroup(2, VehicleType.FLAK38, xPos, yPos, zPos, 0);
+        ObjectGroup heavyAAA = GroupFactory.buildVehicleGroup(2, VehicleType.FLAK38, xPos, yPos, zPos, 0, FormationType.LINE);
         for(int a = 0; a < heavy; a++) {
             Vehicle v = (Vehicle) heavyAAA.getObjects().get(0);
             switch(a) {
@@ -151,7 +156,7 @@ public class MissionConverter {
                 so.setName("Block");
 
                 // Apply positioning offset within group. Use the yOri to always have static object form a line.
-                Float[] newPositions = Util.getOffsetFormationLine(a, sog.getX(), sog.getZ(), sog.getyOri());
+                Float[] newPositions = Util.getOffsetFormationLine(a, sog.getX(), sog.getZ(), sog.getyOri(), 50);
                 so.setXPos(newPositions[0]);
                 so.setZPos(newPositions[1]);
                 sogs.add(so);
@@ -173,12 +178,26 @@ public class MissionConverter {
         List<WayPoint> allWaypoints = new ArrayList<>();
 
         Stream<UnitGroup> all = rebuildStream(ussr, germany);
+        // Validate
+        all.forEach(ug -> {
+            if(ug.getY() == null) {
+                throw new RuntimeException("Unit Group " + ug.getName() + " (" + ug.getType() + ") has no Altitude set.");
+            }
+        });
+
+        all = rebuildStream(ussr, germany);
 
         List<ObjectGroup> airGroups = all.filter(ug -> ug.getGroupType().equals("AIR_GROUP"))
                 .map(ug -> {
 
-                    ObjectGroup objectGroup = GroupFactory.buildPlaneGroup(ug.getAiLevel() == 0, ug.getSize(), PlaneType.valueOf(ug.getType()), ug.getY() != 0, ug.getX(), ug.getY(), ug.getZ(), ug.getyOri(), ug.getLoadout(), ug.getName());
-                    groupMap.put(ug.getClientId(), objectGroup);
+                    ObjectGroup objectGroup = null;
+                    try {
+
+                        objectGroup = GroupFactory.buildPlaneGroup(ug.getAiLevel() == 0, ug.getSize(), PlaneType.valueOf(ug.getType()), ug.getY() != 0, ug.getX(), ug.getY(), ug.getZ(), ug.getyOri(), ug.getLoadout(), ug.getName(), FormationType.LINE);
+                        groupMap.put(ug.getClientId(), objectGroup);
+                    } catch (Exception e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
 
                     return objectGroup;
                 })
@@ -188,8 +207,8 @@ public class MissionConverter {
         all = rebuildStream(ussr, germany);
         List<ObjectGroup> vehicleGroups = all.filter(ug -> ug.getGroupType().equals("GROUND_GROUP"))
                 .map(ug -> {
-
-                    ObjectGroup objectGroup = GroupFactory.buildVehicleGroup(ug.getSize(), VehicleType.valueOf(ug.getType()), ug.getX(), ug.getY(), ug.getZ(), ug.getyOri());
+                    FormationType formationType = ug.getFormation();
+                    ObjectGroup objectGroup = GroupFactory.buildVehicleGroup(ug.getSize(), VehicleType.valueOf(ug.getType()), ug.getX(), ug.getY(), ug.getZ(), ug.getyOri(), formationType);
                     groupMap.put(ug.getClientId(), objectGroup);
                     return objectGroup;
                 })
@@ -271,11 +290,14 @@ public class MissionConverter {
                 gm.getTranslatorMissionBegins().add(missionBegin);
 
                 // For ground groups, set initial formation using a timer or something
-//                if(ug.getGroupType().equals("GROUP_GROUP")) {
-//                    CommandFormation cmdFormation = new CommandFormation(wp.getX(), wp.getY(), wp.getZ(), FormationType.ON_ROAD_COLUMN.getFormationCode(), 0);
-//                    cmdFormation.getObjects().add(og.getLeaderId());
-//                    waypointTimer.getTargets().add(cmdFormation.getId().intValue());
-//                }
+                if(ug.getGroupType().equals("GROUP_GROUP") && ug.getFormation().equals("ROAD_COLUMN")) {
+                    CommandFormation cmdFormation = new CommandFormation(wp.getX(), wp.getY(), wp.getZ(), FormationType.ON_ROAD_COLUMN.getFormationCode(), 0);
+                    cmdFormation.getObjects().add(og.getLeaderId());
+                    Timer formationTimer = new Timer(wp.getX(), wp.getY(), wp.getZ());
+                    formationTimer.getTargets().add(cmdFormation.getId().intValue());
+                    formationTimer.setTime(10); // Wait 10 seconds
+                    gm.getTimers().add(formationTimer);
+                }
             }
 
             // Now, check if there is an interesting command on the waypoint.
@@ -472,7 +494,7 @@ public class MissionConverter {
 //
 //    }
 
-    private MissionOptions buildMissionOptions(ClientMission cm) {
+    private MissionOptions buildMissionOptions(ClientMission cm, UnitGroup playerUnitGroup) {
         MissionOptions mo = MissionFactory.buildDefaultMission();
         mo.setDate(cm.getDate());
         mo.setTime(cm.getTime());
@@ -482,7 +504,8 @@ public class MissionConverter {
         mo.setLCDesc(lcId); // Mission briefing text
         localization.put(lcId, cm.getDescription());
 
-        // TODO fix hard-coded playerconfig, currently only bf109g2 works
+        PlaneType planeType = PlaneType.valueOf(playerUnitGroup.getType());
+        mo.setPlayerConfig(planeType.getScript());
 
         return mo;
     }

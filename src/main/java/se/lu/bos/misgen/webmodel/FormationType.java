@@ -8,7 +8,7 @@ package se.lu.bos.misgen.webmodel;
  * To change this template use File | Settings | File Templates.
  */
 public enum FormationType {
-    COLUMN(7), LINE(6), ON_ROAD_COLUMN(4), OFF_ROAD_COLUMN(5);
+    LINE(6), COLUMN(7), ON_ROAD_COLUMN(4);
 
     private int formationCode = 0;
 
@@ -18,5 +18,18 @@ public enum FormationType {
 
     public int getFormationCode() {
         return formationCode;
+    }
+
+    public static FormationType from(Integer formation) {
+        switch(formation) {
+            case 7:
+                return COLUMN;
+            case 6:
+                return LINE;
+            case 4:
+                return ON_ROAD_COLUMN;
+            default:
+                return LINE;
+        }
     }
 }

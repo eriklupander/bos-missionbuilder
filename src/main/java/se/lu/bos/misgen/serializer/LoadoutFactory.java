@@ -24,7 +24,11 @@ public class LoadoutFactory {
                 break;
             case BF109F4:
                 loadouts.add(new Loadout(planeType, 1, "Unknown?"));
+                loadouts.add(new Loadout(planeType, 2, "1x250 kg bomb"));
                 loadouts.add(new Loadout(planeType, 3, "A bomb?"));
+                break;
+            case FW190A3:
+                loadouts.add(new Loadout(planeType, 5, "2x20mm 180 rnds"));
                 break;
             case IL2M42:
                 loadouts.add(new Loadout(planeType, 18, "Some bombs?"));

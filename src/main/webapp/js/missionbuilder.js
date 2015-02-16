@@ -67,7 +67,9 @@ var missionbuilder = new function() {
         }
         rest.exportMissionToDisk(state.getCurrentMission().serverId, function(data) {
             //window.prompt("Copy to clipboard: Ctrl+C, Enter", data);
-            alert("Mission written to " + data);
+            alert("Mission successfully exported to " + data);
+        }, function(jqXHR, textStatus, errorThrown) {
+            alert("Error saving mission to disk (" + textStatus + "): " + errorThrown);
         });
     }
 
@@ -194,6 +196,13 @@ var missionbuilder = new function() {
             $(unitSelect).empty();
             for(var a = 0 ; a < data.length; a++) {
                 $(unitSelect).append('<option value="' + data[a] + '">' + data[a] + '</option>');
+            }
+        });
+        rest.getFormationTypes(function(data) {
+            var formationSelect = $('#create-ground-unit-group-formation');
+            $(formationSelect).empty();
+            for(var a = 0 ; a < data.length; a++) {
+                $(formationSelect).append('<option value="' + data[a] + '">' + data[a] + '</option>');
             }
         });
         $('#createGroundUnitGroupModal').modal({backdrop:'static'});
@@ -442,17 +451,17 @@ var missionbuilder = new function() {
         }
     }
 
-    this.undo = function() {
-        // If currently editing mission, try to load that last saved version from server.
-        var missionState = state.popMissionState();
-        if(util.notNull(missionState)) {
-            state.setCurrentMission(missionState);
-            maprenderer.redraw();
-        } else {
-            console.log("No state to pop");
-        }
-
-    }
+//    this.undo = function() {
+//        // If currently editing mission, try to load that last saved version from server.
+//        var missionState = state.popMissionState();
+//        if(util.notNull(missionState)) {
+//            state.setCurrentMission(missionState);
+//            maprenderer.redraw();
+//        } else {
+//            console.log("No state to pop");
+//        }
+//
+//    }
 
 
     this.handleObjectSelected = function(obj) {
@@ -511,9 +520,9 @@ var missionbuilder = new function() {
                     rest.getVehicleTypes(state.getCurrentCountry(), function(data) {
                         util.populateSelect('ground-group-edit-group-type', obj, 'type', data);
                     });
-//                    rest.getFormationTypes(function(data) {
-//                        util.populateSelect('ground-group-edit-group-formation', obj, 'formation', data);
-//                    });
+                    rest.getFormationTypes(function(data) {
+                        util.populateSelect('ground-group-edit-group-formation', obj, 'formation', data);
+                    });
                     util.populateSelect('ground-group-edit-group-size', obj, 'size', statics.getGroupSizes());
                     util.populateSelectKeyVal('ground-group-edit-group-skill', obj, 'aiLevel', statics.getSkills());
                     break;
@@ -607,7 +616,7 @@ var missionbuilder = new function() {
                         var keyval = $.map(state.getUnitGroupsForAllSides(), function(item) {
                             return {
                                 "value" : item.clientId,
-                                "name" : item.name
+                                "name" : item.name + " (" + item.type + ")"
                             };
                         });
                         keyval.splice(0, 0, {"value":-1, "name":"No object selected"});     // Insert a no value selected at index 0

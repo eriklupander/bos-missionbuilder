@@ -5,6 +5,7 @@ import se.lu.bos.misgen.model.Plane;
 import se.lu.bos.misgen.model.PlaneType;
 import se.lu.bos.misgen.model.Vehicle;
 import se.lu.bos.misgen.model.VehicleType;
+import se.lu.bos.misgen.webmodel.FormationType;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,7 +16,7 @@ import se.lu.bos.misgen.model.VehicleType;
  */
 public class GroupFactory {
 
-    public static ObjectGroup buildPlaneGroup(boolean playerGroup, int numberOfPlanes, PlaneType planeType, boolean startInAir, float x, float y, float z, float yOri, Integer payloadId, String baseName) {
+    public static ObjectGroup buildPlaneGroup(boolean playerGroup, int numberOfPlanes, PlaneType planeType, boolean startInAir, float x, float y, float z, float yOri, Integer payloadId, String baseName, FormationType formationType) {
 
         ObjectGroup objectGroup = new ObjectGroup();
         for(int a = 0; a < numberOfPlanes; a++) {
@@ -32,12 +33,12 @@ public class GroupFactory {
                 o.getMCU_TR_Entity().getTargets().add(objectGroup.getObjects().get(0).getMCU_TR_Entity().getId().intValue());
             }
         });
-        objectGroup.applyPosition(x, y, z, yOri);
+        objectGroup.applyPosition(x, y, z, yOri, formationType);
 
         return objectGroup;
     }
 
-    public static ObjectGroup buildVehicleGroup(int numberOfVehicles, VehicleType vehicleType, float x, float y, float z, float yOri) {
+    public static ObjectGroup buildVehicleGroup(int numberOfVehicles, VehicleType vehicleType, float x, float y, float z, float yOri, FormationType formationType) {
 
         ObjectGroup objectGroup = new ObjectGroup();
         for(int a = 0; a < numberOfVehicles; a++) {
@@ -50,7 +51,7 @@ public class GroupFactory {
                 o.getMCU_TR_Entity().getTargets().add(objectGroup.getObjects().get(0).getMCU_TR_Entity().getId().intValue());
             }
         });
-        objectGroup.applyPosition(x, y, z, yOri);
+        objectGroup.applyPosition(x, y, z, yOri, formationType);
 
         return objectGroup;
     }
