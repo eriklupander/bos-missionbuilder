@@ -1,7 +1,13 @@
 package se.lu.bos.misgen.groups;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -14,74 +20,81 @@ import java.util.stream.Collectors;
  * Time: 12:35
  * To change this template use File | Settings | File Templates.
  */
+@Component
 public class StaticGroupsFactory {
 
-    private static StaticGroupReader staticGroupReader = new StaticGroupReader();
+    @Autowired
+    StaticGroupReader staticGroupReader;
 
-    public static String getAirfields() throws IOException {
-        InputStream resourceAsStream = StaticGroupsFactory.class.getClassLoader().getResourceAsStream("airfields.group");
+    @Autowired
+    Environment env;
+
+    public String getAirfields() throws IOException {
+        InputStream resourceAsStream = StaticGroupsFactory.class.getClassLoader().getResourceAsStream("airfields.group");              // OWN DERIVED GROUP
         String airfields = IOUtils.toString(resourceAsStream);
         return airfields;
     }
 
-    public static String getStalingradCity() throws IOException {
-        InputStream resourceAsStream = StaticGroupsFactory.class.getClassLoader().getResourceAsStream("Stalingrad_City.Group");
+    public String getStalingradCity() throws IOException {
+        InputStream resourceAsStream = readFile("Template\\Stalingrad_City.Group"); ///StaticGroupsFactory.class.getClassLoader().getResourceAsStream("Stalingrad_City.Group");     // BOS resource
         return IOUtils.toString(resourceAsStream);
     }
 
-    public static String getTowns() throws IOException {
-        InputStream resourceAsStream = StaticGroupsFactory.class.getClassLoader().getResourceAsStream("Stalingrad_ALL_Towns.Group");
+
+
+    public String getTowns() throws IOException {
+        InputStream resourceAsStream = readFile("Template\\Stalingrad_ALL_Towns.Group");   // BOS resource
         return IOUtils.toString(resourceAsStream);
     }
 
-    public static String getBridges() throws IOException {
-        InputStream resourceAsStream = StaticGroupsFactory.class.getClassLoader().getResourceAsStream("Stalingrad_bridges.Group");
+    public String getBridges() throws IOException {
+        InputStream resourceAsStream = readFile("Template\\Stalingrad_bridges.Group");   // BOS resource
         return IOUtils.toString(resourceAsStream);
     }
 
-    public static String getRailwayStations() throws IOException {
-        InputStream resourceAsStream = StaticGroupsFactory.class.getClassLoader().getResourceAsStream("Stalingrad_railway_stations.Group");
+    public String getRailwayStations() throws IOException {
+        InputStream resourceAsStream = readFile("Template\\Stalingrad_railway_stations.Group");    // BOS resource
         return IOUtils.toString(resourceAsStream);
     }
 
-    public static List<GroupEntity> getStalingradGroupEntities() throws IOException {
-        List<GroupEntity> groupEntityList =  staticGroupReader.readGroupEntities("Stalingrad_City.Group", GroupEntityType.STALINGRAD_CITY);
+    public List<GroupEntity> getStalingradGroupEntities() throws IOException {
+        List<GroupEntity> groupEntityList =  staticGroupReader.readGroupEntities("Stalingrad_City.Group", GroupEntityType.STALINGRAD_CITY);    // BOS resource
         return groupEntityList;
     }
 
-    public static List<GroupEntity> getAirFieldGroupEntities() throws IOException {
-        List<GroupEntity> groupEntityList =  staticGroupReader.readGroupEntities("airfields.group", GroupEntityType.AIRFIELD);
+    public List<GroupEntity> getAirFieldGroupEntities() throws IOException {
+        List<GroupEntity> groupEntityList =  staticGroupReader.readGroupEntitiesFromClasspath("airfields.group", GroupEntityType.AIRFIELD);
         return groupEntityList;
     }
 
-    public static List<GroupEntity> getReadBridgeGroupEntities() throws IOException {
+    public List<GroupEntity> getReadBridgeGroupEntities() throws IOException {
         List<GroupEntity> groupEntityList =  staticGroupReader.readGroupEntities("stalingrad_bridges.Group", GroupEntityType.BRIDGE);
         return groupEntityList;
     }
 
-    public static List<GroupEntity> getReadBridgeGroupEntities(float x1, float z1, float x2, float z2) throws IOException {
+    public List<GroupEntity> getReadBridgeGroupEntities(float x1, float z1, float x2, float z2) throws IOException {
         List<GroupEntity> groupEntityList =  staticGroupReader.readGroupEntities("stalingrad_bridges.Group", GroupEntityType.BRIDGE);
         return filterByPosition(x1, z1, x2, z2, groupEntityList);
     }
 
 
 
-    public static List<GroupEntity> getReadTownGroupEntities() throws IOException {
+    public List<GroupEntity> getReadTownGroupEntities() throws IOException {
         List<GroupEntity> groupEntityList =  staticGroupReader.readGroupEntities("Stalingrad_ALL_Towns.Group", GroupEntityType.TOWN);
         return groupEntityList;
     }
 
-    public static List<GroupEntity> getReadTownGroupEntities(float x1, float z1, float x2, float z2) throws IOException {
+    public List<GroupEntity> getReadTownGroupEntities(float x1, float z1, float x2, float z2) throws IOException {
         List<GroupEntity> groupEntityList =  staticGroupReader.readGroupEntities("Stalingrad_ALL_Towns.Group", GroupEntityType.TOWN);
         return filterByPosition(x1, z1, x2, z2, groupEntityList);
     }
 
-    public static List<GroupEntity> getRailwayStationGroupEntities() throws IOException {
+    public List<GroupEntity> getRailwayStationGroupEntities() throws IOException {
         List<GroupEntity> groupEntityList =  staticGroupReader.readGroupEntities("Stalingrad_railway_stations.Group", GroupEntityType.TRAIN_STATION);
         return groupEntityList;
     }
 
-    public static List<GroupEntity> getRailwayStationGroupEntities(float x1, float z1, float x2, float z2) throws IOException {
+    public List<GroupEntity> getRailwayStationGroupEntities(float x1, float z1, float x2, float z2) throws IOException {
         List<GroupEntity> groupEntityList =  staticGroupReader.readGroupEntities("Stalingrad_railway_stations.Group", GroupEntityType.TRAIN_STATION);
         return filterByPosition(x1, z1, x2, z2, groupEntityList);
     }
@@ -96,5 +109,9 @@ public class StaticGroupsFactory {
                     return x1b && x2b && z1b && z2b;
                 })
                 .collect(Collectors.toList());
+    }
+
+    private FileInputStream readFile(String resourceFile) throws IOException {
+        return FileUtils.openInputStream(new File(env.getProperty("bos.data.directory") + resourceFile));
     }
 }

@@ -44,7 +44,7 @@ public class MissionDataServiceBean {
 
     private final static Logger log = LoggerFactory.getLogger(MissionDataServiceBean.class);
 
-    private static final String DEFAULT_MISSION_DIR = "H:\\skyrim\\SteamApps\\common\\IL-2 Sturmovik Battle of Stalingrad\\data\\Missions\\Test\\";
+    private static final String DEFAULT_DATA_DIR = "H:\\skyrim\\SteamApps\\common\\IL-2 Sturmovik Battle of Stalingrad\\data\\";
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -53,6 +53,12 @@ public class MissionDataServiceBean {
 
     @Autowired
     ElasticSearchServer elasticSearchServer;
+
+    @Autowired
+    MissionConverter missionConverter;
+
+    @Autowired
+    ClientAirfieldParser clientAirfieldParser;
 
 
     @Autowired
@@ -65,7 +71,7 @@ public class MissionDataServiceBean {
         try {
             ClientMission clientMission = mapper.readValue(json, ClientMission.class);
 
-            GeneratedMission generatedMission = new MissionConverter().convert(clientMission);
+            GeneratedMission generatedMission = missionConverter.convert(clientMission);
             String missionFileBody = new MissionWriter().generateMission(generatedMission);
 
             IOUtils.write(missionFileBody,
@@ -86,7 +92,7 @@ public class MissionDataServiceBean {
         String json = elasticSearchServer.getClient().prepareGet("missions", "mission", serverId).execute().actionGet().getSourceAsString();
         try {
             ClientMission clientMission = mapper.readValue(json, ClientMission.class);
-            GeneratedMission generatedMission = new MissionConverter().convert(clientMission);
+            GeneratedMission generatedMission = missionConverter.convert(clientMission);
 
             StringBuilder buf = new StringBuilder();
             generatedMission.getLocalization().entrySet().stream().forEach(entry -> buf.append(entry.getKey()).append(":").append(entry.getValue() != null ? entry.getValue() : "").append("\r\n"));
@@ -110,7 +116,7 @@ public class MissionDataServiceBean {
         try {
             ClientMission clientMission = mapper.readValue(json, ClientMission.class);
 
-            GeneratedMission generatedMission = new MissionConverter().convert(clientMission);
+            GeneratedMission generatedMission = missionConverter.convert(clientMission);
             String missionFileBody = new MissionWriter().generateMission(generatedMission);
             return new ResponseEntity(missionFileBody, HttpStatus.OK);
         } catch (IOException e) {
@@ -124,9 +130,9 @@ public class MissionDataServiceBean {
         try {
             ClientMission clientMission = mapper.readValue(json, ClientMission.class);
 
-            GeneratedMission generatedMission = new MissionConverter().convert(clientMission);
+            GeneratedMission generatedMission = missionConverter.convert(clientMission);
             String missionFileBody = new MissionWriter().generateMission(generatedMission);
-            String path = env.getProperty("missions.directory", DEFAULT_MISSION_DIR);
+            String path = env.getProperty("bos.data.directory", DEFAULT_DATA_DIR)  + "Missions\\webmissions";
             if(!path.endsWith("/")) {
                 path = path + "/";
             }
@@ -291,7 +297,7 @@ public class MissionDataServiceBean {
 
     @RequestMapping(method = RequestMethod.GET, value = "/airfields", produces = "application/json")
     public ResponseEntity<List<FormationType>> getAirfields() throws IOException {
-        List<ClientAirfield> airfields = ClientAirfieldParser.build();
+        List<ClientAirfield> airfields = clientAirfieldParser.build();
 
         return new ResponseEntity(airfields, HttpStatus.OK);
     }

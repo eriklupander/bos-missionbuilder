@@ -3,6 +3,8 @@ package se.lu.bos.misgen.serializer;
 import javafx.geometry.Rectangle2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import se.lu.bos.misgen.groups.ClientAirfieldParser;
 import se.lu.bos.misgen.groups.GroupEntity;
 import se.lu.bos.misgen.groups.StaticGroupsFactory;
@@ -26,6 +28,7 @@ import java.util.stream.Stream;
  * Time: 23:13
  * To change this template use File | Settings | File Templates.
  */
+@Component
 public class MissionConverter {
 
     private static final Logger log = LoggerFactory.getLogger(MissionConverter.class);
@@ -36,6 +39,11 @@ public class MissionConverter {
     private List<ClientAirfield> clientAirfields;
     private Integer lcId = 0;
 
+    @Autowired
+    StaticGroupsFactory staticGroupsFactory;
+
+    @Autowired
+    ClientAirfieldParser clientAirfieldParser;
 
 
     public GeneratedMission convert(ClientMission cm) throws IOException {
@@ -45,16 +53,16 @@ public class MissionConverter {
             throw new RuntimeException("Can't generate mission, mission must have exactly ONE (1) group with Skill Level \"Player\". You have " + playerGroups.size() + " such Groups.");
         }
 
-        clientAirfields = ClientAirfieldParser.build();
+        clientAirfields = clientAirfieldParser.build();
 
         GeneratedMission gm = new GeneratedMission();
         gm.setMissionOptions(buildMissionOptions(cm, playerGroups.get(0)));
 
 
 
-        gm.getBridges().addAll(StaticGroupsFactory.getReadBridgeGroupEntities());
-        gm.getRailwayStations().addAll(StaticGroupsFactory.getRailwayStationGroupEntities());
-        gm.getAirfields().addAll(StaticGroupsFactory.getAirFieldGroupEntities());
+        gm.getBridges().addAll(staticGroupsFactory.getReadBridgeGroupEntities());
+        gm.getRailwayStations().addAll(staticGroupsFactory.getRailwayStationGroupEntities());
+        gm.getAirfields().addAll(staticGroupsFactory.getAirFieldGroupEntities());
 
         buildObjectGroups(cm, gm);
         buildStaticObjectGroups(cm, gm);
@@ -65,44 +73,77 @@ public class MissionConverter {
             });
         }
 
-        if(cm.getGenerateAAAAtBridges()) {
-            gm.getBridges().stream().forEach(ge -> {
-                gm.getObjectGroups().addAll(generateAAA(ge.getxPos(), ge.getyPos(), ge.getzPos(), 2, 2));
-            });
-        }
+//        if(cm.getGenerateAAAAtBridges()) {
+//            gm.getBridges().stream().forEach(ge -> {
+//                gm.getObjectGroups().addAll(generateAAA(ge.getxPos(), ge.getyPos(), ge.getzPos(), 2, 2));
+//            });
+//        }
 
         gm.setLocalization(localization);
 
         // TODO determine mission bounds, until then don't load towns at all
         Float[] bounds = findBounds(gm);
-        List<GroupEntity> townEntities = StaticGroupsFactory.getReadTownGroupEntities(bounds[0], bounds[1], bounds[2], bounds[3]);
+        List<GroupEntity> townEntities = staticGroupsFactory.getReadTownGroupEntities(bounds[0], bounds[1], bounds[2], bounds[3]);
         gm.getTowns().addAll(townEntities);
 
         if(cm.getIncludeStalingradCity()) {
-            gm.getTowns().addAll(StaticGroupsFactory.getStalingradGroupEntities());
+            gm.getTowns().addAll(staticGroupsFactory.getStalingradGroupEntities());
         }
 
 
-        addFakeIcons(gm);
+       // addFakeIcons(gm);
 
         return gm;
     }
 
     private void addFakeIcons(GeneratedMission gm) {
-        for(int a = 0; a < 600; a++) {
-            TranslatorIcon ti = new TranslatorIcon(10000 + (a*200), 0f, 10000 + (a*200));
+        List<TranslatorIcon> icons = new ArrayList<>();
+//        for(int a = 0; a < 500; a++) {
+//            TranslatorIcon ti = new TranslatorIcon(10000 + ((a)*400), 0f, 10000 + ((a)*400));
+//            ti.setIconId(a);
+//            ti.setLineType(0);
+//            lcId++;
+//            ti.setLCName(lcId);
+//            localization.put(lcId, "Icon "+a);
+//            lcId++;
+//            ti.setLCDesc(lcId);
+//            localization.put(lcId, "Test " + a);
+//            icons.add(ti);
+//        }
+        for(int a = 551; a < 562; a++) {
+            TranslatorIcon ti = new TranslatorIcon(10000 + ((a)*300), 0f, 10000 + ((a)*300));
             ti.setIconId(a);
             ti.setLineType(1);
             lcId++;
             ti.setLCName(lcId);
-            localization.put(lcId, ""+a);
+            localization.put(lcId, "Icon "+a);
             lcId++;
             ti.setLCDesc(lcId);
             localization.put(lcId, "Test " + a);
-            gm.getTranslatorIcons().add(ti);
+            icons.add(ti);
         }
 
+//        for(int a = 900; a < 910; a++) {
+//            TranslatorIcon ti = new TranslatorIcon(35000 + (a*400), 0f, 35000 + (a*400));
+//            ti.setIconId(a);
+//            ti.setLineType(1);
+//            lcId++;
+//            ti.setLCName(lcId);
+//            localization.put(lcId, ""+a);
+//            lcId++;
+//            ti.setLCDesc(lcId);
+//            localization.put(lcId, "Test " + a);
+//            gm.getTranslatorIcons().add(ti);
+//        }
 
+        // Link icons to form route
+//        for(int a = 0; a < icons.size(); a++) {
+//            if(a+1 < icons.size()) {
+//                TranslatorIcon icon = icons.get(a);
+//                icon.getTargets().add(icons.get(a+1).getId().intValue());
+//            }
+//        }
+        gm.getTranslatorIcons().addAll(icons);
     }
 
     private Float[] findBounds(GeneratedMission gm) {
@@ -118,7 +159,8 @@ public class MissionConverter {
         // Let's create 4 light and 2 heavy AAA guns spread around the airfield centre point by 500 meters
         ObjectGroup lightAAA = new ObjectGroup();
         for(int a = 0; a < light; a++) {
-            Vehicle vehicle = VehicleFactory.buildVehicle(VehicleType.FLAK37, 4, 2, xPos, yPos, zPos, 0);
+            Vehicle vehicle = VehicleFactory.buildVehicle(VehicleType.FLAK37, 2, 2, xPos, yPos, zPos, 0);
+
             switch(a) {
                 case 0:
                     vehicle.setXPos(vehicle.getXPos()+500);
@@ -283,11 +325,14 @@ public class MissionConverter {
                 })
                 .collect(Collectors.toList());
 
+        unitGroupStream = rebuildStream(ussr, germany);
+        UnitGroup playerUnitGroup = unitGroupStream.filter(ug -> ug.getAiLevel() == 0).findFirst().get();
+
         // We need a player starting position icon as well
         if(icons.size() > 0) {
-            unitGroupStream = rebuildStream(ussr, germany);
-            UnitGroup playerUnitGroup = unitGroupStream.filter(ug -> ug.getAiLevel() == 0).findFirst().get();
+
             TranslatorIcon ti = new TranslatorIcon(playerUnitGroup.getX(), playerUnitGroup.getY(), playerUnitGroup.getZ());
+            ti.setIconId(IconType.BALOON_BLUE.getCode());
             lcId++;
             ti.setLCName(lcId);
             localization.put(lcId, playerUnitGroup.getName());
@@ -305,7 +350,26 @@ public class MissionConverter {
             }
         }
 
+        // Test, generate icons for enemy ground forces
+        unitGroupStream = rebuildStream(ussr, germany);
+        List<TranslatorIcon> groundUnitIcons = unitGroupStream
+                .filter(ug -> ug.getCountryCode().intValue() != playerUnitGroup.getCountryCode().intValue() && ug.getGroupType().equals("GROUND_GROUP"))
+                .map(ug -> {
+                    TranslatorIcon ti = new TranslatorIcon(ug.getX(), ug.getY(), ug.getZ());
+                    ti.setIconId(Util.getIconIdForVehicleType(VehicleType.valueOf(ug.getType())));
+                    lcId++;
+                    ti.setLCName(lcId);
+                    localization.put(lcId, ug.getName());
+                    lcId++;
+                    ti.setLCDesc(lcId);
+                    localization.put(lcId, ug.getType());
+                    return ti;
+                })
+                .collect(Collectors.toList());
+
+
          gm.getTranslatorIcons().addAll(icons);
+        gm.getTranslatorIcons().addAll(groundUnitIcons);
     }
 
     private void generateWaypoints(UnitGroup ug, ObjectGroup og, GeneratedMission gm, ClientMission cm) {

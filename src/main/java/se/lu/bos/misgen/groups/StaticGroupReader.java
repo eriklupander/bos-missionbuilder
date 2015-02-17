@@ -1,7 +1,12 @@
 package se.lu.bos.misgen.groups;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -19,14 +24,28 @@ import java.util.stream.Collectors;
  * Time: 20:01
  * To change this template use File | Settings | File Templates.
  */
+@Controller
 public class StaticGroupReader {
+
+    @Autowired
+    Environment env;
+
+    public List<GroupEntity> readGroupEntitiesFromClasspath(String fileName, GroupEntityType groupEntityType) throws IOException {
+        switch(groupEntityType) {
+            case AIRFIELD:
+                return parseAirfields(readGroupFromClasspath(fileName));
+            case AIRFIELD_ICONS:
+                return parseAirfieldIcons(readGroupFromClasspath(fileName));
+        }
+        return null;
+    }
 
     public List<GroupEntity> readGroupEntities(String fileName, GroupEntityType groupEntityType) throws IOException {
         switch(groupEntityType) {
-            case AIRFIELD:
-                return parseAirfields(readGroupFromFile(fileName));
-            case AIRFIELD_ICONS:
-                return parseAirfieldIcons(readGroupFromFile(fileName));
+//            case AIRFIELD:
+//                return parseAirfields(readGroupFromFile(fileName));
+//            case AIRFIELD_ICONS:
+//                return parseAirfieldIcons(readGroupFromFile(fileName));
             case BRIDGE:
                 return parseBridges(readGroupFromFile(fileName));
             case TOWN:
@@ -203,6 +222,12 @@ public class StaticGroupReader {
     }
 
     private String readGroupFromFile(String file) throws IOException {
+        InputStream resourceAsStream = FileUtils.openInputStream(new File(env.getProperty("bos.data.directory") + "Template\\" + file));
+        //StaticGroupsFactory.class.getClassLoader().getResourceAsStream(file);
+        return IOUtils.toString(resourceAsStream);
+    }
+
+    private String readGroupFromClasspath(String file) throws IOException {
         InputStream resourceAsStream = StaticGroupsFactory.class.getClassLoader().getResourceAsStream(file);
         return IOUtils.toString(resourceAsStream);
     }

@@ -1,7 +1,7 @@
 package se.lu.bos.misgen.serializer;
 
-import se.lu.bos.misgen.groups.StaticGroupsFactory;
-import se.lu.bos.misgen.model.*;
+import se.lu.bos.misgen.model.GameEntity;
+import se.lu.bos.misgen.model.GeneratedMission;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
  * To change this template use File | Settings | File Templates.
  */
 public class MissionWriter {
-
-    private int index = 0;
 
     public String generateMission(GeneratedMission gm) throws IOException {
         List<GameEntity> entities = new ArrayList<>();
@@ -53,28 +51,6 @@ public class MissionWriter {
         gm.getTowns().stream().forEach(e -> buf.append(e.getData()).append("\r\n"));
       //  gm.getBridges().stream().forEach(e -> buf.append(e.getData()).append("\r\n"));
       //  gm.getRailwayStations().stream().forEach(e -> buf.append(e.getData()).append("\r\n"));
-        buf.append("# end of file");
-        return buf.toString();
-    }
-
-    public String generateMission(MissionOptions missionOptions, List<Plane> planes, List<Vehicle> vehicles) throws IOException {
-        StringBuffer buf = new StringBuffer();
-        buf.append("# Mission File Version = 1.0;\r\n");
-        buf.append(missionOptions.toString());
-        buf.append("\r\n\r\n\r\n");
-        buf.append(StaticGroupsFactory.getAirfields());
-        buf.append("\r\n\r\n\r\n");
-        for(Plane plane : planes) {
-            buf.append(plane.toString());
-            buf.append("\r\n\r\n\r\n");
-        }
-
-        buf.append("\r\n\r\n\r\n");
-
-        for(Vehicle v : vehicles) {
-            buf.append(v.toString());
-            buf.append("\r\n\r\n\r\n");
-        }
         buf.append("# end of file");
         return buf.toString();
     }

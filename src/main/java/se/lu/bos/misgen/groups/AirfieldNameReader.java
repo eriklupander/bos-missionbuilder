@@ -1,10 +1,15 @@
 package se.lu.bos.misgen.groups;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 import se.lu.bos.misgen.webmodel.ClientAirfield;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -18,11 +23,15 @@ import java.util.Scanner;
  * Time: 11:58
  * To change this template use File | Settings | File Templates.
  */
+@Component
 public class AirfieldNameReader {
 
     private static final Logger log = LoggerFactory.getLogger(AirfieldNameReader.class);
 
-    public static List<ClientAirfield> buildAirfields() throws IOException {
+    @Autowired
+    Environment env;
+
+    public List<ClientAirfield> buildAirfields() throws IOException {
         List<ClientAirfield> airfields = new ArrayList<>();
         String src = readGroupFromFile("Stalingrad_ALL_AIRFIELDS.eng");
         Scanner scanner = new Scanner(src);
@@ -45,8 +54,8 @@ public class AirfieldNameReader {
         return airfields;
     }
 
-    private static String readGroupFromFile(String file) throws IOException {
-        InputStream resourceAsStream = StaticGroupsFactory.class.getClassLoader().getResourceAsStream(file);
-        return IOUtils.toString(resourceAsStream);
+    private String readGroupFromFile(String file) throws IOException {
+        InputStream resourceAsStream = FileUtils.openInputStream(new File(env.getProperty("bos.data.directory") + "\\Template\\" + file)); //StaticGroupsFactory.class.getClassLoader().getResourceAsStream(file);
+        return IOUtils.toString(resourceAsStream, "UTF-16LE");
     }
 }

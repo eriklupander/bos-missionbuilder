@@ -1,6 +1,8 @@
 package se.lu.bos.misgen.util;
 
+import se.lu.bos.misgen.model.IconType;
 import se.lu.bos.misgen.model.OnEvent;
+import se.lu.bos.misgen.model.VehicleType;
 
 import java.util.List;
 
@@ -79,5 +81,27 @@ public class Util {
         pos[0] = new Double(x - ((spacingMeters*index) * Math.cos(Math.toRadians(yOri)))).floatValue();
         pos[1] = new Double(z - ((spacingMeters*index) * Math.sin(Math.toRadians(yOri)))).floatValue();
         return pos;
+    }
+
+    public static Integer getIconIdForVehicleType(VehicleType vehicleType) {
+        switch(vehicleType) {
+            case BA10M:
+            case BM13:
+            case ML20:
+                return IconType.ARTILLERY_RED.getCode();
+            case T34:
+                return IconType.TANK_GROUP_RED.getCode();
+            case GAZ_M:
+            case BA64:
+                return IconType.TRUCK_RED.getCode();
+            case FLAK37:
+            case FLAK38:
+            case GAZ_AA_M4_AA:
+            case MG34_AA:
+                return IconType.AAA_RED.getCode();
+
+            default:
+                return IconType.FORTIFICATION_RED.getCode();
+        }
     }
 }

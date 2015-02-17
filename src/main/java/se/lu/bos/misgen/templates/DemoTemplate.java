@@ -105,10 +105,10 @@ public class DemoTemplate {
         GeneratedMission gm = new GeneratedMission();
         gm.setMissionOptions(missionOptions);
 
-        gm.getAirfields().addAll(StaticGroupsFactory.getAirFieldGroupEntities());
-        gm.getTowns().addAll(StaticGroupsFactory.getReadTownGroupEntities(40000f, 30000f, 120000f, 140000f));
-        gm.getBridges().addAll(StaticGroupsFactory.getReadBridgeGroupEntities(40000f, 30000f, 120000f, 140000f));
-        gm.getRailwayStations().addAll(StaticGroupsFactory.getRailwayStationGroupEntities(40000f, 30000f, 120000f, 140000f));
+//        gm.getAirfields().addAll(StaticGroupsFactory.getAirFieldGroupEntities());
+//        gm.getTowns().addAll(StaticGroupsFactory.getReadTownGroupEntities(40000f, 30000f, 120000f, 140000f));
+//        gm.getBridges().addAll(StaticGroupsFactory.getReadBridgeGroupEntities(40000f, 30000f, 120000f, 140000f));
+//        gm.getRailwayStations().addAll(StaticGroupsFactory.getRailwayStationGroupEntities(40000f, 30000f, 120000f, 140000f));
 
         gm.getAreaAttackCommands().add(attackCmd);
         gm.getObjectGroups().add(planeGroup1);
