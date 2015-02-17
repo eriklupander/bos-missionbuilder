@@ -82,7 +82,27 @@ public class MissionConverter {
             gm.getTowns().addAll(StaticGroupsFactory.getStalingradGroupEntities());
         }
 
+
+        addFakeIcons(gm);
+
         return gm;
+    }
+
+    private void addFakeIcons(GeneratedMission gm) {
+        for(int a = 0; a < 600; a++) {
+            TranslatorIcon ti = new TranslatorIcon(10000 + (a*200), 0f, 10000 + (a*200));
+            ti.setIconId(a);
+            ti.setLineType(1);
+            lcId++;
+            ti.setLCName(lcId);
+            localization.put(lcId, ""+a);
+            lcId++;
+            ti.setLCDesc(lcId);
+            localization.put(lcId, "Test " + a);
+            gm.getTranslatorIcons().add(ti);
+        }
+
+
     }
 
     private Float[] findBounds(GeneratedMission gm) {
@@ -233,9 +253,9 @@ public class MissionConverter {
         gm.getObjectGroups().addAll(vehicleGroups);
         gm.getWayPoints().addAll(allWaypoints);
 
-        all = rebuildStream(ussr, germany);
 
-        addIconsForPlayerRoute(gm, all);
+
+        addIconsForPlayerRoute(gm, ussr, germany);
     }
 
     private Stream<UnitGroup> rebuildStream(Side ussr, Side germany) {
@@ -246,8 +266,8 @@ public class MissionConverter {
         return Stream.concat(germany.getStaticObjectGroups().stream(), ussr.getStaticObjectGroups().stream());
     }
 
-    private void addIconsForPlayerRoute(GeneratedMission gm, Stream<UnitGroup> unitGroupStream) {
-
+    private void addIconsForPlayerRoute(GeneratedMission gm, Side ussr, Side germany) {
+        Stream<UnitGroup> unitGroupStream = rebuildStream(ussr, germany);
         List<TranslatorIcon> icons = unitGroupStream
                 .filter(ug -> ug.getAiLevel() == 0)
                 .flatMap(ug -> ug.getWaypoints().stream())
@@ -262,6 +282,20 @@ public class MissionConverter {
                     return ti;
                 })
                 .collect(Collectors.toList());
+
+        // We need a player starting position icon as well
+        if(icons.size() > 0) {
+            unitGroupStream = rebuildStream(ussr, germany);
+            UnitGroup playerUnitGroup = unitGroupStream.filter(ug -> ug.getAiLevel() == 0).findFirst().get();
+            TranslatorIcon ti = new TranslatorIcon(playerUnitGroup.getX(), playerUnitGroup.getY(), playerUnitGroup.getZ());
+            lcId++;
+            ti.setLCName(lcId);
+            localization.put(lcId, playerUnitGroup.getName());
+            lcId++;
+            ti.setLCDesc(lcId);
+            localization.put(lcId, "Waypoint");
+            icons.add(0, ti);
+        }
 
         // Link icons to form route
         for(int a = 0; a < icons.size(); a++) {
