@@ -104,11 +104,11 @@ var missionbuilder = new function() {
         } else {
             $('#edit-mission-gen-airfield-aaa').removeAttr('checked');
         }
-        if(state.getCurrentMission().generateAAAAtBridges == true) {
-            $('#edit-mission-gen-bridge-aaa').attr('checked', 'checked');
-        } else {
-            $('#edit-mission-gen-bridge-aaa').removeAttr('checked');
-        }
+//        if(state.getCurrentMission().generateAAAAtBridges == true) {
+//            $('#edit-mission-gen-bridge-aaa').attr('checked', 'checked');
+//        } else {
+//            $('#edit-mission-gen-bridge-aaa').removeAttr('checked');
+//        }
 
         if(state.getCurrentMission().includeStalingradCity == true) {
             $('#edit-mission-gen-include-stalingrad').attr('checked', 'checked');
@@ -126,7 +126,7 @@ var missionbuilder = new function() {
         state.getCurrentMission().time = $('#edit-mission-time').val();
         state.getCurrentMission().description = $('#edit-mission-desc').val();
         state.getCurrentMission().generateAAAAtAirfields = $('#edit-mission-gen-airfield-aaa').prop('checked');
-        state.getCurrentMission().generateAAAAtBridges = $('#edit-mission-gen-bridge-aaa').prop('checked');
+        //state.getCurrentMission().generateAAAAtBridges = $('#edit-mission-gen-bridge-aaa').prop('checked');
         state.getCurrentMission().includeStalingradCity = $('#edit-mission-gen-include-stalingrad').prop('checked');
 
         rest.updateMission(state.getCurrentMission(), function(data) {
@@ -323,7 +323,7 @@ var missionbuilder = new function() {
             "date": $('#create-mission-date').val(),
             "time": $('#create-mission-time').val(),
             "generateAAAAtAirfields": $('#create-mission-gen-airfield-aaa').prop('checked'),
-            "generateAAAAtBridges": $('#create-mission-gen-bridge-aaa').prop('checked'),
+            //"generateAAAAtBridges": $('#create-mission-gen-bridge-aaa').prop('checked'),
             "includeStalingradCity": $('#create-mission-include-stalingrad').prop('checked')
         }
         rest.createMission(mission, handleMissionCreateResponse);

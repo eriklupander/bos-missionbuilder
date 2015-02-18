@@ -24,7 +24,7 @@ import java.util.Properties;
 
 //@EnableCaching
 
-@EnableScheduling
+//@EnableScheduling
 @EnableAutoConfiguration(exclude = { org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration.class})
 //@EnableTransactionManagement
 //@EnableWebMvc

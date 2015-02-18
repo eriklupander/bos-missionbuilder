@@ -37,7 +37,9 @@ public class MissionWriter {
                 .collect(Collectors.toList()));
 
 
-        List<GameEntity> sortedEntities = entities.stream().sorted((GameEntity ge1, GameEntity ge2) -> ge1.getId().compareTo(ge2.getId())).collect(Collectors.toList());
+        List<GameEntity> sortedEntities = entities.stream()
+                .sorted((GameEntity ge1, GameEntity ge2) -> ge1.getId().compareTo(ge2.getId()))
+                .collect(Collectors.toList());
 
         StringBuilder buf = new StringBuilder();
         buf.append("# Mission File Version = 1.0;\r\n");
@@ -49,8 +51,8 @@ public class MissionWriter {
         buf.append("\r\n");
         gm.getAirfields().stream().forEach(e -> buf.append(e.getData()).append("\r\n"));
         gm.getTowns().stream().forEach(e -> buf.append(e.getData()).append("\r\n"));
-      //  gm.getBridges().stream().forEach(e -> buf.append(e.getData()).append("\r\n"));
-      //  gm.getRailwayStations().stream().forEach(e -> buf.append(e.getData()).append("\r\n"));
+        gm.getBridges().stream().forEach(e -> buf.append(e.getData()).append("\r\n"));
+        gm.getRailwayStations().stream().forEach(e -> buf.append(e.getData()).append("\r\n"));
         buf.append("# end of file");
         return buf.toString();
     }

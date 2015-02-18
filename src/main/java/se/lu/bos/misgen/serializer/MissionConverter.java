@@ -36,7 +36,7 @@ public class MissionConverter {
     private Map<Long, ObjectGroup> groupMap = new HashMap<>();
 
     private Map<Integer, String> localization = new HashMap<>();
-    private List<ClientAirfield> clientAirfields;
+    private List<ClientAirfield> clientAirfields = new ArrayList<>();
     private Integer lcId = 0;
 
     @Autowired
@@ -46,17 +46,23 @@ public class MissionConverter {
     ClientAirfieldParser clientAirfieldParser;
 
 
-    public GeneratedMission convert(ClientMission cm) throws IOException {
+    public synchronized GeneratedMission convert(ClientMission cm) throws IOException {
+
+        groupMap.clear();
+        localization.clear();
+        clientAirfields.clear();
+        lcId = 0;
 
         List<UnitGroup> playerGroups = cm.getSides().entrySet().stream().flatMap(e -> e.getValue().getUnitGroups().stream()).filter(ug -> ug.getAiLevel() == 0).collect(Collectors.toList());
         if(playerGroups.size() != 1) {
             throw new RuntimeException("Can't generate mission, mission must have exactly ONE (1) group with Skill Level \"Player\". You have " + playerGroups.size() + " such Groups.");
         }
+        UnitGroup playerGroup =  playerGroups.get(0);
 
         clientAirfields = clientAirfieldParser.build();
 
         GeneratedMission gm = new GeneratedMission();
-        gm.setMissionOptions(buildMissionOptions(cm, playerGroups.get(0)));
+        gm.setMissionOptions(buildMissionOptions(cm, playerGroup));
 
 
 
@@ -64,7 +70,7 @@ public class MissionConverter {
         gm.getRailwayStations().addAll(staticGroupsFactory.getRailwayStationGroupEntities());
         gm.getAirfields().addAll(staticGroupsFactory.getAirFieldGroupEntities());
 
-        buildObjectGroups(cm, gm);
+        buildObjectGroups(cm, gm, playerGroup);
         buildStaticObjectGroups(cm, gm);
 
         if(cm.getGenerateAAAAtAirfields()) {
@@ -83,6 +89,8 @@ public class MissionConverter {
 
         // TODO determine mission bounds, until then don't load towns at all
         Float[] bounds = findBounds(gm);
+        log.info("Resolved X/Z mission bounds: " + bounds[0] + ", "+ bounds[1] + ", "+ bounds[2] + ", "+ bounds[3]);
+        log.info("Remember, BoS coordinate system has origin at bottom left");
         List<GroupEntity> townEntities = staticGroupsFactory.getReadTownGroupEntities(bounds[0], bounds[1], bounds[2], bounds[3]);
         gm.getTowns().addAll(townEntities);
 
@@ -230,7 +238,7 @@ public class MissionConverter {
         gm.getStaticObjects().addAll(blocks);
     }
 
-    private void buildObjectGroups(ClientMission cm, GeneratedMission gm) {
+    private void buildObjectGroups(ClientMission cm, GeneratedMission gm, UnitGroup playerGroup) {
         Side ussr = cm.getSides().get(101);
         Side germany = cm.getSides().get(201);
 
@@ -258,7 +266,9 @@ public class MissionConverter {
                         objectGroup = GroupFactory.buildPlaneGroup(ug.getAiLevel() == 0, ug.getSize(), PlaneType.valueOf(ug.getType()), ug.getY() != 0, ug.getX(), ug.getY(), ug.getZ(), ug.getyOri(), ug.getLoadout(), ug.getName(), FormationType.LINE);
                         groupMap.put(ug.getClientId(), objectGroup);
                     } catch (Exception e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        e.printStackTrace();
+                        log.error("Caught Exception building Plane Group: " + e.getMessage());
+                        throw new RuntimeException(e.getMessage());
                     }
 
                     return objectGroup;
@@ -283,7 +293,7 @@ public class MissionConverter {
              // Find the corresponding objectGroup
             ObjectGroup objectGroup = groupMap.get(ug.getClientId());
             if(ug.getWaypoints().size() > 0) {
-                generateWaypoints(ug, objectGroup, gm, cm);
+                generateWaypoints(ug, objectGroup, gm, playerGroup);
             } else {
                 // Do we need a mission begin translator if there are no waypoints at all?
             }
@@ -372,7 +382,7 @@ public class MissionConverter {
         gm.getTranslatorIcons().addAll(groundUnitIcons);
     }
 
-    private void generateWaypoints(UnitGroup ug, ObjectGroup og, GeneratedMission gm, ClientMission cm) {
+    private void generateWaypoints(UnitGroup ug, ObjectGroup og, GeneratedMission gm, UnitGroup playerGroup) {
         List<WayPoint> generatedWaypoints = new ArrayList<>();
         for (int a = 0; a < ug.getWaypoints().size(); a++) {
             se.lu.bos.misgen.webmodel.WayPoint wp = ug.getWaypoints().get(a);
@@ -497,8 +507,8 @@ public class MissionConverter {
         int a = 0;
         Iterator<WayPoint> wpIter = generatedWaypoints.iterator();
         while(wpIter.hasNext()) {
-        //for (int a = 0; a < generatedWaypoints.size() - 1; a++) {
-            WayPoint wayPoint = wpIter.next(); //generatedWaypoints.get(a);
+
+            WayPoint wayPoint = wpIter.next();
 
             // If the waypoint does NOT have a command associated at this waypoint, just add the next waypoint if applicable.
             if(wayPoint.getTargets().size() == 0 && a+1 < generatedWaypoints.size()) {
@@ -519,7 +529,7 @@ public class MissionConverter {
 
 
                         Timer attackCompleteTimer = new Timer(lastWaypoint.getXPos(), lastWaypoint.getYPos(), lastWaypoint.getZPos());
-                        attackCompleteTimer.setTime(600);  // 10 minutes, for now.
+                        attackCompleteTimer.setTime(1200);  // 20 minutes, for now.
                         attackCompleteTimer.getTargets().add(generatedWaypoints.get(a+1).getId().intValue());
 
                         String text = ug.getName() + " (" + ug.getType() + ") attack time period expired, resuming route";
@@ -539,8 +549,8 @@ public class MissionConverter {
                 }
             }
 
-            // Test, add subtitle for planes
-            if(ug.getGroupType().equals("AIR_GROUP")) {
+            // Test, add subtitle for planes of same coalition
+            if(ug.getGroupType().equals("AIR_GROUP") && ug.getCountryCode().equals(playerGroup.getCountryCode())) {
                 String text = ug.getName() + " (" + ug.getType() + ") has reached waypoint " + (a+1);
                 lcId++;
                 TranslatorSubtitle subtitle = new TranslatorSubtitle(wayPoint.getXPos(), wayPoint.getYPos(), wayPoint.getZPos(), lcId);

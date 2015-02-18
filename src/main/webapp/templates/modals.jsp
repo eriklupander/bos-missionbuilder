@@ -40,14 +40,16 @@
                 <div class="form-group">
                     <label>Generate AAA at airfields</label>
                     <input id="create-mission-gen-airfield-aaa" class="checkbox" type="checkbox" value="true" checked>  <br/>
+                   <!--
                     <label>Generate AAA at bridges</label>
                     <input id="create-mission-gen-bridge-aaa" class="checkbox" type="checkbox" value="false">   <br/>
+                    -->
                     <label>Include Stalingrad City buildings</label>
                     <input id="create-mission-include-stalingrad" class="checkbox" type="checkbox" value="true" checked>
                 </div>
                 <div class="form-group">
                     <label>Mission briefing</label>
-                    <textarea id="create-mission-desc" rows="10" class="form-control"></textarea>
+                    <textarea id="create-mission-desc" rows="8" class="form-control"></textarea>
                 </div>
                 <div class="form-group text-center">
                     <button type="button" class="btn btn-success" data-dismiss="modal" onclick="missionbuilder.createMission();">Create</button>

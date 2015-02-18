@@ -242,8 +242,10 @@
     <div class="form-group">
         <label>Generate AAA at airfields</label>
         <input id="edit-mission-gen-airfield-aaa" class="checkbox" type="checkbox" value="true">  <br/>
+      <!--
         <label>Generate AAA at bridges</label>
         <input id="edit-mission-gen-bridge-aaa" class="checkbox" type="checkbox" value="true"> <br/>
+        -->
         <label>Include Stalingrad buildings</label>
         <input id="edit-mission-gen-include-stalingrad" class="checkbox" type="checkbox" value="true">
     </div>
