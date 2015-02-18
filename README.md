@@ -63,9 +63,9 @@ Installation:
 For those of you that have tried the Bosparser application, SMB installs in a more or less identical way. Java 8 is required. Install from Oracle. If you think you have Java installed, open a command shell and type 'java -version' without ' to see Java runtime version.
 1. Download the install zip from Dropbox:
 2. Unzip somewhere on your hard drive
-3. Open the configuration/application.properties file. Change the property bos.data.directory to point at your BoS installations /data folder. This property is used to load files from /Template as well as saving your missions directly into the /data/Missions/webmissions folder
+3. Open the config/application.properties file. Change the property bos.data.directory to point at your BoS installations /data folder. This property is used to load files from /Template as well as saving your missions directly into the /data/Missions/webmissions folder
 4. Start the application by executing bos-smb.bat file. Java may give you an alert about Network access, I think you can ignore it but otherwise click yes.
-5. Open your Web Browser and type "localhost". The SMB application should load, displaying the BoS map. Note: If you are using bosparser (or any other web server software using port 80) you will need to modify the http.port setting in configuration/application.properties to some other port number and then type localhost:[portnumber] instead in your browser.
+5. Open your Web Browser and type "localhost". The SMB application should load, displaying the BoS map. Note: If you are using bosparser (or any other web server software using port 80) you will need to modify the http.port setting in config/application.properties to some other port number and then type localhost:[portnumber] instead in your browser.
 
 
 Known issues:
