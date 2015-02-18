@@ -42,6 +42,7 @@ Main features:
 * Option to automatically generate some AAA assets on airfields having an adjacent LAND command on them.
 * Briefing map will currently show waypoint path of own flight and enemy ground targets. Will add more fine-granular control of briefing map icons later.
 * Exports .Mission and .eng files to %INSTALL_DIR%/data/Missions/webmissions folder
+
 * Note: Due to some limitation in BoS, one MUST start BoS in Offline mode (just like Chir Front missions). This means unlocks cannot be used. Regrettably, it also seems as AI planes cannot be equipped with unlocks.
 * Note: There's no absolute guarantee generated missions will work. If the BoS GUI just returns you directly to the Missions list after starting to show the Loading splash screen, something is invalid in the .Mission file. Also, if you for some reason edit the generated .eng file manually, it must be saved in UTF-16 Lower Endian encoding or the mission won't load.
 
@@ -56,10 +57,10 @@ Disclaimer: I am not in any way affiliated with 1C or 777 and I do NOT have beta
 Requirements:
 Java 8 Runtime Environment installed. Earlier versions of Java are NOT supported since SMB utilizes a lot of the new API's introduced in Java 8.
 SMB requires a copy of BoS to be installed on the users hard drive as it utilizes some of the files found under the /Template directory.
-SMB web GUI is _only_ tested using recent versions of Google Chrome. No other browsers are currently supported, though at least Firefox should work moderately well.
+SMB web GUI is _only_ tested using recent versions of Google Chrome. No other browsers are currently supported.
 
 Installation:
-For those of you that have tried the Bosparser application, SMB installs in a more or less identical way. Java 8 is also required. Install from Oracle. If you think you have Java installed, open a command shell and type 'java -version' without ' to see Java runtime version.
+For those of you that have tried the Bosparser application, SMB installs in a more or less identical way. Java 8 is required. Install from Oracle. If you think you have Java installed, open a command shell and type 'java -version' without ' to see Java runtime version.
 1. Download the install zip from Dropbox:
 2. Unzip somewhere on your hard drive
 3. Open the configuration/application.properties file. Change the property bos.data.directory to point at your BoS installations /data folder. This property is used to load files from /Template as well as saving your missions directly into the /data/Missions/webmissions folder
@@ -80,7 +81,7 @@ Known issues:
 -- Line formations gets skewed if initial group heading is not 0, 90, 180, 270. (Working on that)
 
 
-More stuff, not sure if its bugs in BoS or in my missions.
+More stuff, not sure if it's bugs in BoS or in my missions.
 -- Ground unit engagement AI seems a bit weird. Tanks never turn their turrets and as far as I have seen, they don't turn to engage enemies even when just a few degrees to either side. If directly in front of each other, tanks seem to fire on enemy tanks.
 -- However, I have seen a USSR heavy machine gun successfully engaging Pz III tanks driving by, turning with them and firing until the tank blows up (mostly after hitting the PZ III rear.
 
