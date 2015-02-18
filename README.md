@@ -85,3 +85,19 @@ More stuff, not sure if it's bugs in BoS or in my missions.
 
 I will continue adding features when I have the time, but I would be very happy for any assistence offered by the community. Everything from feedback, payloadIds, coding help (GUI is HTML/javascript/jQuery, Backend is Java 8 / Spring) etc.
 
+<b>Some more screenshots </b>
+
+Create Ground Group dialog<br/> <br/>
+<img src="images/screenshot2.jpg">
+<br/>
+<br/>
+Waypoint edit dialog<br/>
+<img src="images/screenshot3.jpg">
+<br/>
+<br/>
+In-game briefing with text and map markers<br/>
+<img src="images/screenshot4.jpg">
+<br/>
+<br/>
+In-game flying, AI group of FW-190A3 attacking GAZ-M column. Note own tanks in foreground and more enemy ground units in the background.
+<img src="images/screenshot5.jpg">
