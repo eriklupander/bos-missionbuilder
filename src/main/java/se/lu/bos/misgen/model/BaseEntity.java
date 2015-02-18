@@ -1,9 +1,5 @@
 package se.lu.bos.misgen.model;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-
 /**
  * Created with IntelliJ IDEA.
  * User: Erik
@@ -11,13 +7,11 @@ import javax.persistence.MappedSuperclass;
  * Time: 19:41
  * To change this template use File | Settings | File Templates.
  */
-@MappedSuperclass
+
 public abstract class BaseEntity {
 
     private Long id;
 
-    @Id
-    @GeneratedValue
     public Long getId() {
         return id;
     }

@@ -1,1 +1,1 @@
-java -jar bos-missiongenerator-1.0-SNAPSHOT.jar
+java -jar bos-missiongenerator-1.0-SNAPSHOT.war

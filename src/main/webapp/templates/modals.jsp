@@ -119,7 +119,7 @@
                 </div>
                 <div class="form-group">
                     <label>Starting altitude</label>     <br/>
-                    <input id="create-unit-group-altitude" type="text" class="slider" style="width:570px;" value=""
+                    <input id="create-unit-group-altitude" type="text" class="slider" style="width:570px;" value="1500"
                            data-slider-min="0" data-slider-max="10000" data-slider-step="10" data-slider-value="1500"
                            data-slider-orientation="horizontal" data-slider-selection="after" data-slider-tooltip="hide">
                     <br/>
@@ -168,9 +168,11 @@
 
                 <div class="form-group">
                     <label>Loadout</label>
+                    <div>Loadout can be changed after creating the unit group</div>
+                    <!--
                     <select id="create-unit-group-loadout" class="form-control">
-                        <option value="0">Default</option>
                     </select>
+                    -->
                 </div>
 
                 <div class="form-group">

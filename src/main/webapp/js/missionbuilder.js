@@ -69,7 +69,7 @@ var missionbuilder = new function() {
             //window.prompt("Copy to clipboard: Ctrl+C, Enter", data);
             alert("Mission successfully exported to " + data);
         }, function(jqXHR, textStatus, errorThrown) {
-            alert("Error saving mission to disk (" + textStatus + "): " + errorThrown);
+            alert("Error saving mission to disk: " + jqXHR.responseText);
         });
     }
 
@@ -295,7 +295,7 @@ var missionbuilder = new function() {
             size : $('#create-unit-group-size').val(),
             description : $('#create-unit-group-desc').val(),
             aiLevel : $('#create-unit-group-skill').val(),
-            loadout : $('#create-unit-group-loadout').val(),
+            loadout : 0, //$('#create-unit-group-loadout').val(),
             countryId : countryId,
             yOri : 90,
             groupType : "AIR_GROUP",

@@ -554,6 +554,7 @@ public class MissionConverter {
                 String text = ug.getName() + " (" + ug.getType() + ") has reached waypoint " + (a+1);
                 lcId++;
                 TranslatorSubtitle subtitle = new TranslatorSubtitle(wayPoint.getXPos(), wayPoint.getYPos(), wayPoint.getZPos(), lcId);
+                subtitle.setDuration(10);
                 localization.put(lcId, text);
                 wayPoint.getTargets().add(subtitle.getId().intValue());
                 gm.getTranslatorSubtitles().add(subtitle);

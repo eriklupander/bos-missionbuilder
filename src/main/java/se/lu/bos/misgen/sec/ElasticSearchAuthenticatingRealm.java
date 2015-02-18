@@ -1,12 +1,10 @@
 package se.lu.bos.misgen.sec;
 
-import org.springframework.stereotype.Component;
-
 /**
  * Realm for storing auth data in an ElasticSearch DB
  */
 
-@Component
+//@Component
 public class ElasticSearchAuthenticatingRealm { // extends AuthenticatingRealm  {
 
 //    private static final Logger log = LoggerFactory.getLogger(ElasticSearchAuthenticatingRealm.class);
