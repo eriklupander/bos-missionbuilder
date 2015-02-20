@@ -34,7 +34,7 @@ public class CommandFormation extends GameEntity {
 
     public CommandFormation(Float xPos, Float yPos, Float zPos, Integer formationType, Integer formationDensity) {
         setId(GlobalId.nextLong());
-        setName("command Cover");
+        setName("Command Formation");
         setXPos(xPos);
         setYPos(yPos);
         setZPos(zPos);
@@ -60,7 +60,7 @@ public class CommandFormation extends GameEntity {
 
     @Override
     public String toString() {
-        return  "CommandFormation\r\n{\r\n" +
+        return  "MCU_CMD_Formation\r\n{\r\n" +
                 "  Index = " + getId() + ";\r\n" +
                 "  Name = \"" + Name + "\";\r\n" +
                 "  Desc = \"" + Desc + "\";\r\n" +

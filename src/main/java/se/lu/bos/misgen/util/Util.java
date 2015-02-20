@@ -69,31 +69,66 @@ public class Util {
      * @param yOri
      * @return
      */
-    public static Float[] getOffsetFormationLine(int index, Float x, Float z, Float yOri, Integer spacingMeters) {
+    public static Float[] getOffsetFormationLine(int index, Float x, Float y, Float z, Float yOri, Integer spacingMeters) {
 //        Float[] pos = new Float[2];
 //
 //        pos[0] = new Double(x - ((spacingMeters*index) * Math.sin(Math.toRadians(yOri)))).floatValue();
 //        pos[1] = new Double(z + ((spacingMeters*index) * Math.cos(Math.toRadians(yOri)))).floatValue();
 //        return pos;
 
-        if(index == 0) return new Float[]{x,z};
+        if(index == 0) return new Float[]{x,y,z};
         Line node = new Line();
         node.setRotate(yOri+90);
-        Point2D point2D = node.sceneToLocal(0, spacingMeters);
-        return new Float[]{x + (float) point2D.getY(), z + (float) point2D.getX()};
+        Point2D point2D = node.sceneToLocal(0, spacingMeters*index);
+        return new Float[]{x + (float) point2D.getY(), y, z + (float) point2D.getX()};
     }
 
-    public static Float[] getOffsetFormationColumn(int index, Float x, Float z, Float yOri, Integer spacingMeters) {
+    public static Float[] getOffsetFormationColumn(int index, Float x, Float y, Float z, Float yOri, Integer spacingMeters) {
 //        Float[] pos = new Float[2];
 //
 //        pos[0] = new Double(x - ((spacingMeters*index) * Math.cos(Math.toRadians(yOri)))).floatValue();
 //        pos[1] = new Double(z - ((spacingMeters*index) * Math.sin(Math.toRadians(yOri)))).floatValue();
 //        return pos;
-        if(index == 0) return new Float[]{x,z};
+        if(index == 0) return new Float[]{x,y,z};
         Line node = new Line();
         node.setRotate(yOri+180);
-        Point2D point2D = node.sceneToLocal(0, spacingMeters);
-        return new Float[]{x + (float) point2D.getY(), z + (float) point2D.getX()};
+        Point2D point2D = node.sceneToLocal(0, spacingMeters*index);
+        return new Float[]{x + (float) point2D.getY(), y, z + (float) point2D.getX()};
+    }
+
+    /**
+     * Builds a formation like this (if 0 degrees yOri)
+     *
+     *                  0
+ *                  1       2
+*                3             4
+*             5                    6
+     *    ..                            ..
+     *
+     * @param index
+     * @param x
+     * @param y
+     * @param z
+     * @param yOri
+     * @param spacingMeters
+     * @return
+     */
+    public static Float[] getOffsetWedge(int index, Float x, Float y, Float z, Float yOri, Integer spacingMeters) {
+        if(index == 0) return new Float[]{x, y, z};
+        Line node = new Line();
+        Point2D point2D = null;
+        boolean left = index % 2 != 0;
+        float fraction = ((float)index)/2f;
+        int offsetSteps = new Double(Math.ceil(fraction)).intValue();
+
+        if(left) {
+            node.setRotate(yOri+225);
+        } else {
+            node.setRotate(yOri+135);
+        }
+        point2D = node.sceneToLocal(0, spacingMeters*offsetSteps);
+        return new Float[]{x + (float) point2D.getY(), y + (10*offsetSteps) , z + (float) point2D.getX()};
+
     }
 
     public static Integer getIconIdForVehicleType(VehicleType vehicleType) {
@@ -109,6 +144,8 @@ public class Util {
                 return IconType.TRUCK_RED.getCode();
             case FLAK37:
             case FLAK38:
+            case FLAK37_USSR:
+            case FLAK38_USSR:
             case GAZ_AA_M4_AA:
             case MG34_AA:
                 return IconType.AAA_RED.getCode();
@@ -116,13 +153,5 @@ public class Util {
             default:
                 return IconType.FORTIFICATION_RED.getCode();
         }
-    }
-
-    public static Float[] getOffsetWedgeFormation(int index, float x, float y, float z, float heading, int spacingMeters) {
-        if(index == 0) return new Float[]{x,y,z};
-        Line node = new Line();
-        node.setRotate(heading+225);
-        Point2D point2D = node.sceneToLocal(0, spacingMeters);
-        return new Float[]{x + (float) point2D.getY(), y , z + (float) point2D.getX()};
     }
 }

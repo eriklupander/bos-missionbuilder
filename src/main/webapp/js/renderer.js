@@ -172,6 +172,14 @@ var renderer = new function() {
 
         context.save();
         var unitGroups = state.getCurrentMission().sides[state.getCurrentCountry()].unitGroups;
+        renderSide(state.getCurrentCountry(), viewport, context, 1.0);
+        if(state.getFilter('both_sides')) {
+            renderSide(state.getOtherCountry(), viewport, context, 0.3);
+        }
+    }
+
+    var renderSide = function(countryId, viewport, context, globalAlpha) {
+        var unitGroups = state.getCurrentMission().sides[countryId].unitGroups;
         if(unitGroups.length > 0) {
             for(var a = 0; a < unitGroups.length; a++) {
                 var ug = unitGroups[a];
@@ -179,28 +187,29 @@ var renderer = new function() {
                 // Primitive occlusion culling
                 //if(coord.x < 0 || coord.y < 0 || coord.x > maprenderer.mapWidth || coord.y >  maprenderer.mapHeight) continue;
 
-                drawUnitGroup(coord.x, coord.y, ug, context);
+                drawUnitGroup(coord.x, coord.y, ug, context, globalAlpha);
 
-                for(var b = 0; b < ug.waypoints.length; b++) {
-                    var waypoint = ug.waypoints[b];
-                    var wpCoord = coordTranslator.worldToImageInViewport(waypoint.x, waypoint.z, viewport, maprenderer.mapWidth, maprenderer.mapHeight);
-                    var lastCoord = {};
-                    if(b > 0) {
-                        lastCoord = coordTranslator.worldToImageInViewport(ug.waypoints[b-1].x, ug.waypoints[b-1].z, viewport, maprenderer.mapWidth, maprenderer.mapHeight);
+                if(countryId == state.getCurrentCountry()) {
+                    for(var b = 0; b < ug.waypoints.length; b++) {
+                        var waypoint = ug.waypoints[b];
+                        var wpCoord = coordTranslator.worldToImageInViewport(waypoint.x, waypoint.z, viewport, maprenderer.mapWidth, maprenderer.mapHeight);
+                        var lastCoord = {};
+                        if(b > 0) {
+                            lastCoord = coordTranslator.worldToImageInViewport(ug.waypoints[b-1].x, ug.waypoints[b-1].z, viewport, maprenderer.mapWidth, maprenderer.mapHeight);
+                        }
+                        var isSelectedWaypoint = waypoint == state.getSelectedWaypoint();
+                        drawWaypoint(wpCoord.x, wpCoord.y, lastCoord.x, lastCoord.y, coord.x, coord.y, b, isSelectedWaypoint, ug.clientId, waypoint, context);
                     }
-                    var isSelectedWaypoint = waypoint == state.getSelectedWaypoint();
-                    drawWaypoint(wpCoord.x, wpCoord.y, lastCoord.x, lastCoord.y, coord.x, coord.y, b, isSelectedWaypoint, ug.clientId, waypoint, context);
                 }
-
             }
         }
 
-        var staticObjectGroups = state.getCurrentMission().sides[state.getCurrentCountry()].staticObjectGroups;
+        var staticObjectGroups = state.getCurrentMission().sides[countryId].staticObjectGroups;
         if(staticObjectGroups.length > 0) {
             for(var a = 0; a < staticObjectGroups.length; a++) {
                 var sog = staticObjectGroups[a];
                 var coord = coordTranslator.worldToImageInViewport(sog.x, sog.z, viewport, maprenderer.mapWidth, maprenderer.mapHeight);
-                drawStaticObjectGroup(coord.x, coord.y, sog, context);
+                drawStaticObjectGroup(coord.x, coord.y, sog, context, globalAlpha);
             }
         }
         context.restore();
@@ -258,13 +267,13 @@ var renderer = new function() {
 
     }
 
-    var drawStaticObjectGroup  = function(x, y, staticObjectGroup, context) {
+    var drawStaticObjectGroup  = function(x, y, staticObjectGroup, context, globalAlpha) {
         context.beginPath();
         context.arc(x, y, 20, 0, 2 * Math.PI, false);
         context.fillStyle = 'purple';
-        context.globalAlpha = 0.8;
+        context.globalAlpha = globalAlpha-0.2;
         context.fill();
-        context.globalAlpha = 1.0;
+        context.globalAlpha = globalAlpha;
         if(util.notNull(state.getSelectedStaticObjectGroup()) && staticObjectGroup.clientId == state.getSelectedStaticObjectGroup().clientId) {
             context.lineWidth = 6;
         } else {
@@ -288,7 +297,7 @@ var renderer = new function() {
 
     var TO_RADIANS = Math.PI/180;
 
-    var drawUnitGroup = function(x, y, unitGroup, context) {
+    var drawUnitGroup = function(x, y, unitGroup, context, globalAlpha) {
 
         var type = unitGroup.groupType;
 
@@ -297,19 +306,19 @@ var renderer = new function() {
         context.fillStyle = type == 'AIR_GROUP' ? 'blue' : 'green';
 
         if(type == 'AIR_GROUP') {
-            context.globalAlpha = 0.2;
+            context.globalAlpha = globalAlpha == 1.0 ? 0.2 : 0.1;
         } else {
-            context.globalAlpha = 0.7;
+            context.globalAlpha = globalAlpha == 1.0 ? 0.7 : 0.3;
         }
         context.fill();
-        context.globalAlpha = 1.0;
+        context.globalAlpha = globalAlpha;
         if(util.notNull(state.getSelectedUnitGroup()) && unitGroup.clientId == state.getSelectedUnitGroup().clientId) {
             context.lineWidth = 5;
         } else {
             context.lineWidth = 3;
         }
 
-        context.strokeStyle = '#000055';
+        context.strokeStyle = globalAlpha == 1.0 ? '#000055' : '#FF0000';
         context.stroke();
 
         context.font = '12pt Open Sans';

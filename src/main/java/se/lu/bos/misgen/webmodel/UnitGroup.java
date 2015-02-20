@@ -26,7 +26,7 @@ public class UnitGroup extends MapObject {
     private List<WayPoint> waypoints = new ArrayList<WayPoint>();
     private String serverId;
 
-    private FormationType formation = FormationType.LINE;
+    private FormationType formation = FormationType.NONE;
 
     public UnitGroup() {
         super.setObjectType(MapObjectType.UNIT_GROUP);

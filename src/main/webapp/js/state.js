@@ -59,7 +59,8 @@ var state = new function() {
         'ground_group' : true,
         'static_object' : true,
         'trigger' : true,
-        'airfields' : false
+        'airfields' : false,
+        'both_sides' : false
     }
 
     this.setSelectionBox = function(topX, topY, bottomX, bottomY) {
@@ -214,6 +215,10 @@ var state = new function() {
 
     this.getCurrentCountry = function() {
         return currentCountry;
+    }
+
+    this.getOtherCountry = function() {
+        return currentCountry == 201 ? 101: 201;
     }
 
     this.setFilter = function(filter, enabled) {

@@ -22,7 +22,7 @@ public class Timer extends GameEntity {
         setYPos(y);
         setZPos(z);
         setRandom(100);
-        setTime(0);
+        setTime(5);
     }
 
     public Integer getTime() {

@@ -102,13 +102,16 @@ public class ObjectGroup implements WorldObject {
             GameEntity o = objects.get(a);
             Float[] newPos;
             if(formationType == FormationType.ON_ROAD_COLUMN || formationType == FormationType.COLUMN) {
-                newPos = Util.getOffsetFormationColumn(a, x, z, yOri, 50);
+                newPos = Util.getOffsetFormationColumn(a, x, y, z, yOri, 50);
+            } else if(formationType == FormationType.VEE) {       // Should be initial start position for all flights.
+                newPos = Util.getOffsetWedge(a, x, y, z, yOri, 125);
             } else {
-                newPos = Util.getOffsetFormationLine(a, x, z, yOri, 50);
+                newPos = Util.getOffsetFormationLine(a, x, y, z, yOri, 50);
             }
 
             o.setXPos(newPos[0]);
-            o.setZPos(newPos[1]);
+            o.setYPos(newPos[1]);
+            o.setZPos(newPos[2]);
            // o.setXOri(getXOri());
             o.setYOri(yOri);
            // o.setZOri(getZOri());

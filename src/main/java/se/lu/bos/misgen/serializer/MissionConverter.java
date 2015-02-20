@@ -176,7 +176,7 @@ public class MissionConverter {
                 so.setName("Block");
 
                 // Apply positioning offset within group. Use the yOri to always have static object form a line.
-                Float[] newPositions = Util.getOffsetFormationLine(a, sog.getX(), sog.getZ(), sog.getyOri(), 50);
+                Float[] newPositions = Util.getOffsetFormationLine(a, sog.getX(), sog.getY(), sog.getZ(), sog.getyOri(), 50);
                 so.setXPos(newPositions[0]);
                 so.setZPos(newPositions[1]);
                 sogs.add(so);
@@ -213,7 +213,7 @@ public class MissionConverter {
                     ObjectGroup objectGroup = null;
                     try {
 
-                        objectGroup = GroupFactory.buildPlaneGroup(ug.getAiLevel() == 0, ug.getSize(), PlaneType.valueOf(ug.getType()), ug.getY() != 0, ug.getX(), ug.getY(), ug.getZ(), ug.getyOri(), ug.getLoadout(), ug.getName(), FormationType.LINE);
+                        objectGroup = GroupFactory.buildPlaneGroup(ug.getAiLevel() == 0, ug.getSize(), PlaneType.valueOf(ug.getType()), ug.getY() != 0, ug.getX(), ug.getY(), ug.getZ(), ug.getyOri(), ug.getLoadout(), ug.getName(), FormationType.VEE);
                         groupMap.put(ug.getClientId(), objectGroup);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -230,6 +230,9 @@ public class MissionConverter {
         List<ObjectGroup> vehicleGroups = all.filter(ug -> ug.getGroupType().equals("GROUND_GROUP"))
                 .map(ug -> {
                     FormationType formationType = ug.getFormation();
+                    if(formationType == FormationType.NONE) {
+                        formationType = FormationType.LINE;
+                    }
                     ObjectGroup objectGroup = GroupFactory.buildVehicleGroup(ug.getSize(), VehicleType.valueOf(ug.getType()), ug.getX(), ug.getY(), ug.getZ(), ug.getyOri(), formationType);
                     groupMap.put(ug.getClientId(), objectGroup);
                     return objectGroup;
@@ -344,11 +347,12 @@ public class MissionConverter {
                 waypointTimer.getTargets().add(eWp.getId().intValue());
                 TranslatorMissionBegin missionBegin = new TranslatorMissionBegin(wp.getX(), wp.getY(), wp.getZ());
                 missionBegin.getTargets().add(waypointTimer.getId().intValue());
+
                 gm.getTimers().add(waypointTimer);
                 gm.getTranslatorMissionBegins().add(missionBegin);
 
                 // For ground groups, set initial formation using a timer or something
-                if(ug.getGroupType().equals("GROUP_GROUP") && ug.getFormation().equals("ROAD_COLUMN")) {
+                if(ug.getGroupType().equals("GROUND_GROUP") && ug.getFormation().equals(FormationType.ON_ROAD_COLUMN)) {
                     CommandFormation cmdFormation = new CommandFormation(wp.getX(), wp.getY(), wp.getZ(), FormationType.ON_ROAD_COLUMN.getFormationCode(), 1);
                     cmdFormation.getObjects().add(og.getLeaderId());
                     Timer formationTimer = new Timer(wp.getX(), wp.getY(), wp.getZ());
@@ -356,18 +360,22 @@ public class MissionConverter {
                     formationTimer.setTime(10); // Wait 10 seconds
                     gm.getTimers().add(formationTimer);
                     gm.getFormationCommands().add(cmdFormation);
+                    missionBegin.getTargets().add(formationTimer.getId().intValue());
                 }
 
                 // For air groups starting in air, issue a "loose wedge" FormationCommand after 10 seconds
                 if(ug.getGroupType().equals("AIR_GROUP") && ug.getAiLevel() != 0 && ug.getY() > 299) {
-                    CommandFormation cmdFormation = new CommandFormation(wp.getX(), wp.getY(), wp.getZ(), ug.getFormation().getFormationCode(), 2);
+                    CommandFormation cmdFormation = new CommandFormation(wp.getX(), wp.getY(), wp.getZ(), FormationType.VEE.getFormationCode(), 2);
                     cmdFormation.getObjects().add(og.getLeaderId());
                     Timer formationTimer = new Timer(wp.getX(), wp.getY(), wp.getZ());
                     formationTimer.getTargets().add(cmdFormation.getId().intValue());
                     formationTimer.setTime(13); // Wait 13 seconds
                     gm.getTimers().add(formationTimer);
                     gm.getFormationCommands().add(cmdFormation);
+                    missionBegin.getTargets().add(formationTimer.getId().intValue());
                 }
+
+
             }
 
             // Now, check if there is an interesting command on the waypoint.
