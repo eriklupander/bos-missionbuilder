@@ -1,0 +1,16 @@
+-- 2015-02-20 --
+* Vehicle groups command to use follow roads formation nows works
+* Formation calculations for LINE, COLUMN and VEE now works
+* Air units always spawn in VEE formation with > 100 meters between each aircraft. Seems to reduce collisions a lot.
+* Air units try to form loose VEE formation 13 seconds after mission start (not 100% sure this actually works)
+* Fixed broken map filters for Air, Ground and static objects
+* Added map filter to show both sides at the same time
+* Fixed bug where Select Country menu option was not visible after creating a new mission
+* Vehicle formation select now only shows ground unit formations.
+* Briefing icons now always shows BLUE for friendly forces and RED for enemies
+* Fixed bug with wrong icons shown for various ground objects
+
+Known/new issues:
+* Aircraft groups in mission briefing uses Baloon icon. Havn't figured out the IconId for planes yet...
+* Waypoint select bug. New waypoints are not selectable until another unit has been selected and then deselected.
+* All other known ones, see initial post...
