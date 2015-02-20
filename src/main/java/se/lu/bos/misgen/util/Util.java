@@ -1,5 +1,7 @@
 package se.lu.bos.misgen.util;
 
+import javafx.geometry.Point2D;
+import javafx.scene.shape.Line;
 import se.lu.bos.misgen.model.IconType;
 import se.lu.bos.misgen.model.OnEvent;
 import se.lu.bos.misgen.model.VehicleType;
@@ -68,19 +70,30 @@ public class Util {
      * @return
      */
     public static Float[] getOffsetFormationLine(int index, Float x, Float z, Float yOri, Integer spacingMeters) {
-        Float[] pos = new Float[2];
+//        Float[] pos = new Float[2];
+//
+//        pos[0] = new Double(x - ((spacingMeters*index) * Math.sin(Math.toRadians(yOri)))).floatValue();
+//        pos[1] = new Double(z + ((spacingMeters*index) * Math.cos(Math.toRadians(yOri)))).floatValue();
+//        return pos;
 
-        pos[0] = new Double(x - ((spacingMeters*index) * Math.sin(Math.toRadians(yOri)))).floatValue();
-        pos[1] = new Double(z + ((spacingMeters*index) * Math.cos(Math.toRadians(yOri)))).floatValue();
-        return pos;
+        if(index == 0) return new Float[]{x,z};
+        Line node = new Line();
+        node.setRotate(yOri+90);
+        Point2D point2D = node.sceneToLocal(0, spacingMeters);
+        return new Float[]{x + (float) point2D.getY(), z + (float) point2D.getX()};
     }
 
     public static Float[] getOffsetFormationColumn(int index, Float x, Float z, Float yOri, Integer spacingMeters) {
-        Float[] pos = new Float[2];
-
-        pos[0] = new Double(x - ((spacingMeters*index) * Math.cos(Math.toRadians(yOri)))).floatValue();
-        pos[1] = new Double(z - ((spacingMeters*index) * Math.sin(Math.toRadians(yOri)))).floatValue();
-        return pos;
+//        Float[] pos = new Float[2];
+//
+//        pos[0] = new Double(x - ((spacingMeters*index) * Math.cos(Math.toRadians(yOri)))).floatValue();
+//        pos[1] = new Double(z - ((spacingMeters*index) * Math.sin(Math.toRadians(yOri)))).floatValue();
+//        return pos;
+        if(index == 0) return new Float[]{x,z};
+        Line node = new Line();
+        node.setRotate(yOri+180);
+        Point2D point2D = node.sceneToLocal(0, spacingMeters);
+        return new Float[]{x + (float) point2D.getY(), z + (float) point2D.getX()};
     }
 
     public static Integer getIconIdForVehicleType(VehicleType vehicleType) {
@@ -103,5 +116,13 @@ public class Util {
             default:
                 return IconType.FORTIFICATION_RED.getCode();
         }
+    }
+
+    public static Float[] getOffsetWedgeFormation(int index, float x, float y, float z, float heading, int spacingMeters) {
+        if(index == 0) return new Float[]{x,y,z};
+        Line node = new Line();
+        node.setRotate(heading+225);
+        Point2D point2D = node.sceneToLocal(0, spacingMeters);
+        return new Float[]{x + (float) point2D.getY(), y , z + (float) point2D.getX()};
     }
 }
