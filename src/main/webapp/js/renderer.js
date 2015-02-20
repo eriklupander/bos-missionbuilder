@@ -183,6 +183,9 @@ var renderer = new function() {
         if(unitGroups.length > 0) {
             for(var a = 0; a < unitGroups.length; a++) {
                 var ug = unitGroups[a];
+                if(!((ug.groupType == 'AIR_GROUP' && state.getFilter('plane_group')) || (ug.groupType == 'GROUND_GROUP' && state.getFilter('ground_group')))) {
+                    continue;
+                }
                 var coord = coordTranslator.worldToImageInViewport(ug.x, ug.z, viewport, maprenderer.mapWidth, maprenderer.mapHeight);
                 // Primitive occlusion culling
                 //if(coord.x < 0 || coord.y < 0 || coord.x > maprenderer.mapWidth || coord.y >  maprenderer.mapHeight) continue;
@@ -205,7 +208,7 @@ var renderer = new function() {
         }
 
         var staticObjectGroups = state.getCurrentMission().sides[countryId].staticObjectGroups;
-        if(staticObjectGroups.length > 0) {
+        if(staticObjectGroups.length > 0 && state.getFilter('static_object')) {
             for(var a = 0; a < staticObjectGroups.length; a++) {
                 var sog = staticObjectGroups[a];
                 var coord = coordTranslator.worldToImageInViewport(sog.x, sog.z, viewport, maprenderer.mapWidth, maprenderer.mapHeight);

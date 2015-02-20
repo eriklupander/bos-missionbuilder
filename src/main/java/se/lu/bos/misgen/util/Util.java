@@ -4,6 +4,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.shape.Line;
 import se.lu.bos.misgen.model.IconType;
 import se.lu.bos.misgen.model.OnEvent;
+import se.lu.bos.misgen.model.PlaneType;
 import se.lu.bos.misgen.model.VehicleType;
 
 import java.util.List;
@@ -131,27 +132,41 @@ public class Util {
 
     }
 
-    public static Integer getIconIdForVehicleType(VehicleType vehicleType) {
+    public static Integer getIconIdForVehicleType(VehicleType vehicleType, boolean friendly) {
         switch(vehicleType) {
             case BA10M:
             case BM13:
             case ML20:
-                return IconType.ARTILLERY_RED.getCode();
+            case ZIS3_GUN:
+                return friendly ? IconType.ARTILLERY_BLUE.getCode() : IconType.ARTILLERY_RED.getCode();
             case T34:
-                return IconType.TANK_GROUP_RED.getCode();
+            case STUG4:
+            case SDKFZ251:
+            case PZIII:
+                return friendly ? IconType.TANK_GROUP_BLUE.getCode() : IconType.TANK_GROUP_RED.getCode();
             case GAZ_M:
+            case FORD_G917:
+            case OPEL_BLITZ:
             case BA64:
-                return IconType.TRUCK_RED.getCode();
+                return friendly ?  IconType.TRUCK_BLUE.getCode() : IconType.TRUCK_RED.getCode();
             case FLAK37:
             case FLAK38:
             case FLAK37_USSR:
             case FLAK38_USSR:
             case GAZ_AA_M4_AA:
             case MG34_AA:
-                return IconType.AAA_RED.getCode();
+                return friendly ? IconType.AAA_BLUE.getCode() : IconType.AAA_RED.getCode();
 
             default:
-                return IconType.FORTIFICATION_RED.getCode();
+                return friendly ? IconType.FORTIFICATION_BLUE.getCode() :  IconType.FORTIFICATION_RED.getCode();
         }
+    }
+
+    public static Integer getIconIdForPlaneType(PlaneType planeType, boolean friendly) {
+        return friendly ? IconType.BALOON_BLUE.getCode() : IconType.BALOON_RED.getCode();
+    }
+
+    public static Integer getIconIdForStaticObject(String type, boolean friendly) {
+        return friendly ? IconType.FORTIFICATION_BLUE.getCode() :  IconType.FORTIFICATION_RED.getCode();
     }
 }

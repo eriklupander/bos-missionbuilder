@@ -4,22 +4,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import se.lu.bos.misgen.factory.GroupFactory;
+import se.lu.bos.misgen.factory.MissionFactory;
+import se.lu.bos.misgen.factory.VehicleFactory;
 import se.lu.bos.misgen.groups.ClientAirfieldParser;
-import se.lu.bos.misgen.groups.GroupEntity;
 import se.lu.bos.misgen.groups.StaticGroupsFactory;
 import se.lu.bos.misgen.helper.ObjectGroup;
 import se.lu.bos.misgen.model.*;
 import se.lu.bos.misgen.model.Timer;
 import se.lu.bos.misgen.model.WayPoint;
-import se.lu.bos.misgen.factory.GroupFactory;
-import se.lu.bos.misgen.factory.MissionFactory;
-import se.lu.bos.misgen.factory.VehicleFactory;
 import se.lu.bos.misgen.util.Util;
 import se.lu.bos.misgen.webmodel.*;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -260,7 +260,7 @@ public class MissionConverter {
 
 
 
-        addIconsForPlayerRoute(gm, ussr, germany);
+        addIcons(gm, ussr, germany);
     }
 
     private Stream<UnitGroup> rebuildStream(Side ussr, Side germany) {
@@ -271,55 +271,170 @@ public class MissionConverter {
         return Stream.concat(germany.getStaticObjectGroups().stream(), ussr.getStaticObjectGroups().stream());
     }
 
-    private void addIconsForPlayerRoute(GeneratedMission gm, Side ussr, Side germany) {
+    private void addIcons(GeneratedMission gm, Side ussr, Side germany) {
         Stream<UnitGroup> unitGroupStream = rebuildStream(ussr, germany);
-        List<TranslatorIcon> icons = unitGroupStream
-                .filter(ug -> ug.getAiLevel() == 0)
-                .flatMap(ug -> ug.getWaypoints().stream())
-                .map(wp -> {
-                    TranslatorIcon ti = new TranslatorIcon(wp.getX(), wp.getY(), wp.getZ());
+        List<TranslatorIcon> waypointIcons = new ArrayList<>();
+        unitGroupStream
+                .filter(ug -> ug.isBriefingIcon() && ug.isBriefingWaypointIcons())
+                .forEach(ug -> {
+                    List<TranslatorIcon> tmpList = new ArrayList<>();
+
+                    // Iterate over all waypoints, make an icon for each
+                    for(int a = 0; a < ug.getWaypoints().size(); a++) {
+                        se.lu.bos.misgen.webmodel.WayPoint wp = ug.getWaypoints().get(a);
+                        TranslatorIcon ti = new TranslatorIcon(wp.getX(), wp.getY(), wp.getZ());
+                        lcId++;
+                        ti.setLCName(lcId);
+                        localization.put(lcId, wp.getName());
+                        lcId++;
+                        ti.setLCDesc(lcId);
+                        localization.put(lcId, "Waypoint");
+
+                        tmpList.add(ti);
+                    }
+
+                    // Link up all icons to form a route
+                    for(int a = 0; a < tmpList.size(); a++) {
+                        if(a+1 < tmpList.size()) {
+                            TranslatorIcon icon = tmpList.get(a);
+                            icon.getTargets().add(tmpList.get(a+1).getId().intValue());
+                        }
+                    }
+
+                    // Finally, add a link between starting position and first waypoint
+                    TranslatorIcon ti = new TranslatorIcon(ug.getX(), ug.getY(), ug.getZ());
+                    ti.setIconId(IconType.BALOON_BLUE.getCode());
                     lcId++;
                     ti.setLCName(lcId);
-                    localization.put(lcId, wp.getName());
+                    localization.put(lcId, ug.getName());
                     lcId++;
                     ti.setLCDesc(lcId);
+                    ti.getTargets().add(tmpList.get(0).getId().intValue());
                     localization.put(lcId, "Waypoint");
+                    tmpList.add(0, ti);
+
+                    waypointIcons.addAll(tmpList);
+                });
+
+//                .flatMap(ug -> ug.getWaypoints().stream())
+//                .map(wp -> {
+//                    TranslatorIcon ti = new TranslatorIcon(wp.getX(), wp.getY(), wp.getZ());
+//                    lcId++;
+//                    ti.setLCName(lcId);
+//                    localization.put(lcId, wp.getName());
+//                    lcId++;
+//                    ti.setLCDesc(lcId);
+//                    localization.put(lcId, "Waypoint");
+//                    return ti;
+//                })
+//                .collect(Collectors.toList());
+
+//        List<TranslatorIcon> waypointIcons = unitGroupStream
+//                .filter(ug -> ug.isBriefingIcon() && ug.isBriefingWaypointIcons())
+//                .flatMap(ug -> ug.getWaypoints().stream())
+//                .map(wp -> {
+//                    TranslatorIcon ti = new TranslatorIcon(wp.getX(), wp.getY(), wp.getZ());
+//                    lcId++;
+//                    ti.setLCName(lcId);
+//                    localization.put(lcId, wp.getName());
+//                    lcId++;
+//                    ti.setLCDesc(lcId);
+//                    localization.put(lcId, "Waypoint");
+//                    return ti;
+//                })
+//                .collect(Collectors.toList());
+
+        unitGroupStream = rebuildStream(ussr, germany);
+        UnitGroup playerUnitGroup = unitGroupStream.filter(ug -> ug.getAiLevel() == 0).findFirst().get();
+        int countryId = playerUnitGroup.getCountryCode();
+        // We need a player starting position icon as well
+//        if(waypointIcons.size() > 0) {
+//
+//            TranslatorIcon ti = new TranslatorIcon(playerUnitGroup.getX(), playerUnitGroup.getY(), playerUnitGroup.getZ());
+//            ti.setIconId(IconType.BALOON_BLUE.getCode());
+//            lcId++;
+//            ti.setLCName(lcId);
+//            localization.put(lcId, playerUnitGroup.getName());
+//            lcId++;
+//            ti.setLCDesc(lcId);
+//            localization.put(lcId, "Waypoint");
+//            waypointIcons.add(0, ti);
+//        }
+
+        // Link icons to form route
+//        List<UnitGroup> ugs = rebuildStream(ussr, germany).collect(Collectors.toList());
+//
+//        IntStream.range(0, ugs.size())
+//        .filter(i -> ugs.get(i).isBriefingWaypointIcons())
+//        .forEach(i -> {
+//            UnitGroup ug = ugs.get(i);
+//            for(int a = 0; a < ugs.get(i).getWaypoints().size(); a++) {
+//                if(a+1 < waypointIcons.size()) {
+//                    TranslatorIcon icon = waypointIcons.get(a);
+//                    icon.getTargets().add(waypointIcons.get(a+1).getId().intValue());
+//                }
+//            }
+//        });
+//        for(int a = 0; a < waypointIcons.size(); a++) {
+//            if(a+1 < waypointIcons.size()) {
+//                TranslatorIcon icon = waypointIcons.get(a);
+//                icon.getTargets().add(waypointIcons.get(a+1).getId().intValue());
+//            }
+//        }
+
+        // Generate unit icons
+        unitGroupStream = rebuildStream(ussr, germany);
+        List<TranslatorIcon> groundUnitIcons = unitGroupStream
+                .filter(ug -> ug.isBriefingIcon() && ug.getGroupType().equals("GROUND_GROUP"))
+                .map(ug -> {
+                    TranslatorIcon ti = new TranslatorIcon(ug.getX(), ug.getY(), ug.getZ());
+                    ti.setIconId(Util.getIconIdForVehicleType(VehicleType.valueOf(ug.getType()), ug.getCountryCode().intValue() == countryId));
+                    lcId++;
+                    ti.setLCName(lcId);
+                    localization.put(lcId, ug.getName());
+                    lcId++;
+                    ti.setLCDesc(lcId);
+                    localization.put(lcId, ug.getType());
                     return ti;
                 })
                 .collect(Collectors.toList());
 
         unitGroupStream = rebuildStream(ussr, germany);
-        UnitGroup playerUnitGroup = unitGroupStream.filter(ug -> ug.getAiLevel() == 0).findFirst().get();
-
-        // We need a player starting position icon as well
-        if(icons.size() > 0) {
-
-            TranslatorIcon ti = new TranslatorIcon(playerUnitGroup.getX(), playerUnitGroup.getY(), playerUnitGroup.getZ());
-            ti.setIconId(IconType.BALOON_BLUE.getCode());
-            lcId++;
-            ti.setLCName(lcId);
-            localization.put(lcId, playerUnitGroup.getName());
-            lcId++;
-            ti.setLCDesc(lcId);
-            localization.put(lcId, "Waypoint");
-            icons.add(0, ti);
-        }
-
-        // Link icons to form route
-        for(int a = 0; a < icons.size(); a++) {
-            if(a+1 < icons.size()) {
-                TranslatorIcon icon = icons.get(a);
-                icon.getTargets().add(icons.get(a+1).getId().intValue());
-            }
-        }
-
-        // Test, generate icons for enemy ground forces
-        unitGroupStream = rebuildStream(ussr, germany);
-        List<TranslatorIcon> groundUnitIcons = unitGroupStream
-                .filter(ug -> ug.getCountryCode().intValue() != playerUnitGroup.getCountryCode().intValue() && ug.getGroupType().equals("GROUND_GROUP"))
+        List<TranslatorIcon> planeUnitIcons = unitGroupStream
+                .filter(ug -> ug.isBriefingIcon() && ug.getGroupType().equals("AIR_GROUP"))
                 .map(ug -> {
                     TranslatorIcon ti = new TranslatorIcon(ug.getX(), ug.getY(), ug.getZ());
-                    ti.setIconId(Util.getIconIdForVehicleType(VehicleType.valueOf(ug.getType())));
+                    ti.setIconId(Util.getIconIdForPlaneType(PlaneType.valueOf(ug.getType()), ug.getCountryCode().intValue() == countryId));
+                    lcId++;
+                    ti.setLCName(lcId);
+                    localization.put(lcId, ug.getName());
+                    lcId++;
+                    ti.setLCDesc(lcId);
+                    localization.put(lcId, ug.getType());
+                    return ti;
+                })
+                .collect(Collectors.toList());
+
+        List<TranslatorIcon> staticUssrGroupUnitIcons = ussr.getStaticObjectGroups().stream()
+                .filter(ug -> ug.isBriefingIcon())
+                .map(ug -> {
+                    TranslatorIcon ti = new TranslatorIcon(ug.getX(), ug.getY(), ug.getZ());
+                    ti.setIconId(Util.getIconIdForStaticObject(ug.getType(), 101 == countryId));
+                    lcId++;
+                    ti.setLCName(lcId);
+                    localization.put(lcId, ug.getName());
+                    lcId++;
+                    ti.setLCDesc(lcId);
+                    localization.put(lcId, ug.getType());
+                    return ti;
+                })
+                .collect(Collectors.toList());
+
+        List<TranslatorIcon> staticGermanyGroupUnitIcons = germany.getStaticObjectGroups().stream()
+                .filter(ug -> ug.isBriefingIcon())
+                .map(ug -> {
+                    TranslatorIcon ti = new TranslatorIcon(ug.getX(), ug.getY(), ug.getZ());
+                    ti.setIconId(Util.getIconIdForStaticObject(ug.getType(), 201 == countryId));
                     lcId++;
                     ti.setLCName(lcId);
                     localization.put(lcId, ug.getName());
@@ -331,8 +446,13 @@ public class MissionConverter {
                 .collect(Collectors.toList());
 
 
-         gm.getTranslatorIcons().addAll(icons);
+
+
+        gm.getTranslatorIcons().addAll(waypointIcons);
         gm.getTranslatorIcons().addAll(groundUnitIcons);
+        gm.getTranslatorIcons().addAll(planeUnitIcons);
+        gm.getTranslatorIcons().addAll(staticUssrGroupUnitIcons);
+        gm.getTranslatorIcons().addAll(staticGermanyGroupUnitIcons);
     }
 
     private void generateWaypoints(UnitGroup ug, ObjectGroup og, GeneratedMission gm, UnitGroup playerGroup) {

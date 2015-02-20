@@ -118,7 +118,7 @@
                     <input id="create-unit-group-name" class="form-control">
                 </div>
                 <div class="form-group">
-                    <label>Starting altitude</label>     <br/>
+                    <label>Starting altitude (0 for ground start)</label>     <br/>
                     <input id="create-unit-group-altitude" type="text" class="slider" style="width:570px;" value="1500"
                            data-slider-min="0" data-slider-max="10000" data-slider-step="10" data-slider-value="1500"
                            data-slider-orientation="horizontal" data-slider-selection="after" data-slider-tooltip="hide">
@@ -156,7 +156,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Skill level</label>
+                    <label>Skill level (Select 'Player' for Player flight)</label>
                     <select id="create-unit-group-skill" class="form-control">
                         <option value="4">Ace</option>
                         <option value="3">Veteran</option>
@@ -164,6 +164,13 @@
                         <option value="1">Rookie</option>
                         <option value="0">Player</option>
                     </select>
+                </div>
+                <div class="form-group">
+                    <label>Icons & Labels</label>
+                    <div class="row">
+                      <div class="col-md-6"><input type="checkbox" id="create-unit-group-icon" /> Show icon in briefing</div>
+                      <div class="col-md-6"><input type="checkbox" id="create-unit-group-icon-waypoint" /> Show waypoints in briefing</div>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -256,7 +263,13 @@
                     <select id="create-ground-unit-group-formation" class="form-control">
                     </select>
                 </div>
-
+                <div class="form-group">
+                    <label>Icons & Labels</label>
+                    <div class="row">
+                        <div class="col-md-6"><input type="checkbox" id="create-ground-unit-group-icon"/> Show icon in briefing</div>
+                        <div class="col-md-6"><input type="checkbox" id="create-ground-unit-group-icon-waypoint"/> Show waypoints in briefing</div>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label>Unit group description</label>
                     <textarea id="create-ground-unit-group-desc" rows="5" class="form-control"></textarea>
@@ -328,7 +341,12 @@
                         <option value="24">24</option>
                     </select>
                 </div>
-
+                <div class="form-group">
+                    <label>Icons & Labels</label>
+                    <div class="row">
+                        <div class="col-md-6"><input type="checkbox" id="create-static-object-group-icon"/> Show icon in briefing</div>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label>Static object description</label>
                     <textarea id="create-static-object-group-desc" rows="5" class="form-control"></textarea>

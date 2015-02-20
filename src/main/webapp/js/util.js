@@ -68,6 +68,22 @@ var util = new function() {
         });
     }
 
+    this.bindCheckbox = function(id, obj, field) {
+        if(obj[field] == true) {
+            $('#' + id).attr('checked','checked');
+        } else {
+            $('#' + id).removeAttr('checked');
+        }
+        $('#' + id).on('change', function() {
+            obj[field] = $('#' + id).prop('checked');
+            rest.updateMission(state.getCurrentMission(), function(data) {
+                state.setCurrentMission(data);
+                console.log("Saved mission after checkbox change.");
+                maprenderer.redraw();
+            });
+        });
+    }
+
     this.initHandlebarHelpers = function() {
 //        Handlebars.registerHelper('bselect', function(items, options) {
 //            var out = '<select>';

@@ -290,9 +290,12 @@ public class MissionDataServiceBean {
     }
 
 
-    @RequestMapping(method = RequestMethod.GET, value = "/formationTypes", produces = "application/json")
-    public ResponseEntity<List<FormationType>> getFormationTypes() {
-        return new ResponseEntity(FormationType.values(), HttpStatus.OK);
+    @RequestMapping(method = RequestMethod.GET, value = "/formationTypes/{groupType}", produces = "application/json")
+    public ResponseEntity<List<FormationType>> getFormationTypes(@PathVariable String groupType) {
+        return new ResponseEntity(Arrays.asList(FormationType.values()).stream().filter(ft -> {
+             int category = groupType.equals("AIR_GROUP") ? 0 : 1;
+            return ft.getCategory() == category;
+        }).collect(Collectors.toList()), HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/airfields", produces = "application/json")

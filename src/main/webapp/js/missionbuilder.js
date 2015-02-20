@@ -131,6 +131,7 @@ var missionbuilder = new function() {
 
         rest.updateMission(state.getCurrentMission(), function(data) {
             state.setCurrentMission(data);
+            $('#country-select').removeClass('hidden');
             maprenderer.redraw();
         });
     }
@@ -198,7 +199,7 @@ var missionbuilder = new function() {
                 $(unitSelect).append('<option value="' + data[a] + '">' + data[a] + '</option>');
             }
         });
-        rest.getFormationTypes(function(data) {
+        rest.getFormationTypes("GROUND_GROUP", function(data) {
             var formationSelect = $('#create-ground-unit-group-formation');
             $(formationSelect).empty();
             for(var a = 0 ; a < data.length; a++) {
@@ -241,7 +242,8 @@ var missionbuilder = new function() {
             yOri : 90,
             groupType : "STATIC_OBJECT_GROUP",
             objectType : "STATIC_OBJECT",
-            clientId : new Date().getTime()
+            clientId : new Date().getTime(),
+            briefingIcon : $('#create-static-object-group-icon').prop('checked')
         }
 
         var currentMission = state.getCurrentMission();
@@ -269,7 +271,9 @@ var missionbuilder = new function() {
             aiLevel : $('#create-ground-unit-group-skill').val(),
             yOri : 90,
             groupType : "GROUND_GROUP",
-            clientId : new Date().getTime()
+            clientId : new Date().getTime(),
+            briefingIcon : $('#create-ground-unit-group-icon').prop('checked'),
+            briefingWaypointIcons : $('#create-ground-unit-group-icon-waypoint').prop('checked')
         }
 
         var currentMission = state.getCurrentMission();
@@ -299,7 +303,9 @@ var missionbuilder = new function() {
             countryId : countryId,
             yOri : 90,
             groupType : "AIR_GROUP",
-            clientId : new Date().getTime()
+            clientId : new Date().getTime(),
+            briefingIcon : $('#create-unit-group-icon').prop('checked'),
+            briefingWaypointIcons : $('#create-unit-group-icon-waypoint').prop('checked')
         }
 
         var currentMission = state.getCurrentMission();
@@ -326,6 +332,7 @@ var missionbuilder = new function() {
             //"generateAAAAtBridges": $('#create-mission-gen-bridge-aaa').prop('checked'),
             "includeStalingradCity": $('#create-mission-include-stalingrad').prop('checked')
         }
+        $('#country-select').removeClass('hidden');
         rest.createMission(mission, handleMissionCreateResponse);
     }
 
@@ -507,6 +514,8 @@ var missionbuilder = new function() {
                             })
                         });
                     util.populateSelectKeyVal('planes-edit-group-skill', obj, 'aiLevel', statics.getSkills());
+                    util.bindCheckbox('planes-edit-group-icon', obj, 'briefingIcon');
+                    util.bindCheckbox('planes-edit-group-icon-waypoint', obj, 'briefingWaypointIcons');
 
                     break;
                 case "GROUND_GROUP":
@@ -520,11 +529,13 @@ var missionbuilder = new function() {
                     rest.getVehicleTypes(state.getCurrentCountry(), function(data) {
                         util.populateSelect('ground-group-edit-group-type', obj, 'type', data);
                     });
-                    rest.getFormationTypes(function(data) {
+                    rest.getFormationTypes("GROUND_GROUP", function(data) {
                         util.populateSelect('ground-group-edit-group-formation', obj, 'formation', data);
                     });
                     util.populateSelect('ground-group-edit-group-size', obj, 'size', statics.getGroupSizes());
                     util.populateSelectKeyVal('ground-group-edit-group-skill', obj, 'aiLevel', statics.getSkills());
+                    util.bindCheckbox('ground-group-edit-group-icon', obj, 'briefingIcon');
+                    util.bindCheckbox('ground-group-edit-group-icon-waypoint', obj, 'briefingWaypointIcons');
                     break;
                 case "STATIC_OBJECT_GROUP":
                     var src = $('#static-object-group-edit-tpl').html();
@@ -537,6 +548,7 @@ var missionbuilder = new function() {
                     });
                     util.populateSelect('static-object-group-edit-size', obj, 'size', statics.getGroupSizes());
                     util.bindTextField('static-object-group-edit-heading', obj, 'yOri');
+                    util.bindCheckbox('static-object-group-edit-group-icon', obj, 'briefingIcon');
                     break;
             }
 

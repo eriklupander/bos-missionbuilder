@@ -78,8 +78,8 @@ var rest = new function() {
         $.getJSON(BASE + "/actionTypes", callback);
     }
 
-    this.getFormationTypes = function(callback) {
-        $.getJSON(BASE + "/formationTypes", callback);
+    this.getFormationTypes = function(groupType, callback) {
+        $.getJSON(BASE + "/formationTypes/" + groupType, callback);
     }
 
     this.getLoadouts = function(planeType, callback) {

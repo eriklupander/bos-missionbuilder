@@ -34,10 +34,6 @@
                data-slider-min="0" data-slider-max="10000" data-slider-step="10" data-slider-value="{{y}}"
                data-slider-orientation="horizontal" data-slider-selection="after" data-slider-tooltip="hide">
         <div id="y-text" class="text-center">{{y}} meters</div>
-        <!--
-        <select  class="form-control" id="planes-edit-group-altitude">
-        </select>
-        -->
     </div>
     <div class="propertyelement">
         <label>Heading (0-359)</label>
@@ -64,6 +60,13 @@
         <label>Loadout</label>
         <select  class="form-control" id="planes-edit-group-loadout">
         </select>
+    </div>
+    <div class="form-group">
+        <label>Icons & Labels</label>
+        <div class="row">
+            <div class="col-md-6"><input type="checkbox" id="planes-edit-group-icon"/> Show icon in briefing</div>
+            <div class="col-md-6"><input type="checkbox" id="planes-edit-group-icon-waypoint"/> Show waypoints in briefing</div>
+        </div>
     </div>
     <div class="propertyelement">
         <label>Description</label>
@@ -108,7 +111,13 @@
         <select class="form-control" id="ground-group-edit-group-skill">
         </select>
     </div>
-
+    <div class="form-group">
+        <label>Icons & Labels</label>
+        <div class="row">
+            <div class="col-md-6"><input type="checkbox" id="ground-group-edit-group-icon"/> Show icon in briefing</div>
+            <div class="col-md-6"><input type="checkbox" id="ground-group-edit-group-icon-waypoint"/> Show waypoints in briefing</div>
+        </div>
+    </div>
     <div class="propertyelement">
         <label>Description</label>
         <textarea id="ground-group-edit-group-description" class="form-control">{{description}}</textarea>
@@ -166,6 +175,12 @@
     <div class="propertyelement">
         <label>Heading (0-359)</label>
         <input id="static-object-group-edit-heading" class="form-control" type="text" value="{{yOri}}"/>
+    </div>
+    <div class="form-group">
+        <label>Icons & Labels</label>
+        <div class="row">
+            <div class="col-md-6"><input type="checkbox" id="static-object-group-edit-group-icon"/> Show icon in briefing</div>
+        </div>
     </div>
 
     <div class="text-center propertyelement">

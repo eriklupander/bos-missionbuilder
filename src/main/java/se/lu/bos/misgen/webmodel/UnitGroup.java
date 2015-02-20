@@ -26,6 +26,9 @@ public class UnitGroup extends MapObject {
     private List<WayPoint> waypoints = new ArrayList<WayPoint>();
     private String serverId;
 
+    private boolean briefingIcon = false;
+    private boolean briefingWaypointIcons = false;
+
     private FormationType formation = FormationType.NONE;
 
     public UnitGroup() {
@@ -126,5 +129,21 @@ public class UnitGroup extends MapObject {
 
     public void setFormation(FormationType formation) {
         this.formation = formation;
+    }
+
+    public boolean isBriefingIcon() {
+        return briefingIcon;
+    }
+
+    public void setBriefingIcon(boolean briefingIcon) {
+        this.briefingIcon = briefingIcon;
+    }
+
+    public boolean isBriefingWaypointIcons() {
+        return briefingWaypointIcons;
+    }
+
+    public void setBriefingWaypointIcons(boolean briefingWaypointIcons) {
+        this.briefingWaypointIcons = briefingWaypointIcons;
     }
 }

@@ -15,6 +15,7 @@ public class StaticObjectGroup extends MapObject {
     private String name;
     private String description;
     private String type;
+    private boolean briefingIcon = false;
 
     public StaticObjectGroup() {
         setGroupType("STATIC_OBJECT_GROUP");
@@ -66,5 +67,13 @@ public class StaticObjectGroup extends MapObject {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public boolean isBriefingIcon() {
+        return briefingIcon;
+    }
+
+    public void setBriefingIcon(boolean briefingIcon) {
+        this.briefingIcon = briefingIcon;
     }
 }

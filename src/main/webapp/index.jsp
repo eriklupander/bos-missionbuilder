@@ -98,7 +98,7 @@
                         <a href="#" onclick="missionbuilder.toggleMapFilter('both_sides');"><i id="both_sides_check" class="fa fa-check hidden"></i> Show both sides</a>
                     </li>
                     <li>
-                        <a href="#" onclick="missionbuilder.toggleMapFilter('air_group');"><i id="air_group_check" class="fa fa-check"></i> Planes Groups</a>
+                        <a href="#" onclick="missionbuilder.toggleMapFilter('plane_group');"><i id="plane_group_check" class="fa fa-check"></i> Planes Groups</a>
                     </li>
                     <li>
                         <a href="#" onclick="missionbuilder.toggleMapFilter('ground_group');"><i id="ground_group_check" class="fa fa-check"></i> Ground groups</a>

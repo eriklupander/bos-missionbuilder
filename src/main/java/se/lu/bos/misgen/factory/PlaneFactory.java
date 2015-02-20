@@ -24,6 +24,7 @@ public class PlaneFactory {
         if(playerGroup && numInGroup == 0) {
             p.setAILevel(0);
         }
+        p.setStartInAir(y == 0 ? 1 : 0);
         return p;
     }
 }
