@@ -1,4 +1,4 @@
-package se.lu.bos.misgen.serializer;
+package se.lu.bos.misgen.factory;
 
 import se.lu.bos.misgen.model.PlaneType;
 import se.lu.bos.misgen.webmodel.Loadout;

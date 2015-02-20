@@ -5,11 +5,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Erik
- * Date: 2015-01-04
- * Time: 22:45
- * To change this template use File | Settings | File Templates.
+ * TODO Add human-readable name for all vehicles. Perhaps also add properties for max speed
  */
 public enum VehicleType {
 
@@ -22,6 +18,8 @@ public enum VehicleType {
     BA10M(101, "LuaScripts\\WorldObjects\\Vehicles\\BA10M.txt", "graphics\\vehicles\\BA10M\\BA10M.mgm"),
     GAZ_M(101, "LuaScripts\\WorldObjects\\Vehicles\\GAZ-M.txt", "graphics\\vehicles\\GAZ-M\\GAZ-M.mgm"),
     GAZ_AA_M4_AA(101, "LuaScripts\\WorldObjects\\Vehicles\\gaz-aa-m4-aa.txt", "graphics\\Artillery\\GAZ\\gaz-aa-m4-aa.mgm"),
+    FLAK37_USSR(101, "LuaScripts\\WorldObjects\\vehicles\\flak37.txt", "graphics\\artillery\\flak37\\flak37.mgm"),
+    FLAK38_USSR(101, "LuaScripts\\WorldObjects\\vehicles\\flak38.txt", "graphics\\artillery\\flak38\\flak38.mgm"),
 
     MG34_AA(201, "LuaScripts\\WorldObjects\\vehicles\\mg34-aa.txt", "graphics\\artillery\\mg34-aa\\mg34-aa.mgm"),
     FORD_G917(201, "LuaScripts\\WorldObjects\\vehicles\\ford-g917.txt", "graphics\\vehicles\\ford\\ford-g917.mgm"),

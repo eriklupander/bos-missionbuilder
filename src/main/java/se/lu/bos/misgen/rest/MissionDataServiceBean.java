@@ -19,7 +19,7 @@ import se.lu.bos.misgen.model.PlaneType;
 import se.lu.bos.misgen.model.StaticObjectType;
 import se.lu.bos.misgen.model.VehicleType;
 import se.lu.bos.misgen.nosql.ElasticSearchServer;
-import se.lu.bos.misgen.serializer.LoadoutFactory;
+import se.lu.bos.misgen.factory.LoadoutFactory;
 import se.lu.bos.misgen.serializer.MissionConverter;
 import se.lu.bos.misgen.serializer.MissionFileWriter;
 import se.lu.bos.misgen.serializer.MissionWriter;

@@ -1,6 +1,5 @@
 package se.lu.bos.misgen.serializer;
 
-import javafx.geometry.Rectangle2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,21 +11,23 @@ import se.lu.bos.misgen.helper.ObjectGroup;
 import se.lu.bos.misgen.model.*;
 import se.lu.bos.misgen.model.Timer;
 import se.lu.bos.misgen.model.WayPoint;
+import se.lu.bos.misgen.factory.GroupFactory;
+import se.lu.bos.misgen.factory.MissionFactory;
+import se.lu.bos.misgen.factory.VehicleFactory;
 import se.lu.bos.misgen.util.Util;
 import se.lu.bos.misgen.webmodel.*;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Erik
- * Date: 2015-01-29
- * Time: 23:13
- * To change this template use File | Settings | File Templates.
+ * Converts "client" Mission POJO into "bos" Mission POJO.
+ *
+ * E.g. ClientMission -> GeneratedMission
+ *
+ * TODO should be refactored a bit into more manageable pieces.
  */
 @Component
 public class MissionConverter {
@@ -66,9 +67,7 @@ public class MissionConverter {
 
 
 
-        gm.getBridges().addAll(staticGroupsFactory.getReadBridgeGroupEntities());
-        gm.getRailwayStations().addAll(staticGroupsFactory.getRailwayStationGroupEntities());
-        gm.getAirfields().addAll(staticGroupsFactory.getAirFieldGroupEntities());
+
 
         buildObjectGroups(cm, gm, playerGroup);
         buildStaticObjectGroups(cm, gm);
@@ -87,72 +86,23 @@ public class MissionConverter {
 
         gm.setLocalization(localization);
 
-        // TODO determine mission bounds, until then don't load towns at all
         Float[] bounds = findBounds(gm);
         log.info("Resolved X/Z mission bounds: " + bounds[0] + ", "+ bounds[1] + ", "+ bounds[2] + ", "+ bounds[3]);
         log.info("Remember, BoS coordinate system has origin at bottom left");
-        List<GroupEntity> townEntities = staticGroupsFactory.getReadTownGroupEntities(bounds[0], bounds[1], bounds[2], bounds[3]);
-        gm.getTowns().addAll(townEntities);
+
+        gm.getTowns().addAll(staticGroupsFactory.getReadTownGroupEntities(bounds[0], bounds[1], bounds[2], bounds[3]));
+        gm.getBridges().addAll(staticGroupsFactory.getReadBridgeGroupEntities(bounds[0], bounds[1], bounds[2], bounds[3]));
+        gm.getRailwayStations().addAll(staticGroupsFactory.getRailwayStationGroupEntities(bounds[0], bounds[1], bounds[2], bounds[3]));
+        gm.getAirfields().addAll(staticGroupsFactory.getAirFieldGroupEntities());
 
         if(cm.getIncludeStalingradCity()) {
             gm.getTowns().addAll(staticGroupsFactory.getStalingradGroupEntities());
         }
 
-
-       // addFakeIcons(gm);
-
         return gm;
     }
 
-    private void addFakeIcons(GeneratedMission gm) {
-        List<TranslatorIcon> icons = new ArrayList<>();
-//        for(int a = 0; a < 500; a++) {
-//            TranslatorIcon ti = new TranslatorIcon(10000 + ((a)*400), 0f, 10000 + ((a)*400));
-//            ti.setIconId(a);
-//            ti.setLineType(0);
-//            lcId++;
-//            ti.setLCName(lcId);
-//            localization.put(lcId, "Icon "+a);
-//            lcId++;
-//            ti.setLCDesc(lcId);
-//            localization.put(lcId, "Test " + a);
-//            icons.add(ti);
-//        }
-        for(int a = 551; a < 562; a++) {
-            TranslatorIcon ti = new TranslatorIcon(10000 + ((a)*300), 0f, 10000 + ((a)*300));
-            ti.setIconId(a);
-            ti.setLineType(1);
-            lcId++;
-            ti.setLCName(lcId);
-            localization.put(lcId, "Icon "+a);
-            lcId++;
-            ti.setLCDesc(lcId);
-            localization.put(lcId, "Test " + a);
-            icons.add(ti);
-        }
 
-//        for(int a = 900; a < 910; a++) {
-//            TranslatorIcon ti = new TranslatorIcon(35000 + (a*400), 0f, 35000 + (a*400));
-//            ti.setIconId(a);
-//            ti.setLineType(1);
-//            lcId++;
-//            ti.setLCName(lcId);
-//            localization.put(lcId, ""+a);
-//            lcId++;
-//            ti.setLCDesc(lcId);
-//            localization.put(lcId, "Test " + a);
-//            gm.getTranslatorIcons().add(ti);
-//        }
-
-        // Link icons to form route
-//        for(int a = 0; a < icons.size(); a++) {
-//            if(a+1 < icons.size()) {
-//                TranslatorIcon icon = icons.get(a);
-//                icon.getTargets().add(icons.get(a+1).getId().intValue());
-//            }
-//        }
-        gm.getTranslatorIcons().addAll(icons);
-    }
 
     private Float[] findBounds(GeneratedMission gm) {
         Float minX = Stream.concat(gm.getWayPoints().stream(), gm.getObjectGroups().stream()).min( (wo1, wo2) -> wo1.getXPos().compareTo(wo2.getXPos())).get().getXPos();
@@ -399,12 +349,24 @@ public class MissionConverter {
 
                 // For ground groups, set initial formation using a timer or something
                 if(ug.getGroupType().equals("GROUP_GROUP") && ug.getFormation().equals("ROAD_COLUMN")) {
-                    CommandFormation cmdFormation = new CommandFormation(wp.getX(), wp.getY(), wp.getZ(), FormationType.ON_ROAD_COLUMN.getFormationCode(), 0);
+                    CommandFormation cmdFormation = new CommandFormation(wp.getX(), wp.getY(), wp.getZ(), FormationType.ON_ROAD_COLUMN.getFormationCode(), 1);
                     cmdFormation.getObjects().add(og.getLeaderId());
                     Timer formationTimer = new Timer(wp.getX(), wp.getY(), wp.getZ());
                     formationTimer.getTargets().add(cmdFormation.getId().intValue());
                     formationTimer.setTime(10); // Wait 10 seconds
                     gm.getTimers().add(formationTimer);
+                    gm.getFormationCommands().add(cmdFormation);
+                }
+
+                // For air groups starting in air, issue a "loose wedge" FormationCommand after 10 seconds
+                if(ug.getGroupType().equals("AIR_GROUP") && ug.getAiLevel() != 0 && ug.getY() > 299) {
+                    CommandFormation cmdFormation = new CommandFormation(wp.getX(), wp.getY(), wp.getZ(), ug.getFormation().getFormationCode(), 2);
+                    cmdFormation.getObjects().add(og.getLeaderId());
+                    Timer formationTimer = new Timer(wp.getX(), wp.getY(), wp.getZ());
+                    formationTimer.getTargets().add(cmdFormation.getId().intValue());
+                    formationTimer.setTime(13); // Wait 13 seconds
+                    gm.getTimers().add(formationTimer);
+                    gm.getFormationCommands().add(cmdFormation);
                 }
             }
 
@@ -570,16 +532,7 @@ public class MissionConverter {
         return Stream.concat(gm.getAreaAttackCommands().stream(), gm.getAttackTargetCommands().stream()).filter(ac -> ac.getId().intValue() == id.intValue()).findFirst().orElse(null);
     }
 
-    private CommandAttackArea findCommandAttackArea(Integer id, GeneratedMission gm) {
 
-        Optional<CommandAttackArea> first = gm.getAreaAttackCommands().stream().filter(aac -> aac.getId().intValue() == id.intValue()).findFirst();
-        if(first.isPresent()) {
-            return first.get();
-        } else {
-            return null;
-        }
-
-    }
 
     private ClientAirfield findClosestAirfield(Float xPos, Float zPos) {
         if(clientAirfields.size() == 0) {
@@ -599,12 +552,9 @@ public class MissionConverter {
         }).get();
     }
 
-//    private GameEntity findAttackAreaCommand(GeneratedMission gm, Integer id) {
-//
-//    }
 
     private MissionOptions buildMissionOptions(ClientMission cm, UnitGroup playerUnitGroup) {
-        MissionOptions mo = MissionFactory.buildDefaultMission();
+        MissionOptions mo = MissionFactory.buildDefaultMissionOptions();
         mo.setDate(cm.getDate());
         mo.setTime(cm.getTime());
         mo.setLCName(lcId); // Mission title, for briefing
@@ -618,13 +568,4 @@ public class MissionConverter {
 
         return mo;
     }
-
-    private UnitGroup findUnitGroupByClientId(Long clientId, ClientMission cm) {
-        List<UnitGroup> collect = cm.getSides().entrySet().stream().flatMap(entry -> entry.getValue().getUnitGroups().stream()).filter(ug -> ug.getClientId().equals(clientId)).collect(Collectors.toList());
-        if(collect.size() > 0) {
-            return collect.get(0);
-        }
-        throw new IllegalArgumentException("Could not find unitgroup matching id: " + clientId);
-    }
-
 }

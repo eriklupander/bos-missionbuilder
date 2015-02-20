@@ -39,6 +39,7 @@ public class GeneratedMission {
     private List<CommandCover> coverCommands = new ArrayList<>();
     private List<CommandTakeOff> takeOffCommands = new ArrayList<>();
     private List<CommandLand> landCommands = new ArrayList<>();
+    private List<CommandFormation> formationCommands = new ArrayList<>();
 
     private List<GroupEntity> airfields = new ArrayList<>();
     private List<GroupEntity> bridges = new ArrayList<>();
@@ -240,5 +241,13 @@ public class GeneratedMission {
 
     public void setStaticObjects(List<StaticObject> staticObjects) {
         this.staticObjects = staticObjects;
+    }
+
+    public List<CommandFormation> getFormationCommands() {
+        return formationCommands;
+    }
+
+    public void setFormationCommands(List<CommandFormation> formationCommands) {
+        this.formationCommands = formationCommands;
     }
 }

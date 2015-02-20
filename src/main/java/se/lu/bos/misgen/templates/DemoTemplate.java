@@ -1,13 +1,12 @@
 package se.lu.bos.misgen.templates;
 
-import se.lu.bos.misgen.groups.StaticGroupsFactory;
 import se.lu.bos.misgen.helper.ObjectGroup;
 import se.lu.bos.misgen.helper.OnEventId;
 import se.lu.bos.misgen.model.*;
-import se.lu.bos.misgen.serializer.GroupFactory;
-import se.lu.bos.misgen.serializer.MissionFactory;
+import se.lu.bos.misgen.factory.GroupFactory;
+import se.lu.bos.misgen.factory.MissionFactory;
 import se.lu.bos.misgen.serializer.MissionWriter;
-import se.lu.bos.misgen.serializer.WayPointFactory;
+import se.lu.bos.misgen.factory.WayPointFactory;
 import se.lu.bos.misgen.webmodel.FormationType;
 
 import java.io.IOException;
@@ -22,7 +21,7 @@ import java.io.IOException;
 public class DemoTemplate {
 
     public static String buildDemoMission() throws IOException {
-        MissionOptions missionOptions = MissionFactory.buildDefaultMission();
+        MissionOptions missionOptions = MissionFactory.buildDefaultMissionOptions();
         ObjectGroup planeGroup1 = GroupFactory.buildPlaneGroup(true, 3, PlaneType.BF109G2, true, 95939f, 500f, 50383f, 45f, 0, "Group A", FormationType.LINE);
         // ObjectGroup planeGroup1 = GroupFactory.buildPlaneGroup(true, 1, PlaneType.BF109G2, true, 131950, 500f, 253736);        // Above stalingrad
         //planeGroup1.applyYOrientation(90.0f);

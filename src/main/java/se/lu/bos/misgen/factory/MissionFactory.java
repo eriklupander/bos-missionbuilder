@@ -1,4 +1,4 @@
-package se.lu.bos.misgen.serializer;
+package se.lu.bos.misgen.factory;
 
 import se.lu.bos.misgen.model.MissionOptions;
 import se.lu.bos.misgen.model.WindLayer;
@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class MissionFactory {
 
-    public static MissionOptions buildDefaultMission() {
+    public static MissionOptions buildDefaultMissionOptions() {
         MissionOptions m = new MissionOptions();
         List<WindLayer> windLayers = new ArrayList<>();
         WindLayer wl1 = new WindLayer(0, 245, 2.0f);

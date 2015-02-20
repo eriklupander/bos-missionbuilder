@@ -23,6 +23,7 @@ public class MissionWriter {
         entities.addAll(gm.getAreaAttackCommands());
         entities.addAll(gm.getAttackTargetCommands());
         entities.addAll(gm.getCoverCommands());
+        entities.addAll(gm.getFormationCommands());
         entities.addAll(gm.getTakeOffCommands());
         entities.addAll(gm.getLandCommands());
         entities.addAll(gm.getTimers());
