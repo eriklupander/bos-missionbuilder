@@ -114,7 +114,12 @@
                     </li>
                 </ul>
             </li>
+
+            <li class="dropdown hidden" id="weather-select">
+                <a href="#"  class="dropdown-toggle"  onclick="missionbuilder.openWeatherEditor();"><i class="fa fa-cloud"></i>  Weather Editor</a>
+             </li>
         </ul>
+
         <!-- Top Menu Items -->
         <ul class="nav navbar-right top-nav">
 
@@ -272,6 +277,7 @@
 </div>
 
 <jsp:include page="templates/forms.jsp"/>
+<jsp:include page="templates/weathereditor.jsp"/>
 
 <script>
     $body = $("body");

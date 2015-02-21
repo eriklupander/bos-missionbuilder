@@ -14,10 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import se.lu.bos.misgen.groups.ClientAirfieldParser;
-import se.lu.bos.misgen.model.GeneratedMission;
-import se.lu.bos.misgen.model.PlaneType;
-import se.lu.bos.misgen.model.StaticObjectType;
-import se.lu.bos.misgen.model.VehicleType;
+import se.lu.bos.misgen.model.*;
 import se.lu.bos.misgen.nosql.ElasticSearchServer;
 import se.lu.bos.misgen.factory.LoadoutFactory;
 import se.lu.bos.misgen.serializer.MissionConverter;
@@ -147,6 +144,8 @@ public class MissionDataServiceBean {
 
     @RequestMapping(method = RequestMethod.POST, value = "/mission", consumes = "application/json", produces = "application/json")
     public ResponseEntity<ClientMission> createClientMission(@RequestBody ClientMission clientMission) {
+        addDefaultWindlayers(clientMission);
+
         String json = null;
         try {
             json = mapper.writeValueAsString(clientMission);
@@ -159,6 +158,14 @@ public class MissionDataServiceBean {
         } catch (Exception e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private void addDefaultWindlayers(ClientMission clientMission) {
+        clientMission.getWeather().getWindLayers().add(new WindLayer(0, 275, 2f));
+        clientMission.getWeather().getWindLayers().add(new WindLayer(500, 275, 2f));
+        clientMission.getWeather().getWindLayers().add(new WindLayer(1000, 275, 2f));
+        clientMission.getWeather().getWindLayers().add(new WindLayer(2000, 275, 2f));
+        clientMission.getWeather().getWindLayers().add(new WindLayer(5000, 275, 2f));
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/mission/{serverMissionId}", consumes = "application/json", produces = "application/json")
@@ -203,6 +210,9 @@ public class MissionDataServiceBean {
         try {
             String json = elasticSearchServer.getClient().prepareGet("missions", "mission", serverId).execute().actionGet().getSourceAsString();
             ClientMission clientMission = mapper.readValue(json, ClientMission.class);
+            if(clientMission.getWeather().getWindLayers() == null || clientMission.getWeather().getWindLayers().size() == 0) {
+                addDefaultWindlayers(clientMission);
+            }
             return new ResponseEntity(clientMission, HttpStatus.OK);
         } catch (IOException e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -249,6 +259,7 @@ public class MissionDataServiceBean {
 
             return new ResponseEntity(esData, HttpStatus.OK);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity(new ArrayList<>(), HttpStatus.OK);
         }
     }

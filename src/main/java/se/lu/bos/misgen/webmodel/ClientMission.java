@@ -29,6 +29,8 @@ public class ClientMission {
     private Boolean generateAAAAtBridges = false;
     private boolean includeStalingradCity = true;
 
+    private Weather weather;
+
     private ClientMission() {
         sides.put(101, new Side("USSR"));
         sides.put(201, new Side("Germany"));
@@ -124,5 +126,16 @@ public class ClientMission {
 
     public void setIncludeStalingradCity(boolean includeStalingradCity) {
         this.includeStalingradCity = includeStalingradCity;
+    }
+
+    public Weather getWeather() {
+        if(weather == null) {
+            weather = new Weather();
+        }
+        return weather;
+    }
+
+    public void setWeather(Weather weather) {
+        this.weather = weather;
     }
 }
