@@ -26,7 +26,7 @@
         <div class="col-md-2" id="precLevel-m">{{precLevel}}</div>
         <div class="col-md-5">
             <input id="precLevel" type="text" class="slider" style="width:200px;" value="{{precLevel}}"
-                   data-slider-min="0" data-slider-max="10" data-slider-step="1"
+                   data-slider-min="0" data-slider-max="100" data-slider-step="1"
                    data-slider-value="{{precLevel}}"
                    data-slider-orientation="horizontal" data-slider-selection="after" data-slider-tooltip="hide">
         </div>
@@ -38,7 +38,6 @@
         <div class="col-md-5">
             <select id="precType">
                 <option value="0">None</option>
-                <option value="1">Rain</option>
                 <option value="2">Snow</option>
             </select></div>
     </div>
@@ -48,7 +47,11 @@
         <div class="col-md-2"></div>
         <div class="col-md-5">
             <select id="cloudConfig">
-                <option value="00_clear_03\\sky.ini">Clear</option>
+                <option value="00_clear_03\sky.ini">Clear</option>
+                <option value="01_Light_08\sky.ini">Light</option>
+                <option value="02_Medium_07\sky.ini">Medium</option>
+                <option value="03_Heavy_03\sky.ini">Heavy</option>
+                <option value="04_Overcast_01\sky.ini">Overcast</option>
             </select>
         </div>
     </div>

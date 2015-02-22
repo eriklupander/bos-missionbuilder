@@ -6,6 +6,15 @@ var missionbuilder = new function() {
         maprenderer.renderMap();
     }
 
+    var escapeRegExp = function(string) {
+        return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+    }
+
+
+     var replaceAll = function(string, find, replace) {
+            return string.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+        }
+
     this.openWeatherEditor = function() {
 
 
@@ -31,7 +40,11 @@ var missionbuilder = new function() {
             $('#temperature-m').text(ev.value + ' (cel)');
         });
 
-
+        util.setSelectedSelectItem('precType', state.getCurrentMission().weather.precType);
+        //util.setSelectedSelectItem('cloudConfig', state.getCurrentMission().weather.cloudConfig);
+        $('#cloudConfig').children().removeAttr('selected');
+        console.log("Escaping weather into: " + replaceAll(state.getCurrentMission().weather.cloudConfig, '\\', '\\\\'));
+        $('#cloudConfig').find('option[value="'+ replaceAll(state.getCurrentMission().weather.cloudConfig, '\\', '\\\\') +'"]').attr('selected','selected');
 
         $('#wl0h').slider().on('slide', function(ev){
             $('#wl0h-m').text(ev.value);
@@ -241,6 +254,9 @@ var missionbuilder = new function() {
             $('#rightmenu').removeClass('hidden');
             $('#country-select').removeClass('hidden');
             $('#weather-select').removeClass('hidden');
+
+            state.deselectAll();
+            $('#object-properties').addClass('hidden');
 
              /*   BLOCK DISABLED FOR NOW. For locally installed version use the export to disk that writes .Mission and .eng file directly to directory.
             $('#missionFileLink').html('<a target="_blank" href="' + BASEPATH + '/mission/' + state.getCurrentMission().serverId + '/downloadmission">Download mission</a>');
@@ -524,18 +540,21 @@ var missionbuilder = new function() {
         if(util.notNull(state.getSelectedUnitGroup())) {
             var y = state.getSelectedUnitGroup().y;
             var waypoint = {
+                objectType:'WAYPOINT',
                 x:worldX,
                 y:y,
                 z:worldZ,
                 clientId:new Date().getTime(),
                 unitGroupClientId:state.getSelectedUnitGroup().clientId,
-                speed:300,     // TODO Fix speed depending on air or ground unit
+                speed: (state.getSelectedUnitGroup().groupType == 'GROUND_GROUP' ? 30 : 300),     // TODO Fix speed depending on air or ground unit
                 action:{"actionType":"FLY"}
             }
             state.getSelectedUnitGroup().waypoints.push(waypoint);
             rest.updateMission(state.getCurrentMission(), function(data) {
                 state.setCurrentMission(data);   // NOTE: When setting current mission, we either need to null all "selected objects" or reassign them.
                 maprenderer.redraw();
+
+                // Call addWaypoint again to continue adding waypoints.
                 missionbuilder.addWaypoint();
             });
 

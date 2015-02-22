@@ -694,6 +694,19 @@ public class MissionConverter {
         PlaneType planeType = PlaneType.valueOf(playerUnitGroup.getType());
         mo.setPlayerConfig(planeType.getScript());
 
+        applyWeather(cm, mo);
+
         return mo;
+    }
+
+    private void applyWeather(ClientMission cm, MissionOptions mo) {
+        mo.setCloudConfig(cm.getWeather().getCloudConfig());
+        mo.setCloudHeight(cm.getWeather().getCloudHeight());
+        mo.setCloudLevel(cm.getWeather().getCloudLevel());
+        mo.setPrecLevel(cm.getWeather().getPrecLevel());
+        mo.setPrecType(cm.getWeather().getPrecType());
+        mo.setTemperature(cm.getWeather().getTemperature());
+        mo.setTurbulence(cm.getWeather().getTurbulence());
+        mo.setWindLayers(cm.getWeather().getWindLayers());
     }
 }
