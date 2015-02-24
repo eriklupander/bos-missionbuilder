@@ -69,7 +69,7 @@ h5 {
 #object-properties {
     position: absolute;
     right:0px;
-    top:100px;
+    top:60px;
     padding:12px;
     width:225px;
     color:#9d9d9d;
@@ -83,4 +83,8 @@ h5 {
 .propertyelement {
     margin-bottom:8px;
     font-size:10pt;
+}
+
+.spacer {
+    margin-top: 12px;
 }

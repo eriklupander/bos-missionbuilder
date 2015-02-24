@@ -339,7 +339,7 @@ var renderer = new function() {
 
         var src = '';
         if(type == 'AIR_GROUP') {
-            rotation = unitGroup.yOri;
+            rotation = Math.round( unitGroup.yOri );
             src = 'bf109';
         } else {
             src = state.getCurrentCountry() == 201 ? "pziv" : "t34";

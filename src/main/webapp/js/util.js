@@ -4,12 +4,16 @@ var util = new function() {
         return typeof obj != 'undefined' && obj != null;
     }
 
+    this.isNull = function(obj) {
+        return obj == null || typeof obj == 'undefined';
+    }
+
     this.setSelectedSelectItem = function(selectId, val) {
         $('#' + selectId).children().removeAttr('selected');
         $('#' + selectId).find('option[value="'+val+'"]').attr('selected','selected');
     }
 
-    this.populateSelect = function(id, obj, field, items) {
+    this.populateSelect = function(id, obj, field, items, extraCallback) {
         $('#' + id).empty();
         $(items).each(function(i, value) {
             $('#' + id).append('<option value="'+value+'">'+value+'</option>');
@@ -23,12 +27,16 @@ var util = new function() {
                 state.setCurrentMission(data);
                 console.log("Saved mission after property change.");
                 maprenderer.redraw();
-            })
+            });
+
+            if(util.notNull(extraCallback)) {
+                extraCallback(id, obj, field, items, newValue);
+            }
         });
         util.setSelectedSelectItem(id, getValueOnProperty(obj, field));
     }
 
-    this.populateSelectKeyVal = function(id, obj, field, items) {
+    this.populateSelectKeyVal = function(id, obj, field, items, extraCallback) {
         $('#' + id).empty();
         $(items).each(function(i, value) {
             $('#' + id).append('<option value="'+value.value+'">'+value.name+'</option>');
@@ -41,7 +49,12 @@ var util = new function() {
                 state.setCurrentMission(data);
                 console.log("Saved mission after property change.");
                 maprenderer.redraw();
-            })
+            });
+
+            if(util.notNull(extraCallback)) {
+                extraCallback(id, obj, field, items, newValue);
+            }
+
         });
         util.setSelectedSelectItem(id, getValueOnProperty(obj, field));
     }
@@ -69,13 +82,16 @@ var util = new function() {
     }
 
     this.bindCheckbox = function(id, obj, field) {
-        if(obj[field] == true) {
+        //if(obj[field] == true || obj[field] == "true") {
+        var isChecked = getValueOnProperty(obj, field) === true || getValueOnProperty(obj, field) == "true";
+        if(isChecked) {
             $('#' + id).attr('checked','checked');
         } else {
             $('#' + id).removeAttr('checked');
         }
         $('#' + id).on('change', function() {
-            obj[field] = $('#' + id).prop('checked');
+            //obj[field] = $('#' + id).prop('checked');
+            setValueOnProperty(obj, field, $('#' + id).prop('checked'));
             rest.updateMission(state.getCurrentMission(), function(data) {
                 state.setCurrentMission(data);
                 console.log("Saved mission after checkbox change.");
@@ -129,5 +145,13 @@ var util = new function() {
             }
         }
         return obj;
+    }
+
+
+
+    this.angle = function(p1x, p1y, p2x, p2y) {
+        var xDiff = p2x - p1x;
+        var yDiff = p2y - p1y;
+        return Math.atan2(yDiff, xDiff) * (180/pi);
     }
 }

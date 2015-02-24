@@ -207,13 +207,13 @@ public class MissionConverter {
 
         all = rebuildStream(ussr, germany);
 
-        List<ObjectGroup> airGroups = all.filter(ug -> ug.getGroupType().equals("AIR_GROUP"))
+        List<ObjectGroup> airGroups = all.filter(ug -> ug.getGroupType() == GroupType.AIR_GROUP)
                 .map(ug -> {
 
                     ObjectGroup objectGroup = null;
                     try {
-
-                        objectGroup = GroupFactory.buildPlaneGroup(ug.getAiLevel() == 0, ug.getSize(), PlaneType.valueOf(ug.getType()), ug.getY() != 0, ug.getX(), ug.getY(), ug.getZ(), ug.getyOri(), ug.getLoadout(), ug.getName(), FormationType.VEE);
+                        objectGroup = GroupFactory.buildPlaneGroup(ug, FormationType.VEE);
+                        //objectGroup = GroupFactory.buildPlaneGroup(ug.getAiLevel() == 0, ug.getSize(), PlaneType.valueOf(ug.getType()), ug.getY() != 0, ug.getX(), ug.getY(), ug.getZ(), ug.getyOri(), ug.getLoadout(), ug.getName(), FormationType.VEE);
                         groupMap.put(ug.getClientId(), objectGroup);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -227,7 +227,7 @@ public class MissionConverter {
 
         // Ugly, rebuild stream from scratch
         all = rebuildStream(ussr, germany);
-        List<ObjectGroup> vehicleGroups = all.filter(ug -> ug.getGroupType().equals("GROUND_GROUP"))
+        List<ObjectGroup> vehicleGroups = all.filter(ug -> ug.getGroupType() == GroupType.GROUND_GROUP)
                 .map(ug -> {
                     FormationType formationType = ug.getFormation();
                     if(formationType == FormationType.NONE) {
@@ -301,91 +301,34 @@ public class MissionConverter {
                         }
                     }
 
-                    // Finally, add a link between starting position and first waypoint
-                    TranslatorIcon ti = new TranslatorIcon(ug.getX(), ug.getY(), ug.getZ());
-                    ti.setIconId(IconType.BALOON_BLUE.getCode());
-                    lcId++;
-                    ti.setLCName(lcId);
-                    localization.put(lcId, ug.getName());
-                    lcId++;
-                    ti.setLCDesc(lcId);
-                    ti.getTargets().add(tmpList.get(0).getId().intValue());
-                    localization.put(lcId, "Waypoint");
-                    tmpList.add(0, ti);
+                    // Finally, add a link between starting position and first waypoint, if applicable
+                    if(tmpList.size() > 0) {
+                        TranslatorIcon ti = new TranslatorIcon(ug.getX(), ug.getY(), ug.getZ());
+                        ti.setIconId(IconType.BALOON_BLUE.getCode());
+                        lcId++;
+                        ti.setLCName(lcId);
+                        localization.put(lcId, ug.getName());
+                        lcId++;
+                        ti.setLCDesc(lcId);
+                        ti.getTargets().add(tmpList.get(0).getId().intValue());
+                        localization.put(lcId, "Waypoint");
+                        tmpList.add(0, ti);
 
-                    waypointIcons.addAll(tmpList);
+                        waypointIcons.addAll(tmpList);
+                    }
+
                 });
 
-//                .flatMap(ug -> ug.getWaypoints().stream())
-//                .map(wp -> {
-//                    TranslatorIcon ti = new TranslatorIcon(wp.getX(), wp.getY(), wp.getZ());
-//                    lcId++;
-//                    ti.setLCName(lcId);
-//                    localization.put(lcId, wp.getName());
-//                    lcId++;
-//                    ti.setLCDesc(lcId);
-//                    localization.put(lcId, "Waypoint");
-//                    return ti;
-//                })
-//                .collect(Collectors.toList());
-
-//        List<TranslatorIcon> waypointIcons = unitGroupStream
-//                .filter(ug -> ug.isBriefingIcon() && ug.isBriefingWaypointIcons())
-//                .flatMap(ug -> ug.getWaypoints().stream())
-//                .map(wp -> {
-//                    TranslatorIcon ti = new TranslatorIcon(wp.getX(), wp.getY(), wp.getZ());
-//                    lcId++;
-//                    ti.setLCName(lcId);
-//                    localization.put(lcId, wp.getName());
-//                    lcId++;
-//                    ti.setLCDesc(lcId);
-//                    localization.put(lcId, "Waypoint");
-//                    return ti;
-//                })
-//                .collect(Collectors.toList());
 
         unitGroupStream = rebuildStream(ussr, germany);
         UnitGroup playerUnitGroup = unitGroupStream.filter(ug -> ug.getAiLevel() == 0).findFirst().get();
         int countryId = playerUnitGroup.getCountryCode();
-        // We need a player starting position icon as well
-//        if(waypointIcons.size() > 0) {
-//
-//            TranslatorIcon ti = new TranslatorIcon(playerUnitGroup.getX(), playerUnitGroup.getY(), playerUnitGroup.getZ());
-//            ti.setIconId(IconType.BALOON_BLUE.getCode());
-//            lcId++;
-//            ti.setLCName(lcId);
-//            localization.put(lcId, playerUnitGroup.getName());
-//            lcId++;
-//            ti.setLCDesc(lcId);
-//            localization.put(lcId, "Waypoint");
-//            waypointIcons.add(0, ti);
-//        }
 
-        // Link icons to form route
-//        List<UnitGroup> ugs = rebuildStream(ussr, germany).collect(Collectors.toList());
-//
-//        IntStream.range(0, ugs.size())
-//        .filter(i -> ugs.get(i).isBriefingWaypointIcons())
-//        .forEach(i -> {
-//            UnitGroup ug = ugs.get(i);
-//            for(int a = 0; a < ugs.get(i).getWaypoints().size(); a++) {
-//                if(a+1 < waypointIcons.size()) {
-//                    TranslatorIcon icon = waypointIcons.get(a);
-//                    icon.getTargets().add(waypointIcons.get(a+1).getId().intValue());
-//                }
-//            }
-//        });
-//        for(int a = 0; a < waypointIcons.size(); a++) {
-//            if(a+1 < waypointIcons.size()) {
-//                TranslatorIcon icon = waypointIcons.get(a);
-//                icon.getTargets().add(waypointIcons.get(a+1).getId().intValue());
-//            }
-//        }
 
         // Generate unit icons
         unitGroupStream = rebuildStream(ussr, germany);
         List<TranslatorIcon> groundUnitIcons = unitGroupStream
-                .filter(ug -> ug.isBriefingIcon() && ug.getGroupType().equals("GROUND_GROUP"))
+                .filter(ug -> ug.isBriefingIcon() && ug.getGroupType() == GroupType.GROUND_GROUP)
                 .map(ug -> {
                     TranslatorIcon ti = new TranslatorIcon(ug.getX(), ug.getY(), ug.getZ());
                     ti.setIconId(Util.getIconIdForVehicleType(VehicleType.valueOf(ug.getType()), ug.getCountryCode().intValue() == countryId));
@@ -401,7 +344,7 @@ public class MissionConverter {
 
         unitGroupStream = rebuildStream(ussr, germany);
         List<TranslatorIcon> planeUnitIcons = unitGroupStream
-                .filter(ug -> ug.isBriefingIcon() && ug.getGroupType().equals("AIR_GROUP"))
+                .filter(ug -> ug.isBriefingIcon() && ug.getGroupType() == GroupType.AIR_GROUP)
                 .map(ug -> {
                     TranslatorIcon ti = new TranslatorIcon(ug.getX(), ug.getY(), ug.getZ());
                     ti.setIconId(Util.getIconIdForPlaneType(PlaneType.valueOf(ug.getType()), ug.getCountryCode().intValue() == countryId));
@@ -472,7 +415,7 @@ public class MissionConverter {
                 gm.getTranslatorMissionBegins().add(missionBegin);
 
                 // For ground groups, set initial formation using a timer or something
-                if(ug.getGroupType().equals("GROUND_GROUP") && ug.getFormation().equals(FormationType.ON_ROAD_COLUMN)) {
+                if(ug.getGroupType() == GroupType.GROUND_GROUP && ug.getFormation().equals(FormationType.ON_ROAD_COLUMN)) {
                     CommandFormation cmdFormation = new CommandFormation(wp.getX(), wp.getY(), wp.getZ(), FormationType.ON_ROAD_COLUMN.getFormationCode(), 1);
                     cmdFormation.getObjects().add(og.getLeaderId());
                     Timer formationTimer = new Timer(wp.getX(), wp.getY(), wp.getZ());
@@ -484,7 +427,7 @@ public class MissionConverter {
                 }
 
                 // For air groups starting in air, issue a "loose wedge" FormationCommand after 10 seconds
-                if(ug.getGroupType().equals("AIR_GROUP") && ug.getAiLevel() != 0 && ug.getY() > 299) {
+                if(ug.getGroupType() == GroupType.AIR_GROUP && ug.getAiLevel() != 0 && ug.getY() > 299) {
                     CommandFormation cmdFormation = new CommandFormation(wp.getX(), wp.getY(), wp.getZ(), FormationType.VEE.getFormationCode(), 2);
                     cmdFormation.getObjects().add(og.getLeaderId());
                     Timer formationTimer = new Timer(wp.getX(), wp.getY(), wp.getZ());
@@ -504,7 +447,7 @@ public class MissionConverter {
                 switch(wp.getAction().getActionType()) {
                     case FLY:
                         // Make sure ground groups don't fly away ;) and keep within speed limits.
-                        if(ug.getGroupType().equals("GROUND_GROUP")) {
+                        if(ug.getGroupType() == GroupType.GROUND_GROUP) {
                             eWp.setYPos(0.0f);
                             if(eWp.getSpeed() > 30) {
                                 eWp.setSpeed(30);
@@ -514,11 +457,31 @@ public class MissionConverter {
                         generatedWaypoints.add(eWp);
                         break;
                     case ATTACK_AREA:
-                        // TODO For at least artillery, a waypoint with attack_area should NOT move to the location, just
-                        // make them fire on it...
+                        // TODO Fix 0 0 1 flags
+
                         CommandAttackArea attackAreaCmd = new CommandAttackArea(
                                 wp.getX(), wp.getY(), wp.getZ(), wp.getArea(),
                                 0, 0, 1, og.getLeaderId());
+                        if (wp.getAction().getProperties().containsKey("time")) {
+                            Integer time = Integer.parseInt(wp.getAction().getProperties().get("time"));
+                            attackAreaCmd.setTime(time * 60); // Remember, BoS timers are in seconds, we specify this timeout in minutes.
+                        }
+                        if (wp.getAction().getProperties().containsKey("target_air") && Boolean.valueOf(wp.getAction().getProperties().get("target_air"))) {
+                            attackAreaCmd.setAttackAir(1);
+                        } else {
+                            attackAreaCmd.setAttackAir(0);
+                        }
+                        if (wp.getAction().getProperties().containsKey("target_ground") && Boolean.valueOf(wp.getAction().getProperties().get("target_ground"))) {
+                            attackAreaCmd.setAttackGround(1);
+                        } else {
+                            attackAreaCmd.setAttackGround(0);
+                        }
+                        if (wp.getAction().getProperties().containsKey("target_gtargets") && Boolean.valueOf(wp.getAction().getProperties().get("target_gtargets"))) {
+                            attackAreaCmd.setAttackGTargets(1);
+                        } else {
+                            attackAreaCmd.setAttackGTargets(0);
+                        }
+
                         gm.getAreaAttackCommands().add(attackAreaCmd);
                         eWp.getTargets().clear();
                         eWp.getTargets().add(attackAreaCmd.getId().intValue());
@@ -530,6 +493,12 @@ public class MissionConverter {
 
                         // We must know the targetId for the group to be covered
                         ObjectGroup targetObjectGroup = groupMap.get(wp.getAction().getTargetClientId());
+
+                        if(wp.getAction().getTargetClientId() == null) {
+                            String msg = "Unit " + ug.getName() + "(" + ug.getType() + ") has a COVER command at waypoint (" + (a+1) + ") without cover target. Please correct.";
+                            log.error(msg);
+                            throw new RuntimeException(msg);
+                        }
 
                         // Next, figure out the generated targetId for its entity.
                         CommandCover coverCmd = new CommandCover(
@@ -640,7 +609,7 @@ public class MissionConverter {
             }
 
             // Test, add subtitle for planes of same coalition
-            if(ug.getGroupType().equals("AIR_GROUP") && ug.getCountryCode().equals(playerGroup.getCountryCode())) {
+            if(ug.getGroupType() == GroupType.AIR_GROUP && ug.getCountryCode().equals(playerGroup.getCountryCode())) {
                 String text = ug.getName() + " (" + ug.getType() + ") has reached waypoint " + (a+1);
                 lcId++;
                 TranslatorSubtitle subtitle = new TranslatorSubtitle(wayPoint.getXPos(), wayPoint.getYPos(), wayPoint.getZPos(), lcId);

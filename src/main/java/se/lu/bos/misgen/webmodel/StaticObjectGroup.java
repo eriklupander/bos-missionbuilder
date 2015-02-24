@@ -9,7 +9,7 @@ package se.lu.bos.misgen.webmodel;
  */
 public class StaticObjectGroup extends MapObject {
 
-    private String groupType;
+    private GroupType groupType;
     private Integer size;
     private Integer countryCode = -1;
     private String name;
@@ -18,14 +18,14 @@ public class StaticObjectGroup extends MapObject {
     private boolean briefingIcon = false;
 
     public StaticObjectGroup() {
-        setGroupType("STATIC_OBJECT_GROUP");
+        setGroupType(GroupType.STATIC_OBJECT_GROUP);
     }
 
-    public String getGroupType() {
+    public GroupType getGroupType() {
         return groupType;
     }
 
-    public void setGroupType(String groupType) {
+    public void setGroupType(GroupType groupType) {
         this.groupType = groupType;
     }
 

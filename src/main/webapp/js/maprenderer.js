@@ -103,7 +103,6 @@ var maprenderer = new function() {
 
             startXX=parseInt(e.offsetX);
             startYY=parseInt(e.offsetY);
-            // TODO FIX KLDUGE ERROR: If the screen is scrolled down, the YY offset does not match anymore!!! It changes :(
 
             switch(state.getState()) {
                 case state.MAP_WAITING_FOR_CLICK_AIR_GROUP:
@@ -156,6 +155,9 @@ var maprenderer = new function() {
                     if(util.notNull(state.getDragTarget()) && !util.notNull(state.getDragTarget().clientId)) {
                         state.getDragTarget().clientId = new Date().getTime();
                     }
+
+                    // Update angle on all air gr
+
                     rest.updateMission(state.getCurrentMission(), function(data) {
                         state.setCurrentMission(data);
                         console.log("Updated mission "  + data.name);
@@ -337,6 +339,7 @@ var maprenderer = new function() {
             var startYY=parseInt(e.offsetY);
 
             var ug = state.getDragTarget();
+
             var worldPos = coordTranslator.imageToWorld(imageX+startXX*zoom, imageY+startYY*zoom, metadata);
             ug.z = worldPos.z;
             ug.x = worldPos.x;

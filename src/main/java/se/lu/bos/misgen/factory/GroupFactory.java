@@ -6,6 +6,7 @@ import se.lu.bos.misgen.model.PlaneType;
 import se.lu.bos.misgen.model.Vehicle;
 import se.lu.bos.misgen.model.VehicleType;
 import se.lu.bos.misgen.webmodel.FormationType;
+import se.lu.bos.misgen.webmodel.UnitGroup;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,27 +17,27 @@ import se.lu.bos.misgen.webmodel.FormationType;
  */
 public class GroupFactory {
 
-    public static ObjectGroup buildPlaneGroup(boolean playerGroup, int numberOfPlanes, PlaneType planeType, boolean startInAir, float x, float y, float z, float yOri, Integer payloadId, String baseName, FormationType formationType) {
-
-        ObjectGroup objectGroup = new ObjectGroup();
-        for(int a = 0; a < numberOfPlanes; a++) {
-            objectGroup.getObjects().add(PlaneFactory.buildPlane(playerGroup, planeType, a, 2, x, y, z, yOri, payloadId, baseName));
-        }
-        objectGroup.getObjects().stream().forEach( o -> {
-            if(startInAir) {
-                ((Plane)o).setStartInAir(0);
-            } else {
-                ((Plane)o).setStartInAir(1);
-            }
-            if(((Plane) o).getNumberInFormation() > 0) {
-                // Make sure wingmen entity target the flight leader entity
-                o.getMCU_TR_Entity().getTargets().add(objectGroup.getObjects().get(0).getMCU_TR_Entity().getId().intValue());
-            }
-        });
-        objectGroup.applyPosition(x, y, z, yOri, formationType);
-
-        return objectGroup;
-    }
+//    public static ObjectGroup buildPlaneGroup(boolean playerGroup, int numberOfPlanes, PlaneType planeType, boolean startInAir, float x, float y, float z, float yOri, Integer payloadId, String baseName, FormationType formationType) {
+//
+//        ObjectGroup objectGroup = new ObjectGroup();
+//        for(int a = 0; a < numberOfPlanes; a++) {
+//            objectGroup.getObjects().add(PlaneFactory.buildPlane(playerGroup, planeType, a, 2, x, y, z, yOri, payloadId, baseName, player));
+//        }
+//        objectGroup.getObjects().stream().forEach( o -> {
+//            if(startInAir) {
+//                ((Plane)o).setStartInAir(0);
+//            } else {
+//                ((Plane)o).setStartInAir(1);
+//            }
+//            if(((Plane) o).getNumberInFormation() > 0) {
+//                // Make sure wingmen entity target the flight leader entity
+//                o.getMCU_TR_Entity().getTargets().add(objectGroup.getObjects().get(0).getMCU_TR_Entity().getId().intValue());
+//            }
+//        });
+//        objectGroup.applyPosition(x, y, z, yOri, formationType);
+//
+//        return objectGroup;
+//    }
 
     public static ObjectGroup buildVehicleGroup(int numberOfVehicles, VehicleType vehicleType, float x, float y, float z, float yOri, FormationType formationType) {
 
@@ -56,4 +57,27 @@ public class GroupFactory {
         return objectGroup;
     }
 
+    public static ObjectGroup buildPlaneGroup(UnitGroup ug, FormationType formationType) {
+        ObjectGroup objectGroup = new ObjectGroup();
+        for(int a = 0; a < ug.getSize(); a++) {
+            Plane plane = PlaneFactory.buildPlane(ug.getAiLevel() == 0, PlaneType.valueOf(ug.getType()), a,
+                    ug.getAiLevel(), ug.getX(), ug.getY(), ug.getZ(), ug.getyOri(), ug.getLoadout(), ug.getName(), ug.getPlayerIndex());
+
+            objectGroup.getObjects().add(plane);
+        }
+        objectGroup.getObjects().stream().forEach( o -> {
+            if(ug.getY() != 0) {
+                ((Plane)o).setStartInAir(0);
+            } else {
+                ((Plane)o).setStartInAir(1);
+            }
+            if(((Plane) o).getNumberInFormation() > 0) {
+                // Make sure wingmen entity target the flight leader entity
+                o.getMCU_TR_Entity().getTargets().add(objectGroup.getObjects().get(0).getMCU_TR_Entity().getId().intValue());
+            }
+        });
+        objectGroup.applyPosition(ug.getX(), ug.getY(), ug.getZ(), ug.getyOri(), formationType);
+
+        return objectGroup;
+    }
 }

@@ -1,6 +1,7 @@
 package se.lu.bos.misgen.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.geometry.Point2D;
 import org.apache.commons.io.IOUtils;
 import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse;
 import org.elasticsearch.action.index.IndexResponse;
@@ -13,17 +14,14 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import se.lu.bos.misgen.factory.LoadoutFactory;
 import se.lu.bos.misgen.groups.ClientAirfieldParser;
 import se.lu.bos.misgen.model.*;
 import se.lu.bos.misgen.nosql.ElasticSearchServer;
-import se.lu.bos.misgen.factory.LoadoutFactory;
 import se.lu.bos.misgen.serializer.MissionConverter;
 import se.lu.bos.misgen.serializer.MissionFileWriter;
 import se.lu.bos.misgen.serializer.MissionWriter;
-import se.lu.bos.misgen.webmodel.ActionType;
-import se.lu.bos.misgen.webmodel.ClientAirfield;
-import se.lu.bos.misgen.webmodel.ClientMission;
-import se.lu.bos.misgen.webmodel.FormationType;
+import se.lu.bos.misgen.webmodel.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -172,6 +170,9 @@ public class MissionDataServiceBean {
     public ResponseEntity<ClientMission> updateClientMission(@PathVariable String serverMissionId, @RequestBody ClientMission clientMission) {
         String json = null;
         try {
+
+            sanitizeClientMission(clientMission);
+
             json = mapper.writeValueAsString(clientMission);
             IndexResponse response = elasticSearchServer.getClient().prepareIndex("missions", "mission", serverMissionId)
                     .setSource(json)
@@ -182,6 +183,34 @@ public class MissionDataServiceBean {
         } catch (Exception e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+
+    /**
+     * Clean some stuff up if necessary. For example, all AIR_GROUPs having one waypoint and starting airborne
+     * shall have a heading directly towards waypoint 1. This is to avoid excessive manuevers on spawn resulting in crashes.
+     *
+     * @param clientMission
+     */
+    private void sanitizeClientMission(ClientMission clientMission) {
+//        clientMission.getSides().values().stream()
+//                .flatMap(s -> s.getUnitGroups().stream())
+//                .filter(ug -> ug.getGroupType() == GroupType.AIR_GROUP && ug.getY() > 0.0f && ug.getWaypoints().size() > 0)
+//                .forEach(ug -> {
+//                     // Calculate angle between group pos and first waypoint
+//                    WayPoint wayPoint = ug.getWaypoints().get(0);
+//                    Point2D sp = new Point2D(ug.getX(), ug.getZ());
+//                    Point2D wp = new Point2D(wayPoint.getX(), wayPoint.getZ());
+//                    double angle = toDeg(sp, wp);
+//                    log.info("Setting angle " + angle);
+//                    ug.setyOri(new Double(angle).floatValue());
+//                });
+    }
+
+    private Double toDeg(Point2D p1, Point2D p2) {
+        double xDiff = p2.getX() - p1.getX();
+        double yDiff = p2.getY() - p1.getY();
+        return Math.toDegrees(Math.atan2(yDiff, xDiff));
     }
 
 //    @RequestMapping(method = RequestMethod.POST, value = "/unitGroup", consumes = "application/json", produces = "application/json")
@@ -303,8 +332,9 @@ public class MissionDataServiceBean {
 
     @RequestMapping(method = RequestMethod.GET, value = "/formationTypes/{groupType}", produces = "application/json")
     public ResponseEntity<List<FormationType>> getFormationTypes(@PathVariable String groupType) {
+        GroupType groupTypeEnum = GroupType.valueOf(groupType);
         return new ResponseEntity(Arrays.asList(FormationType.values()).stream().filter(ft -> {
-             int category = groupType.equals("AIR_GROUP") ? 0 : 1;
+            int category = groupTypeEnum == GroupType.AIR_GROUP ? 0 : 1;
             return ft.getCategory() == category;
         }).collect(Collectors.toList()), HttpStatus.OK);
     }

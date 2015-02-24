@@ -1,4 +1,5 @@
 <script id="weather-tpl" type="text/x-handlebars-template">
+    <!--
     <div class="row">
         <div class="col-md-3">Cloud level</div>
         <div class="col-md-2" id="cloudLevel-m">{{cloudLevel}} meters</div>
@@ -41,7 +42,8 @@
                 <option value="2">Snow</option>
             </select></div>
     </div>
-    <hr style="margin-top:10px;margin-bottom:10px;"/>
+    -->
+
     <div class="row">
         <div class="col-md-3">Cloud config</div>
         <div class="col-md-2"></div>
@@ -55,8 +57,8 @@
             </select>
         </div>
     </div>
-    <hr style="margin-top:10px;margin-bottom:10px;"/>
-    <div class="row">
+
+    <div class="row spacer">
         <div class="col-md-3">Turbulence</div>
         <div class="col-md-2" id="turbulence-m">{{turbulence}}</div>
         <div class="col-md-5">
@@ -66,9 +68,9 @@
                    data-slider-orientation="horizontal" data-slider-selection="after" data-slider-tooltip="hide">
         </div>
     </div>
-    <hr style="margin-top:10px;margin-bottom:10px;"/>
-    <div class="row">
-        <div class="col-md-3 text-info">Temperature </div>
+
+    <div class="row spacer">
+        <div class="col-md-3">Temperature </div>
         <div class="col-md-2" id="temperature-m">{{temperature}} (cel)</div>
         <div class="col-md-5">
             <input id="temperature" type="text" class="slider" style="width:200px;" value="{{temperature}}"

@@ -6,101 +6,8 @@ var missionbuilder = new function() {
         maprenderer.renderMap();
     }
 
-    var escapeRegExp = function(string) {
-        return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-    }
 
 
-     var replaceAll = function(string, find, replace) {
-            return string.replace(new RegExp(escapeRegExp(find), 'g'), replace);
-        }
-
-    this.openWeatherEditor = function() {
-
-
-
-        var src = $('#weather-tpl').html();
-        var template = Handlebars.compile(src);
-        var html    = template(state.getCurrentMission().weather);
-        $('#weather-body').html(html);
-
-        $('#cloudLevel').slider().on('slide', function(ev){
-            $('#cloudLevel-m').text(ev.value + ' meters');
-        });
-        $('#cloudHeight').slider().on('slide', function(ev){
-            $('#cloudHeight-m').text(ev.value + ' meters');
-        });
-        $('#precLevel').slider().on('slide', function(ev){
-            $('#precLevel-m').text(ev.value);
-        });
-        $('#turbulence').slider().on('slide', function(ev){
-            $('#turbulence-m').text(ev.value);
-        });
-        $('#temperature').slider().on('slide', function(ev){
-            $('#temperature-m').text(ev.value + ' (cel)');
-        });
-
-        util.setSelectedSelectItem('precType', state.getCurrentMission().weather.precType);
-        //util.setSelectedSelectItem('cloudConfig', state.getCurrentMission().weather.cloudConfig);
-        $('#cloudConfig').children().removeAttr('selected');
-        console.log("Escaping weather into: " + replaceAll(state.getCurrentMission().weather.cloudConfig, '\\', '\\\\'));
-        $('#cloudConfig').find('option[value="'+ replaceAll(state.getCurrentMission().weather.cloudConfig, '\\', '\\\\') +'"]').attr('selected','selected');
-
-        $('#wl0h').slider().on('slide', function(ev){
-            $('#wl0h-m').text(ev.value);
-        });
-        $('#wl0s').slider().on('slide', function(ev){
-            $('#wl0s-m').text(ev.value);
-        });
-        $('#wl500h').slider().on('slide', function(ev){
-            $('#wl500h-m').text(ev.value);
-        });
-        $('#wl500s').slider().on('slide', function(ev){
-            $('#wl500s-m').text(ev.value);
-        });
-        $('#wl1000h').slider().on('slide', function(ev){
-            $('#wl1000h-m').text(ev.value);
-        });
-        $('#wl1000s').slider().on('slide', function(ev){
-            $('#wl1000s-m').text(ev.value);
-        });
-        $('#wl2000h').slider().on('slide', function(ev){
-            $('#wl2000h-m').text(ev.value);
-        });
-        $('#wl2000s').slider().on('slide', function(ev){
-            $('#wl2000s-m').text(ev.value);
-        });
-        $('#wl5000h').slider().on('slide', function(ev){
-            $('#wl5000h-m').text(ev.value);
-        });
-        $('#wl5000s').slider().on('slide', function(ev){
-            $('#wl5000s-m').text(ev.value);
-        });
-
-        $('#weatherModal').modal({backdrop:'static'});
-    }
-
-    this.saveWeather = function() {
-
-        state.getCurrentMission().weather.cloudLevel = $('#cloudLevel').val();
-        state.getCurrentMission().weather.cloudHeight = $('#cloudHeight').val();
-        state.getCurrentMission().weather.precLevel = $('#precLevel').val();
-        state.getCurrentMission().weather.precType = $('#precType').val();
-        state.getCurrentMission().weather.cloudConfig = $('#cloudConfig').val();
-        state.getCurrentMission().weather.turbulence = $('#turbulence').val();
-        state.getCurrentMission().weather.temperature = $('#temperature').val();
-
-        var altitudes = [0, 500, 1000, 2000, 5000];
-        for(var a = 0;a < 5; a++) {
-            state.getCurrentMission().weather.windLayers[a].headingDegrees = $('#wl'+altitudes[a]+'h').val();
-            state.getCurrentMission().weather.windLayers[a].speed = $('#wl'+altitudes[a]+'s').val();
-        }
-
-        rest.updateMission(state.getCurrentMission(), function(data) {
-            state.setCurrentMission(data);
-            maprenderer.redraw();
-        });
-    }
     /*
     this.downloadMissionFile = function() {
         if(!(util.notNull(state.getCurrentMission()) && util.notNull(state.getCurrentMission().serverId))) {
@@ -547,7 +454,7 @@ var missionbuilder = new function() {
                 clientId:new Date().getTime(),
                 unitGroupClientId:state.getSelectedUnitGroup().clientId,
                 speed: (state.getSelectedUnitGroup().groupType == 'GROUND_GROUP' ? 30 : 300),     // TODO Fix speed depending on air or ground unit
-                action:{"actionType":"FLY"}
+                action:{"actionType":"FLY", "properties":{}, "area":20}
             }
             state.getSelectedUnitGroup().waypoints.push(waypoint);
             rest.updateMission(state.getCurrentMission(), function(data) {
@@ -602,8 +509,64 @@ var missionbuilder = new function() {
                         });
                         util.populateSelectKeyVal('planes-edit-group-loadout', obj, 'loadout', keyvals);
                     });
-                    util.populateSelect('planes-edit-group-size', obj, 'size', statics.getGroupSizes());
-                    //util.populateSelect('planes-edit-group-altitude', obj, 'y', statics.getAltitudes());
+
+
+                    util.populateSelect('planes-edit-group-size', obj, 'size', statics.getGroupSizes(), function(id, obj, field, items, newValue) {
+                        // In this extra-callback we can update other GUI elements depending on changes of the first one.
+                        if(obj.aiLevel == 0) {
+                            $('#planes-edit-group-player-index-div').removeClass('hidden');
+                            var currentValue = $('#planes-edit-group-player-index').val();
+
+
+                            if(currentValue > newValue) {
+                                obj.playerIndex = newValue;
+                            }
+
+                            var sizes = [];
+                            for(var a = 0; a < obj.size; a++) {
+                                sizes.push(a+1);
+                            }
+                            util.populateSelect('planes-edit-group-player-index', obj, 'playerIndex', sizes);
+                            util.setSelectedSelectItem('planes-edit-group-player-index', obj.playerIndex);
+
+                            // If we need to force the playerIndex down, save directly.
+                        } else {
+                            $('#planes-edit-group-player-index-div').addClass('hidden');
+                            obj.playerIndex = -1;
+                        }
+
+                    });
+                    if(obj.aiLevel == 0) {
+                        $('#planes-edit-group-player-index-div').removeClass('hidden');
+                    } else {
+                        $('#planes-edit-group-player-index-div').addClass('hidden');
+                    }
+                    var sizes = [];
+                    for(var a = 0; a < obj.size; a++) {
+                        sizes.push(a+1);
+                    }
+                    util.populateSelect('planes-edit-group-player-index', obj, 'playerIndex', sizes);
+
+
+
+                    util.populateSelectKeyVal('planes-edit-group-skill', obj, 'aiLevel', statics.getSkills(), function(id, obj, field, items, newValue) {
+                        if(newValue == 0) {
+                            $('#planes-edit-group-player-index-div').removeClass('hidden');
+                            var sizes = [];
+                            for(var a = 0; a < obj.size; a++) {
+                                sizes.push(a+1);
+                            }
+                            obj.playerIndex = 1;
+                            util.populateSelect('planes-edit-group-player-index', obj, 'playerIndex', sizes);
+                        } else {
+                            $('#planes-edit-group-player-index-div').addClass('hidden');
+                            util.populateSelect('planes-edit-group-player-index', obj, 'playerIndex', new Array());
+                            obj.playerIndex = -1;
+                        }
+                        rest.updateMission(state.getCurrentMission());
+                    });
+
+
                     $('#planes-edit-group-altitude').slider().on('slide', function(ev){
                         $('#y-text').text(ev.value);
                         obj.y = ev.value;
@@ -616,7 +579,6 @@ var missionbuilder = new function() {
                                 maprenderer.redraw();
                             })
                         });
-                    util.populateSelectKeyVal('planes-edit-group-skill', obj, 'aiLevel', statics.getSkills());
                     util.bindCheckbox('planes-edit-group-icon', obj, 'briefingIcon');
                     util.bindCheckbox('planes-edit-group-icon-waypoint', obj, 'briefingWaypointIcons');
 
@@ -677,10 +639,16 @@ var missionbuilder = new function() {
                             });
                         break;
                     case "WAYPOINT":
+
+                        initActionPropertiesIfNecessary(obj);
+
                         var src = $('#waypoint-edit-tpl').html();
                         var template = Handlebars.compile(src);
                         var html    = template(obj);
                         $('#object-properties').html(html);
+
+
+
                         util.bindTextField('waypoint-edit-name', obj, 'name');
 
                         // Slider for speed
@@ -711,13 +679,13 @@ var missionbuilder = new function() {
                                 })
                             });
 
-                        // Slider for action radius/area
-                        $('#waypoint-edit-radius').slider().on('slide', function(ev){
-                            $('#action-radius-text').text(ev.value);
+                        // Slider for action area
+                        $('#waypoint-edit-area').slider().on('slide', function(ev){
+                            $('#waypoint-action-area-text').text(ev.value);
                             obj.area = ev.value;
                             maprenderer.redraw();
                         }).on('slideStop', function(ev){
-                                $('#action-radius-text').text(ev.value + ' meters');
+                                $('#waypoint-action-area-text').text(ev.value + ' meters');
                                 obj.area = ev.value;
                                 rest.updateMission(state.getCurrentMission(), function(data) {
                                     state.setCurrentMission(data);
@@ -725,8 +693,33 @@ var missionbuilder = new function() {
                                 })
                             });
 
+
+
+                        $('#waypoint-edit-time').slider().on('slide', function(ev){
+                            $('#waypoint-edit-time-text').text(ev.value);
+                            obj.action.properties.time = ev.value;
+                            maprenderer.redraw();
+                        }).on('slideStop', function(ev){
+                                $('#waypoint-edit-time-text').text(ev.value + ' minutes');
+                                obj.action.properties.time = ev.value;
+                                rest.updateMission(state.getCurrentMission(), function(data) {
+                                    state.setCurrentMission(data);
+                                    maprenderer.redraw();
+                                })
+                            });
+
+
+
+                        util.bindCheckbox('waypoint-edit-action-targets-air', obj,  'action.properties.target_air');
+                        util.bindCheckbox('waypoint-edit-action-targets-ground', obj,  'action.properties.target_ground');
+                        util.bindCheckbox('waypoint-edit-action-targets-vehicles', obj,  'action.properties.target_gtargets');
+
                         rest.getActionTypes( function(data) {
-                            util.populateSelect('waypoint-edit-action', obj, 'action.actionType', data);
+                            util.populateSelect('waypoint-edit-action', obj, 'action.actionType', data, function(id, obj, field, items, newValue) {
+                                // When action changes, we need to update the form as well.
+                                initActionPropertiesIfNecessary(obj);
+                                updateActionForm(newValue);
+                            });
                         });
                         var keyval = $.map(state.getUnitGroupsForAllSides(), function(item) {
                             return {
@@ -736,7 +729,7 @@ var missionbuilder = new function() {
                         });
                         keyval.splice(0, 0, {"value":-1, "name":"No object selected"});     // Insert a no value selected at index 0
                         util.populateSelectKeyVal('waypoint-edit-action-target', obj, 'action.targetClientId', keyval);
-
+                        updateActionForm(obj.action.actionType);
                         break;
                 }
             }
@@ -819,6 +812,60 @@ var missionbuilder = new function() {
                 }
             }
         });
+    }
+
+    var updateActionForm = function(val) {
+        switch(val) {
+            case "ATTACK_AREA":
+                $('#waypoint-edit-action-time-div').removeClass('hidden');
+                $('#waypoint-edit-action-area-div').removeClass('hidden');
+                $('#waypoint-edit-action-target-div').addClass('hidden');
+                $('#waypoint-edit-action-targets-div').removeClass('hidden');
+                break;
+            case "ATTACK_TARGET":
+                $('#waypoint-edit-action-time-div').addClass('hidden');
+                $('#waypoint-edit-action-area-div').addClass('hidden');
+                $('#waypoint-edit-action-target-div').removeClass('hidden');
+                $('#waypoint-edit-action-targets-div').addClass('hidden');
+                break;
+            case "COVER":
+                $('#waypoint-edit-action-target-div').removeClass('hidden');
+                $('#waypoint-edit-action-time-div').addClass('hidden');
+                $('#waypoint-edit-action-area-div').addClass('hidden');
+                $('#waypoint-edit-action-targets-div').addClass('hidden');
+                break;
+            default:
+                $('#waypoint-edit-action-time-div').addClass('hidden');
+                $('#waypoint-edit-action-area-div').addClass('hidden');
+                $('#waypoint-edit-action-target-div').addClass('hidden');
+                $('#waypoint-edit-action-targets-div').addClass('hidden');
+        }
+    }
+
+    var initActionPropertiesIfNecessary = function(obj) {
+
+        if(util.isNull(obj.action.properties)) {
+            obj.action.properties = {};
+        }
+
+        // Set a default value if not set...
+        if(util.isNull(obj.action.properties.time)) {
+            obj.action.properties.time = 20;
+        }
+        // Set a default value if not set...
+        if(util.isNull(obj.area)) {
+            obj.area = 1000;
+        }
+        // Set default values if not set...
+        if(util.isNull(obj.action.properties.target_air)) {
+            obj.action.properties.target_air = false;
+        }
+        if(util.isNull(obj.action.properties.target_ground)) {
+            obj.action.properties.target_ground = false;
+        }
+        if(util.isNull(obj.action.properties.target_gtargets)) {
+            obj.action.properties.target_gtargets = false;
+        }
     }
 
     var handleMissionCreateResponse = function(data) {

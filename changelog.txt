@@ -1,3 +1,23 @@
+-- 2015-02-24 --
+* Added possibility to select player plane in formation. Select AI level 0. Now a new dropdown appears below "AI Level" where the player can select from 1 -> size of flight. If size of flight is changed to a value smaller than the currently selected "Player in formation" value, the latter is automatically set to the last plane of the flight.
+* Added "duration" to the ATTACK_AREA command on waypoints. 1-120 minutes.
+* Added checkboxes to ATTACK_AREA command for specifying which type of targets to target: Air, Ground, Vehicles. I think "Vehicles" translate to all movable ground objects while "Ground" translates to... not sure.
+* Added context-aware Command editing - the relevant form components are now shown for ATTACK_AREA, ATTACK_TARGET, COVER, LAND, START and FLY commands.
+* Added validation so COVER command has a target object set
+* Removed controls from Weather Editor having no effect. (Note sure yet whether temperature does anything. I do think turbulence works)
+* Fixed bug where all AI flights got AI level 2.
+* Fixed bug where unit having no waypoints caused export to .Mission format to crash
+
+IMPORTANT HAPPY NOTE 1: As per game version 1.09 it is no longer necessary to run user-made missions in Offline Mode
+IMPORTANT HAPPY NOTE 2: Per the above, unlocks seems to work fine in user-made missions
+
+
+
+-- 2015-02-22 --
+* Added weather editor
+* Fixed waypoint selection bug
+
+
 -- 2015-02-20 --
 * Vehicle groups command to use follow roads formation nows works
 * Formation calculations for LINE, COLUMN and VEE now works
@@ -12,5 +32,4 @@
 
 Known/new issues:
 * Aircraft groups in mission briefing uses Baloon icon. Havn't figured out the IconId for planes yet...
-* Waypoint select bug. New waypoints are not selectable until another unit has been selected and then deselected.
 * All other known ones, see initial post...

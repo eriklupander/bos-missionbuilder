@@ -11,7 +11,7 @@ import se.lu.bos.misgen.model.PlaneType;
  * To change this template use File | Settings | File Templates.
  */
 public class PlaneFactory {
-    public static Plane buildPlane(boolean playerGroup, PlaneType planeType, int numInGroup, int aiLevel, float x, float y, float z, float yOri, Integer payloadId, String baseName) {
+    public static Plane buildPlane(boolean playerGroup, PlaneType planeType, int numInGroup, int aiLevel, float x, float y, float z, float yOri, Integer payloadId, String baseName, int playerIndex) {
         Plane p = new Plane(x, y, z, yOri);
         p.setName(baseName + " " + (numInGroup+1) + " (" + planeType.name() + ")");
         p.getMCU_TR_Entity().setName(p.getName());
@@ -21,8 +21,14 @@ public class PlaneFactory {
         p.setNumberInFormation(numInGroup);
         p.setCountry(planeType.getCountry());
         p.setPayloadId(payloadId);
-        if(playerGroup && numInGroup == 0) {
-            p.setAILevel(0);
+
+        // Handle player index in flight if applicable.
+        if(playerGroup) {
+            if(numInGroup == (playerIndex-1)) {
+                p.setAILevel(0);
+            } else {
+                p.setAILevel(3);
+            }
         }
         p.setStartInAir(y == 0 ? 1 : 0);
         return p;

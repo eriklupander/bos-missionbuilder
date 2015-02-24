@@ -51,6 +51,11 @@
         <select  class="form-control" id="planes-edit-group-size">
         </select>
     </div>
+    <div class="propertyelement hidden" id="planes-edit-group-player-index-div">
+        <label>Player in formation</label>
+        <select  class="form-control" id="planes-edit-group-player-index">
+        </select>
+    </div>
     <div class="propertyelement">
         <label>Skill level</label>
         <select class="form-control" id="planes-edit-group-skill">
@@ -219,19 +224,39 @@
         </select>
     </div>
 
-    <div class="propertyelement" class="" id="waypoint-edit-action-target-wrapper">
+    <div class="propertyelement hidden" class="" id="waypoint-edit-action-target-div">
         <label>Target</label>
         <select class="form-control" id="waypoint-edit-action-target">
         </select>
-        <i>Only applicable to COVER and ATTACK commands</i>
     </div>
 
-    <div class="propertyelement">
+    <div class="propertyelement hidden" id="waypoint-edit-action-time-div">
+        <label>Action duration</label>
+        <input id="waypoint-edit-time" type="text" class="slider" style="width:200px;" value="{{action.properties.time}}"
+               data-slider-min="0" data-slider-max="120" data-slider-step="1" data-slider-value="{{action.properties.time}}"
+               data-slider-orientation="horizontal" data-slider-selection="after" data-slider-tooltip="hide">
+        <div id="waypoint-edit-time-text" class="text-center">{{action.properties.time}} minutes</div>
+    </div>
+
+    <div class="propertyelement hidden" id="waypoint-edit-action-area-div">
         <label>Action radius</label>
-        <input id="waypoint-edit-radius" type="text" class="slider" style="width:200px;" value=""
+        <input id="waypoint-edit-area" type="text" class="slider" style="width:200px;" value="{{area}}"
                data-slider-min="100" data-slider-max="5000" data-slider-step="50" data-slider-value="{{area}}"
                data-slider-orientation="horizontal" data-slider-selection="after" data-slider-tooltip="hide">
-        <div id="action-radius-text" class="text-center">{{area}} meters</div>
+        <div id="waypoint-action-area-text" class="text-center">{{area}} meters</div>
+    </div>
+
+    <div class="propertyelement hidden" id="waypoint-edit-action-targets-div">
+        <label>Targets</label>
+        <div>
+            <div class="row">
+                <div class="col-md-4">Air</div>  <div class="col-md-4">Ground</div> <div class="col-md-4">Vehicles</div>
+
+                <div class="col-md-4"><input id="waypoint-edit-action-targets-air" type="checkbox"></div>
+                <div class="col-md-4"><input id="waypoint-edit-action-targets-ground" type="checkbox"></div>
+                <div class="col-md-4"><input id="waypoint-edit-action-targets-vehicles" type="checkbox"></div>
+            </div>
+        </div>
     </div>
 
     <div class="text-center propertyelement">

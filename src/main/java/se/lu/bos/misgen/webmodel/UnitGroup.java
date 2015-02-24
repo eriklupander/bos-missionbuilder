@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class UnitGroup extends MapObject {
 
-    private String groupType;
+    private GroupType groupType;
     private Integer size;
     private Integer countryCode = -1;
     private String name;
@@ -22,6 +22,7 @@ public class UnitGroup extends MapObject {
     private boolean startsInAir;
     private Integer loadout = 0;
     private Integer aiLevel = 2;
+    private Integer playerIndex = -1; // If aiLevel == 0, then this can be used (from index 1) to set which plane in formation that the player should be. Must never be > than size of course.
 
     private List<WayPoint> waypoints = new ArrayList<WayPoint>();
     private String serverId;
@@ -35,11 +36,11 @@ public class UnitGroup extends MapObject {
         super.setObjectType(MapObjectType.UNIT_GROUP);
     }
 
-    public String getGroupType() {
+    public GroupType getGroupType() {
         return groupType;
     }
 
-    public void setGroupType(String groupType) {
+    public void setGroupType(GroupType groupType) {
         this.groupType = groupType;
     }
 
@@ -145,5 +146,13 @@ public class UnitGroup extends MapObject {
 
     public void setBriefingWaypointIcons(boolean briefingWaypointIcons) {
         this.briefingWaypointIcons = briefingWaypointIcons;
+    }
+
+    public Integer getPlayerIndex() {
+        return playerIndex;
+    }
+
+    public void setPlayerIndex(Integer playerIndex) {
+        this.playerIndex = playerIndex;
     }
 }

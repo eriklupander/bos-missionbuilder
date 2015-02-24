@@ -1,5 +1,9 @@
 package se.lu.bos.misgen.webmodel;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created with IntelliJ IDEA.
  * User: eriklupander
@@ -10,6 +14,8 @@ package se.lu.bos.misgen.webmodel;
 public class WaypointAction {
     private ActionType actionType;
     private Long targetClientId;
+
+    private Map<String, String> properties = new HashMap<>();
 
     public ActionType getActionType() {
         return actionType;
@@ -25,5 +31,13 @@ public class WaypointAction {
 
     public void setTargetClientId(Long targetClientId) {
         this.targetClientId = targetClientId;
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
     }
 }

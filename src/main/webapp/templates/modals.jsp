@@ -375,7 +375,7 @@
 
             </div>
             <div class="form-group text-center">
-                <button type="button" class="btn btn-success" data-dismiss="modal" onclick="missionbuilder.saveWeather();">Save</button>
+                <button type="button" class="btn btn-success" data-dismiss="modal" onclick="weathereditor.saveWeather();">Save</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
             </div>
         </div>
