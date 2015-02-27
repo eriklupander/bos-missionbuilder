@@ -224,6 +224,12 @@
         </select>
     </div>
 
+    <div class="propertyelement">
+        <label>Action priority</label>
+        <select class="form-control" id="waypoint-edit-priority">
+        </select>
+    </div>
+
     <div class="propertyelement hidden" class="" id="waypoint-edit-action-target-div">
         <label>Target</label>
         <select class="form-control" id="waypoint-edit-action-target">

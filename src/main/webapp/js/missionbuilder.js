@@ -453,8 +453,10 @@ var missionbuilder = new function() {
                 z:worldZ,
                 clientId:new Date().getTime(),
                 unitGroupClientId:state.getSelectedUnitGroup().clientId,
+                area : 800,
+                priority : 2,
                 speed: (state.getSelectedUnitGroup().groupType == 'GROUND_GROUP' ? 30 : 300),     // TODO Fix speed depending on air or ground unit
-                action:{"actionType":"FLY", "properties":{}, "area":20}
+                action:{"actionType":"FLY", "properties":{}, "area":500}
             }
             state.getSelectedUnitGroup().waypoints.push(waypoint);
             rest.updateMission(state.getCurrentMission(), function(data) {
@@ -721,6 +723,10 @@ var missionbuilder = new function() {
                                 updateActionForm(newValue);
                             });
                         });
+
+                        var priorities = [{"name":"High", "value":1},{"name":"Medium", "value":2},{"name":"Low", "value":3}]
+                        util.populateSelectKeyVal('waypoint-edit-priority', obj, 'priority', priorities);
+
                         var keyval = $.map(state.getUnitGroupsForAllSides(), function(item) {
                             return {
                                 "value" : item.clientId,
@@ -843,6 +849,10 @@ var missionbuilder = new function() {
     }
 
     var initActionPropertiesIfNecessary = function(obj) {
+
+        if(util.isNull(obj.priority)) {
+            obj.priority = 2;
+        }
 
         if(util.isNull(obj.action.properties)) {
             obj.action.properties = {};

@@ -27,36 +27,31 @@ import se.lu.bos.misgen.util.Util;
  */
 public class CommandAttackArea extends GameEntity {
 
-    private Integer AttackGround = 1;
+    private Integer AttackGround = 0;
     private Integer AttackAir = 0;
-    private Integer AttackGTargets = 0;
+    private Integer AttackGTargets = 1;
     private Integer AttackArea = 3000;
     private Integer Time = 600;
     private Integer Priority = 1;
 
-    public CommandAttackArea(Float xPos, Float yPos, Float zPos, int areaSize, int attackGround, int attackAir, int attackGTargets, GameEntity executingObject) {
+    public CommandAttackArea(Float xPos, Float yPos, Float zPos, int areaSize, GameEntity executingObject) {
         setId(GlobalId.nextLong());
         setName("command AttackArea");
         setXPos(xPos);
         setYPos(yPos);
         setZPos(zPos);
         setAttackArea(areaSize);
-        setAttackGround(attackGround);
-        setAttackAir(attackAir);
-        setAttackGTargets(attackGTargets);
+
         getObjects().add(executingObject.getMCU_TR_Entity().getId().intValue());
     }
 
-    public CommandAttackArea(Float xPos, Float yPos, Float zPos, int areaSize, int attackGround, int attackAir, int attackGTargets, Integer executingObjectId) {
+    public CommandAttackArea(Float xPos, Float yPos, Float zPos, int areaSize, Integer executingObjectId) {
         setId(GlobalId.nextLong());
         setName("command AttackArea");
         setXPos(xPos);
         setYPos(yPos);
         setZPos(zPos);
         setAttackArea(areaSize);
-        setAttackGround(attackGround);
-        setAttackAir(attackAir);
-        setAttackGTargets(attackGTargets);
         getObjects().add(executingObjectId);
     }
 

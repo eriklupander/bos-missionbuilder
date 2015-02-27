@@ -460,8 +460,7 @@ public class MissionConverter {
                         // TODO Fix 0 0 1 flags
 
                         CommandAttackArea attackAreaCmd = new CommandAttackArea(
-                                wp.getX(), wp.getY(), wp.getZ(), wp.getArea(),
-                                0, 0, 1, og.getLeaderId());
+                                wp.getX(), wp.getY(), wp.getZ(), wp.getArea(), og.getLeaderId());
                         if (wp.getAction().getProperties().containsKey("time")) {
                             Integer time = Integer.parseInt(wp.getAction().getProperties().get("time"));
                             attackAreaCmd.setTime(time * 60); // Remember, BoS timers are in seconds, we specify this timeout in minutes.
@@ -481,6 +480,8 @@ public class MissionConverter {
                         } else {
                             attackAreaCmd.setAttackGTargets(0);
                         }
+
+                        attackAreaCmd.setPriority(wp.getPriority());
 
                         gm.getAreaAttackCommands().add(attackAreaCmd);
                         eWp.getTargets().clear();
@@ -503,6 +504,7 @@ public class MissionConverter {
                         // Next, figure out the generated targetId for its entity.
                         CommandCover coverCmd = new CommandCover(
                                 wp.getX(), wp.getY(), wp.getZ(), og.getLeaderId(), targetObjectGroup.getLeaderId());
+                        coverCmd.setPriority(wp.getPriority());
                         gm.getCoverCommands().add(coverCmd);
                         // Add cover target to waypoint target list. Or should this be done on the previous waypoint??
                         eWp.getTargets().add(coverCmd.getId().intValue());
@@ -518,6 +520,7 @@ public class MissionConverter {
                             // Next, figure out the generated targetId for its entity.
                             CommandAttackTarget attackCmd = new CommandAttackTarget(
                                     wp.getX(), wp.getY(), wp.getZ(), 1, og.getLeaderId(), targetObjectGroup2.getLeaderId());
+                            attackCmd.setPriority(wp.getPriority());
                             gm.getAttackTargetCommands().add(attackCmd);
 
                             // Add attack target to waypoint target list. Or should this be done on the previous waypoint??
