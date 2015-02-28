@@ -1,3 +1,8 @@
+-- XXXX-XX-XX --
+* Added Priority (1-3) to waypoints and commands
+* Re-added precipitation controls to weather editor
+
+
 -- 2015-02-24 --
 * Added possibility to select player plane in formation. Select AI level 0. Now a new dropdown appears below "AI Level" where the player can select from 1 -> size of flight. If size of flight is changed to a value smaller than the currently selected "Player in formation" value, the latter is automatically set to the last plane of the flight.
 * Added "duration" to the ATTACK_AREA command on waypoints. 1-120 minutes.

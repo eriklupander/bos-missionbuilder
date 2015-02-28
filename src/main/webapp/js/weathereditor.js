@@ -13,9 +13,9 @@ var weathereditor = new function() {
 //        $('#cloudHeight').slider().on('slide', function(ev){
 //            $('#cloudHeight-m').text(ev.value + ' meters');
 //        });
-//        $('#precLevel').slider().on('slide', function(ev){
-//            $('#precLevel-m').text(ev.value);
-//        });
+        $('#precLevel').slider().on('slide', function(ev){
+            $('#precLevel-m').text(ev.value);
+        });
         $('#turbulence').slider().on('slide', function(ev){
             $('#turbulence-m').text(ev.value);
         });
@@ -23,7 +23,7 @@ var weathereditor = new function() {
             $('#temperature-m').text(ev.value + ' (cel)');
         });
 
-        //util.setSelectedSelectItem('precType', state.getCurrentMission().weather.precType);
+        util.setSelectedSelectItem('precType', state.getCurrentMission().weather.precType);
         //util.setSelectedSelectItem('cloudConfig', state.getCurrentMission().weather.cloudConfig);
         $('#cloudConfig').children().removeAttr('selected');
         console.log("Escaping weather into: " + replaceAll(state.getCurrentMission().weather.cloudConfig, '\\', '\\\\'));
@@ -67,8 +67,8 @@ var weathereditor = new function() {
 
 //        state.getCurrentMission().weather.cloudLevel = $('#cloudLevel').val();
 //        state.getCurrentMission().weather.cloudHeight = $('#cloudHeight').val();
-//        state.getCurrentMission().weather.precLevel = $('#precLevel').val();
-//        state.getCurrentMission().weather.precType = $('#precType').val();
+        state.getCurrentMission().weather.precLevel = $('#precLevel').val();
+        state.getCurrentMission().weather.precType = $('#precType').val();
         state.getCurrentMission().weather.cloudConfig = $('#cloudConfig').val();
         state.getCurrentMission().weather.turbulence = $('#turbulence').val();
         state.getCurrentMission().weather.temperature = $('#temperature').val();

@@ -22,6 +22,7 @@
         </div>
     </div>
     <hr style="margin-top:10px;margin-bottom:10px;"/>
+    -->
     <div class="row">
         <div class="col-md-3">Precipitation level</div>
         <div class="col-md-2" id="precLevel-m">{{precLevel}}</div>
