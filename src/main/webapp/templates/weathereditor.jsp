@@ -43,7 +43,6 @@
                 <option value="2">Snow</option>
             </select></div>
     </div>
-    -->
 
     <div class="row">
         <div class="col-md-3">Cloud config</div>

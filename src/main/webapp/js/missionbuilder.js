@@ -75,6 +75,28 @@ var missionbuilder = new function() {
         });
     }
 
+    this.deleteMission = function() {
+        if(util.notNull(state.getCurrentMission()) && util.notNull(state.getCurrentMission().serverId)) {
+            if(confirm("Do you want to DELETE this Mission?")) {
+                rest.deleteMission(state.getCurrentMission().serverId, function(msg) {
+                    state.deselectAll();
+                    state.setCurrentMission(null);
+
+                    $('#mission-name').text('');
+                    $('#rightmenu').addClass('hidden');
+                    $('#country-select').addClass('hidden');
+                    $('#weather-select').addClass('hidden');
+                    $('#skins-select').addClass('hidden');
+
+                    $('#object-properties').addClass('hidden');
+                    maprenderer.redraw();
+                });
+            }
+        } else {
+            alert("Cannot delete, load mission first");
+        }
+    }
+
     this.selectCurrentCountry = function(countryCode) {
         state.setCurrentCountry(countryCode);
 
@@ -143,8 +165,10 @@ var missionbuilder = new function() {
             $('#load-mission-body').empty();
             var tpl = '<div class="list-group">';
             for(var a = 0; a < data.length; a++) {
-                tpl += '<a class="list-group-item" data-dismiss="modal" onclick="missionbuilder.loadMission(\''+ data[a].serverId + '\');"><h4 class="list-group-item-heading">' + data[a].name + '</h4>';
-                tpl += '<p class="list-group-item-text">' + data[a].description + '</p></a>';
+                if(util.notNull(data[a].serverId)) {
+                    tpl += '<a class="list-group-item" data-dismiss="modal" onclick="missionbuilder.loadMission(\''+ data[a].serverId + '\');"><h4 class="list-group-item-heading">' + data[a].name + '</h4>';
+                    tpl += '<p class="list-group-item-text">' + data[a].description + '</p></a>';
+                }
             }
             tpl += '</div>';
             $('#load-mission-body').html(tpl);
@@ -161,6 +185,7 @@ var missionbuilder = new function() {
             $('#rightmenu').removeClass('hidden');
             $('#country-select').removeClass('hidden');
             $('#weather-select').removeClass('hidden');
+            $('#skins-select').removeClass('hidden');
 
             state.deselectAll();
             $('#object-properties').addClass('hidden');
@@ -340,6 +365,7 @@ var missionbuilder = new function() {
         }
         $('#country-select').removeClass('hidden');
         $('#weather-select').removeClass('hidden');
+        $('#skins-select').removeClass('hidden');
         rest.createMission(mission, handleMissionCreateResponse);
     }
 

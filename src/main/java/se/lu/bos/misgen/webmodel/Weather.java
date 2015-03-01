@@ -1,6 +1,5 @@
 package se.lu.bos.misgen.webmodel;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import se.lu.bos.misgen.model.WindLayer;
 
 import java.util.ArrayList;

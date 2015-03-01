@@ -1,8 +1,6 @@
 package se.lu.bos.misgen.serializer;
 
 import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 
 import java.io.File;

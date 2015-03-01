@@ -77,6 +77,9 @@
                     <li>
                         <a href="#" onclick="missionbuilder.exportMissionToDisk();">Export Mission to Disk</a>
                     </li>
+                    <li>
+                        <a href="#" onclick="missionbuilder.deleteMission();">Delete Mission</a>
+                    </li>
                 </ul>
             </li>
             <li class="dropdown hidden"  id="country-select">
@@ -118,6 +121,10 @@
             <li class="dropdown hidden" id="weather-select">
                 <a href="#"  class="dropdown-toggle"  onclick="weathereditor.openWeatherEditor();"><i class="fa fa-cloud"></i>  Weather Editor</a>
              </li>
+
+            <li class="dropdown hidden" id="skins-select">
+                <a href="#"  class="dropdown-toggle"  onclick="skinmanager.openSkinManager();"><i class="fa fa-plane"></i>  Skin Manager</a>
+            </li>
         </ul>
 
         <!-- Top Menu Items -->
@@ -219,6 +226,7 @@
 <script src="js/sidemenu.js"></script>
 <script src="js/state.js"></script>
 <script src="js/weathereditor.js"></script>
+<script src="js/skinmanager.js"></script>
 <script src="js/missionbuilder.js"></script>
 <script src="js/coordTranslator.js"></script>
 <script src="js/renderer.js"></script>

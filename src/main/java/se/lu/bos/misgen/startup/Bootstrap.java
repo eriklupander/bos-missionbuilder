@@ -1,23 +1,5 @@
 package se.lu.bos.misgen.startup;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import se.lu.bos.misgen.dao.UserDao;
-import se.lu.bos.misgen.nosql.ElasticSearchServer;
-import se.lu.bos.misgen.sec.User;
-
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
  * Created with IntelliJ IDEA.
  * User: eriklupander

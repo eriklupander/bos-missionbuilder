@@ -1,6 +1,10 @@
--- XXXX-XX-XX --
-* Added Priority (1-3) to waypoints and commands
+-- 2015-03-01 --
+* Added Skin Manager, allowing user-made skins to be set on individual aircraft.
+* Added Priority (1-3) to waypoints and commands.
+* Added Delete Mission option to Menu. Deletes mission from internal SMB database. Any generated .Mission file is not deleted.
 * Re-added precipitation controls to weather editor
+* Added automatic append of backslash to bos.data.directory property if missing.
+* Fixed bug resulting in Static Objects being placed at the western edge of the map.
 
 
 -- 2015-02-24 --

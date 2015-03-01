@@ -62,6 +62,17 @@ var rest = new function() {
         )
     }
 
+    this.deleteMission = function(missionServerId, callback) {
+        $.ajax({
+                method : 'DELETE',
+                url : BASE + '/missions/' + missionServerId,
+                contentType: 'application/json',
+                processData: false,
+                success : callback
+            }
+        )
+    }
+
     this.getPlaneTypes = function(countryId, callback) {
         $.getJSON(BASE + "/planeTypes/" + countryId, callback);
     }
@@ -96,5 +107,9 @@ var rest = new function() {
 
     this.loadAirfields = function(callback) {
         $.getJSON(BASE + "/airfields", callback);
+    }
+
+    this.getSkins = function(callback) {
+        $.getJSON(BASE + "/skins", callback);
     }
 }

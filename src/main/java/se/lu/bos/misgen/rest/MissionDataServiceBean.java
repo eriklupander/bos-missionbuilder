@@ -1,8 +1,8 @@
 package se.lu.bos.misgen.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javafx.geometry.Point2D;
 import org.apache.commons.io.IOUtils;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
@@ -10,7 +10,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +20,8 @@ import se.lu.bos.misgen.nosql.ElasticSearchServer;
 import se.lu.bos.misgen.serializer.MissionConverter;
 import se.lu.bos.misgen.serializer.MissionFileWriter;
 import se.lu.bos.misgen.serializer.MissionWriter;
+import se.lu.bos.misgen.serializer.skin.SkinManager;
+import se.lu.bos.misgen.util.EnvUtil;
 import se.lu.bos.misgen.webmodel.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -39,7 +40,7 @@ public class MissionDataServiceBean {
 
     private final static Logger log = LoggerFactory.getLogger(MissionDataServiceBean.class);
 
-    private static final String DEFAULT_DATA_DIR = "H:\\skyrim\\SteamApps\\common\\IL-2 Sturmovik Battle of Stalingrad\\data\\";
+    public static final String DEFAULT_DATA_DIR = "H:\\skyrim\\SteamApps\\common\\IL-2 Sturmovik Battle of Stalingrad\\data\\";
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -55,9 +56,11 @@ public class MissionDataServiceBean {
     @Autowired
     ClientAirfieldParser clientAirfieldParser;
 
+    @Autowired
+    SkinManager skinManager;
 
     @Autowired
-    Environment env;
+    EnvUtil envUtil;
 
     @RequestMapping(method = RequestMethod.GET, value="/mission/{serverId}/downloadmission", produces = "application/octet-stream")
     public void downloadMission(@PathVariable String serverId, HttpServletResponse response) {
@@ -127,7 +130,7 @@ public class MissionDataServiceBean {
 
             GeneratedMission generatedMission = missionConverter.convert(clientMission);
             String missionFileBody = new MissionWriter().generateMission(generatedMission);
-            String path = env.getProperty("bos.data.directory", DEFAULT_DATA_DIR)  + "Missions\\webmissions";
+            String path = envUtil.getBasePath()  + "Missions\\webmissions";
             if(!path.endsWith("/")) {
                 path = path + "/";
             }
@@ -193,47 +196,19 @@ public class MissionDataServiceBean {
      * @param clientMission
      */
     private void sanitizeClientMission(ClientMission clientMission) {
-//        clientMission.getSides().values().stream()
-//                .flatMap(s -> s.getUnitGroups().stream())
-//                .filter(ug -> ug.getGroupType() == GroupType.AIR_GROUP && ug.getY() > 0.0f && ug.getWaypoints().size() > 0)
-//                .forEach(ug -> {
-//                     // Calculate angle between group pos and first waypoint
-//                    WayPoint wayPoint = ug.getWaypoints().get(0);
-//                    Point2D sp = new Point2D(ug.getX(), ug.getZ());
-//                    Point2D wp = new Point2D(wayPoint.getX(), wayPoint.getZ());
-//                    double angle = toDeg(sp, wp);
-//                    log.info("Setting angle " + angle);
-//                    ug.setyOri(new Double(angle).floatValue());
-//                });
+
     }
 
-    private Double toDeg(Point2D p1, Point2D p2) {
-        double xDiff = p2.getX() - p1.getX();
-        double yDiff = p2.getY() - p1.getY();
-        return Math.toDegrees(Math.atan2(yDiff, xDiff));
-    }
 
-//    @RequestMapping(method = RequestMethod.POST, value = "/unitGroup", consumes = "application/json", produces = "application/json")
-//    public ResponseEntity<UnitGroup> getClientUnitGroup(@RequestBody UnitGroup clientUnitGroup) {
-//        String json = null;
-//        try {
-//            json = mapper.writeValueAsString(clientUnitGroup);
-//            IndexResponse response = elasticSearchServer.getClient().prepareIndex("unitGroups", "unitgroup")
-//                    .setSource(json)
-//                    .execute()
-//                    .actionGet();
-//            clientUnitGroup.setServerId(response.getId());
-//            return new ResponseEntity(clientUnitGroup, HttpStatus.CREATED);
-//        } catch (Exception e) {
-//            return new ResponseEntity(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
+
+
 
     @RequestMapping(method = RequestMethod.GET, value = "/actionTypes", produces = "application/json")
     public ResponseEntity<List<ActionType>> getActionTypes() {
         return new ResponseEntity(ActionType.values(), HttpStatus.OK);
     }
 
+    // TODO change path
     @RequestMapping(method = RequestMethod.GET, value = "/mission/{serverId}", produces = "application/json")
     public ResponseEntity<ClientMission> getClientMission(@PathVariable String serverId) {
         try {
@@ -247,6 +222,22 @@ public class MissionDataServiceBean {
             return new ResponseEntity(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
+
+
+    @RequestMapping(method = RequestMethod.DELETE, value = "/missions/{serverId}", produces = "text/plain")
+    public ResponseEntity<String> getDeleteClientMission(@PathVariable String serverId) {
+        DeleteResponse deleteResponse = elasticSearchServer.getClient().prepareDelete("missions", "mission", serverId)
+                .execute()
+                .actionGet();
+        log.info("Delete request result: " + deleteResponse.isFound());
+        return new ResponseEntity<String>("Mission identified by " + serverId + " deleted", HttpStatus.OK);
+    }
+
+
+
+
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/missions", produces = "application/json")
     public ResponseEntity<String> getDeleteClientMissions() {
@@ -278,7 +269,7 @@ public class MissionDataServiceBean {
                 List<ClientMission> collect = Arrays.asList(response.getHits().getHits()).stream()
                         .map(hit -> {
                             ClientMission cm = jh.apply(hit.getSourceAsString());
-                            cm.setServerId(hit.id());
+                            //cm.setServerId(hit.id());
                             return cm;
                         }).collect(Collectors.toList());
                 esData.addAll(collect);
@@ -350,5 +341,16 @@ public class MissionDataServiceBean {
     public ResponseEntity<List<FormationType>> getLoadouts(@PathVariable String planeType) throws IOException {
         PlaneType type = PlaneType.valueOf(planeType);
         return new ResponseEntity(LoadoutFactory.getLoadout(type), HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/skins/{planeType}", produces = "application/json")
+    public ResponseEntity<List<String>> getSkins(@PathVariable String planeType) throws IOException {
+        PlaneType type = PlaneType.valueOf(planeType);
+        return new ResponseEntity(skinManager.getSkins(type), HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/skins", produces = "application/json")
+    public ResponseEntity<List<String>> getSkins() throws IOException {
+        return new ResponseEntity(skinManager.getSkins(), HttpStatus.OK);
     }
 }

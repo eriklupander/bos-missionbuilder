@@ -1,7 +1,6 @@
 package se.lu.bos.misgen.groups;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import se.lu.bos.misgen.webmodel.ClientAirfield;
 import se.lu.bos.misgen.webmodel.MapObjectType;

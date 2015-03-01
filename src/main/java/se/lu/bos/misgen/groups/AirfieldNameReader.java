@@ -5,8 +5,8 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import se.lu.bos.misgen.util.EnvUtil;
 import se.lu.bos.misgen.webmodel.ClientAirfield;
 
 import java.io.File;
@@ -29,7 +29,7 @@ public class AirfieldNameReader {
     private static final Logger log = LoggerFactory.getLogger(AirfieldNameReader.class);
 
     @Autowired
-    Environment env;
+    EnvUtil envUtil;
 
     public List<ClientAirfield> buildAirfields() throws IOException {
         List<ClientAirfield> airfields = new ArrayList<>();
@@ -55,7 +55,7 @@ public class AirfieldNameReader {
     }
 
     private String readGroupFromFile(String file) throws IOException {
-        InputStream resourceAsStream = FileUtils.openInputStream(new File(env.getProperty("bos.data.directory") + "\\Template\\" + file)); //StaticGroupsFactory.class.getClassLoader().getResourceAsStream(file);
+        InputStream resourceAsStream = FileUtils.openInputStream(new File(envUtil.getBasePath() + "\\Template\\" + file)); //StaticGroupsFactory.class.getClassLoader().getResourceAsStream(file);
         return IOUtils.toString(resourceAsStream, "UTF-16LE");
     }
 }

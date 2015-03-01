@@ -3,8 +3,8 @@ package se.lu.bos.misgen.groups;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
+import se.lu.bos.misgen.util.EnvUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class StaticGroupReader {
 
     @Autowired
-    Environment env;
+    EnvUtil envUtil;
 
     public List<GroupEntity> readGroupEntitiesFromClasspath(String fileName, GroupEntityType groupEntityType) throws IOException {
         switch(groupEntityType) {
@@ -222,7 +222,7 @@ public class StaticGroupReader {
     }
 
     private String readGroupFromFile(String file) throws IOException {
-        InputStream resourceAsStream = FileUtils.openInputStream(new File(env.getProperty("bos.data.directory") + "Template\\" + file));
+        InputStream resourceAsStream = FileUtils.openInputStream(new File(envUtil.getBasePath() + "Template\\" + file));
         //StaticGroupsFactory.class.getClassLoader().getResourceAsStream(file);
         return IOUtils.toString(resourceAsStream);
     }

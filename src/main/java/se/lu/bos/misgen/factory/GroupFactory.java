@@ -75,9 +75,26 @@ public class GroupFactory {
                 // Make sure wingmen entity target the flight leader entity
                 o.getMCU_TR_Entity().getTargets().add(objectGroup.getObjects().get(0).getMCU_TR_Entity().getId().intValue());
             }
+
+            applySkin((Plane) o, ug);
         });
         objectGroup.applyPosition(ug.getX(), ug.getY(), ug.getZ(), ug.getyOri(), formationType);
 
         return objectGroup;
+    }
+
+    private static void applySkin(Plane plane, UnitGroup ug) {
+        if(ug.getSkins() == null || ug.getSkins().size() == 0) {
+            plane.setSkin("");
+        } else {
+            if(ug.getSkins().size() > plane.getNumberInFormation()) {
+                String skin = ug.getSkins().get(plane.getNumberInFormation());
+                if("Default".equalsIgnoreCase(skin)) {
+                    plane.setSkin("");
+                } else {
+                    plane.setSkin(PlaneType.valueOf(ug.getType()).getSkinFolder() + "\\" + skin);
+                }
+            }
+        }
     }
 }

@@ -3,8 +3,8 @@ package se.lu.bos.misgen.groups;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import se.lu.bos.misgen.util.EnvUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,7 +27,7 @@ public class StaticGroupsFactory {
     StaticGroupReader staticGroupReader;
 
     @Autowired
-    Environment env;
+    EnvUtil envUtil;
 
     public String getAirfields() throws IOException {
         InputStream resourceAsStream = StaticGroupsFactory.class.getClassLoader().getResourceAsStream("airfields.group");              // OWN DERIVED GROUP
@@ -112,6 +112,6 @@ public class StaticGroupsFactory {
     }
 
     private FileInputStream readFile(String resourceFile) throws IOException {
-        return FileUtils.openInputStream(new File(env.getProperty("bos.data.directory") + resourceFile));
+        return FileUtils.openInputStream(new File(envUtil.getBasePath() + resourceFile));
     }
 }

@@ -120,7 +120,7 @@ var state = new function() {
         currentMission = mission;
 
         // Re-set the selected unit group
-        if(util.notNull(selectedUnitGroup)) {
+        if(util.notNull(currentMission) &&  util.notNull(selectedUnitGroup)) {
             for(var a = 0; a < currentMission.sides[currentCountry].unitGroups.length; a++) {
                 if(currentMission.sides[currentCountry].unitGroups[a].clientId === selectedUnitGroup.clientId) {
                     currentMission.sides[currentCountry].unitGroups[a] = selectedUnitGroup;

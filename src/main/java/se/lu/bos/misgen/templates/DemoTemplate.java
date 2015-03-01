@@ -1,14 +1,5 @@
 package se.lu.bos.misgen.templates;
 
-import se.lu.bos.misgen.helper.ObjectGroup;
-import se.lu.bos.misgen.helper.OnEventId;
-import se.lu.bos.misgen.model.*;
-import se.lu.bos.misgen.factory.GroupFactory;
-import se.lu.bos.misgen.factory.MissionFactory;
-import se.lu.bos.misgen.serializer.MissionWriter;
-import se.lu.bos.misgen.factory.WayPointFactory;
-import se.lu.bos.misgen.webmodel.FormationType;
-
 import java.io.IOException;
 
 /**

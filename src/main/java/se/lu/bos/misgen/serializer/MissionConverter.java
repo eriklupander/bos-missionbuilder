@@ -19,7 +19,6 @@ import se.lu.bos.misgen.webmodel.*;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -178,7 +177,7 @@ public class MissionConverter {
                 // Apply positioning offset within group. Use the yOri to always have static object form a line.
                 Float[] newPositions = Util.getOffsetFormationLine(a, sog.getX(), sog.getY(), sog.getZ(), sog.getyOri(), 50);
                 so.setXPos(newPositions[0]);
-                so.setZPos(newPositions[1]);
+                so.setZPos(newPositions[2]);
                 sogs.add(so);
             }
 

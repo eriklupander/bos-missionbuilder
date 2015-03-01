@@ -30,6 +30,8 @@ public class UnitGroup extends MapObject {
     private boolean briefingIcon = false;
     private boolean briefingWaypointIcons = false;
 
+    private List<String> skins = new ArrayList<>();
+
     private FormationType formation = FormationType.NONE;
 
     public UnitGroup() {
@@ -154,5 +156,13 @@ public class UnitGroup extends MapObject {
 
     public void setPlayerIndex(Integer playerIndex) {
         this.playerIndex = playerIndex;
+    }
+
+    public List<String> getSkins() {
+        return skins;
+    }
+
+    public void setSkins(List<String> skins) {
+        this.skins = skins;
     }
 }

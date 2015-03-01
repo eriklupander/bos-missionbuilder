@@ -1,6 +1,5 @@
 package se.lu.bos.misgen.webmodel;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
