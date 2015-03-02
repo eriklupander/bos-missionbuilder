@@ -31,6 +31,8 @@ public class ClientMission {
 
     private Weather weather;
 
+    private List<Effect> effects = new ArrayList<>();
+
     private ClientMission() {
         sides.put(101, new Side("USSR"));
         sides.put(201, new Side("Germany"));
@@ -137,5 +139,13 @@ public class ClientMission {
 
     public void setWeather(Weather weather) {
         this.weather = weather;
+    }
+
+    public List<Effect> getEffects() {
+        return effects;
+    }
+
+    public void setEffects(List<Effect> effects) {
+        this.effects = effects;
     }
 }

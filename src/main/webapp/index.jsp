@@ -123,7 +123,7 @@
              </li>
 
             <li class="dropdown hidden" id="skins-select">
-                <a href="#"  class="dropdown-toggle"  onclick="skinmanager.openSkinManager();"><i class="fa fa-plane"></i>  Skin Manager</a>
+                <a href="#"  class="dropdown-toggle"  onclick="flightmanager.openFlightManager();"><i class="fa fa-plane"></i>  Flight Manager</a>
             </li>
         </ul>
 
@@ -226,7 +226,7 @@
 <script src="js/sidemenu.js"></script>
 <script src="js/state.js"></script>
 <script src="js/weathereditor.js"></script>
-<script src="js/skinmanager.js"></script>
+<script src="js/flightmanager.js"></script>
 <script src="js/missionbuilder.js"></script>
 <script src="js/coordTranslator.js"></script>
 <script src="js/renderer.js"></script>
@@ -242,7 +242,7 @@
 
 
 <jsp:include page="templates/modals.jsp"/>
-
+<jsp:include page="templates/flightmanager.jsp"/>
 
 
 <!-- OBJECT PROPERTIES DIALOG -->

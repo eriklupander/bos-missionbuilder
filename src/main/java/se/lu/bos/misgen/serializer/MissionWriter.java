@@ -26,12 +26,14 @@ public class MissionWriter {
         entities.addAll(gm.getFormationCommands());
         entities.addAll(gm.getTakeOffCommands());
         entities.addAll(gm.getLandCommands());
+        entities.addAll(gm.getEffectCommands());
         entities.addAll(gm.getTimers());
         entities.addAll(gm.getTranslatorIcons());
         entities.addAll(gm.getTranslatorMissionBegins());
         entities.addAll(gm.getTranslatorSubtitles());
         entities.addAll(gm.getWayPoints());
         entities.addAll(gm.getStaticObjects());
+        entities.addAll(gm.getEffects());
         entities.addAll((Collection<? extends GameEntity>) gm.getObjectGroups()
                 .stream().map(og -> og.getObjects())
                 .flatMap(s -> s.stream())

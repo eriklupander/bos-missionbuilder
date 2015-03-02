@@ -1,5 +1,6 @@
 package se.lu.bos.misgen.model;
 
+import org.eclipse.jdt.internal.compiler.util.SimpleSet;
 import se.lu.bos.misgen.groups.GroupEntity;
 import se.lu.bos.misgen.helper.ObjectGroup;
 
@@ -50,6 +51,7 @@ public class GeneratedMission {
     private List<Airfield> airfieldEntities = new ArrayList<>();
 
     private Map<Integer, String> localization;
+    private List<CommandEffect> effectCommands = new ArrayList<>();
 
     public Map<Integer, String> getLocalization() {
         return localization;
@@ -249,5 +251,13 @@ public class GeneratedMission {
 
     public void setFormationCommands(List<CommandFormation> formationCommands) {
         this.formationCommands = formationCommands;
+    }
+
+    public List<CommandEffect> getEffectCommands() {
+        return effectCommands;
+    }
+
+    public void setEffectCommands(List<CommandEffect> effectCommands) {
+        this.effectCommands = effectCommands;
     }
 }

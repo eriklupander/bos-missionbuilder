@@ -8,5 +8,5 @@ package se.lu.bos.misgen.webmodel;
  * To change this template use File | Settings | File Templates.
  */
 public enum MapObjectType {
-    UNIT_GROUP, WAYPOINT, TRIGGER, AIRFIELD, STATIC_OBJECT;
+    UNIT_GROUP, WAYPOINT, TRIGGER, AIRFIELD, STATIC_OBJECT, EFFECT;
 }

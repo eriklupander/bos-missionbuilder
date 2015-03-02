@@ -11,6 +11,7 @@ import se.lu.bos.misgen.groups.ClientAirfieldParser;
 import se.lu.bos.misgen.groups.StaticGroupsFactory;
 import se.lu.bos.misgen.helper.ObjectGroup;
 import se.lu.bos.misgen.model.*;
+import se.lu.bos.misgen.model.Effect;
 import se.lu.bos.misgen.model.Timer;
 import se.lu.bos.misgen.model.WayPoint;
 import se.lu.bos.misgen.util.Util;
@@ -69,19 +70,11 @@ public class MissionConverter {
 
 
         buildObjectGroups(cm, gm, playerGroup);
+        buildEffects(cm, gm);
         buildStaticObjectGroups(cm, gm);
 
-        if(cm.getGenerateAAAAtAirfields()) {
-            gm.getAirfieldEntities().stream().forEach(af -> {
-                gm.getObjectGroups().addAll(generateAAA(af.getXPos(), af.getYPos(), af.getZPos(), 4, 2));
-            });
-        }
 
-//        if(cm.getGenerateAAAAtBridges()) {
-//            gm.getBridges().stream().forEach(ge -> {
-//                gm.getObjectGroups().addAll(generateAAA(ge.getxPos(), ge.getyPos(), ge.getzPos(), 2, 2));
-//            });
-//        }
+        generateAAA(cm, gm);
 
         gm.setLocalization(localization);
 
@@ -101,6 +94,49 @@ public class MissionConverter {
         return gm;
     }
 
+    /**
+     * Builds a structure like this to activate and add all effects to the mission:
+     *
+     * MCU_TR_MissionBegin -> [target link] -> Timer -> [target link] -> MCU_CMD_Effect -> [object-link(s)] -> MCU_TR_Entity -> [MisObjID] -> Effect
+     *
+     * @param cm
+     * @param gm
+     */
+    private void buildEffects(ClientMission cm, GeneratedMission gm) {
+        if(cm.getEffects().size() == 0) return;
+
+        List<Effect> effectList =  cm.getEffects().stream()
+                .map(e -> new Effect(e.getX(), e.getY(), e.getZ(), e.getEffectType()))
+                .collect(Collectors.toList());
+
+        final TranslatorMissionBegin translatorMissionBegin = new TranslatorMissionBegin(effectList.get(0).getXPos(), effectList.get(0).getYPos(), effectList.get(0).getZPos());
+        final Timer effectsTimer = new Timer(effectList.get(0).getXPos(), effectList.get(0).getYPos(), effectList.get(0).getZPos());
+        final CommandEffect cmdEffect = new CommandEffect(effectList.get(0).getXPos(), effectList.get(0).getYPos(), effectList.get(0).getZPos());
+
+        effectList.stream().forEach(e -> cmdEffect.getObjects().add(e.getLinkTrId()));
+        effectsTimer.getTargets().add(cmdEffect.getId().intValue());
+        translatorMissionBegin.getTargets().add(effectsTimer.getId().intValue());
+
+        gm.getTranslatorMissionBegins().add(translatorMissionBegin);
+        gm.getEffectCommands().add(cmdEffect);
+        gm.getTimers().add(effectsTimer);
+        gm.getEffects().addAll(effectList);
+
+    }
+
+    private void generateAAA(ClientMission cm, GeneratedMission gm) {
+        if(cm.getGenerateAAAAtAirfields()) {
+            gm.getAirfieldEntities().stream().forEach(af -> {
+                gm.getObjectGroups().addAll(generateAAA(af.getXPos(), af.getYPos(), af.getZPos(), 4, 2));
+            });
+        }
+
+//        if(cm.getGenerateAAAAtBridges()) {
+//            gm.getBridges().stream().forEach(ge -> {
+//                gm.getObjectGroups().addAll(generateAAA(ge.getxPos(), ge.getyPos(), ge.getzPos(), 2, 2));
+//            });
+//        }
+    }
 
 
     private Float[] findBounds(GeneratedMission gm) {

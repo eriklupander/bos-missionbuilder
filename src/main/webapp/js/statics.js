@@ -44,4 +44,13 @@ var statics = new function() {
         arr.push({"value":0, "name":"Player"});
         return arr;
     }
+
+    this.getSkillsAIOnly = function() {
+        var arr = new Array();
+        arr.push({"value":4, "name":"Ace"});
+        arr.push({"value":3, "name":"Veteran"});
+        arr.push({"value":2, "name":"Regular"});
+        arr.push({"value":1, "name":"Novice"});
+        return arr;
+    }
 }

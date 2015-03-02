@@ -31,6 +31,7 @@ public class UnitGroup extends MapObject {
     private boolean briefingWaypointIcons = false;
 
     private List<String> skins = new ArrayList<>();
+    private List<Integer> aiLevels = new ArrayList<>();
 
     private FormationType formation = FormationType.NONE;
 
@@ -164,5 +165,13 @@ public class UnitGroup extends MapObject {
 
     public void setSkins(List<String> skins) {
         this.skins = skins;
+    }
+
+    public List<Integer> getAiLevels() {
+        return aiLevels;
+    }
+
+    public void setAiLevels(List<Integer> aiLevels) {
+        this.aiLevels = aiLevels;
     }
 }
