@@ -112,4 +112,8 @@ var rest = new function() {
     this.getSkins = function(callback) {
         $.getJSON(BASE + "/skins", callback);
     }
+
+    this.getEffectTypes = function(callback) {
+        $.getJSON(BASE + "/effectTypes", callback);
+    }
 }

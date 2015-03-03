@@ -54,6 +54,16 @@ var coordTranslator = new function() {
                 return true;
             }
         }
+
+        // Try effects
+        var effects = state.getCurrentMission().effects;
+        for(var a = 0; a < effects.length; a++) {
+            var effect = effects[a];
+            if(coordTranslator.inHitBox(effect.x, effect.z, hitBox)) {
+                callback(effect);
+                return true;
+            }
+        }
         return false;
     }
 

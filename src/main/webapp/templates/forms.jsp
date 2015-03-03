@@ -304,3 +304,20 @@
         <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
     </div>
 </script>
+
+
+
+
+<script id="effect-edit-tpl" type="text/x-handlebars-template">
+    <h4>Edit effect</h4>
+
+    <div class="propertyelement">
+        <label>Effect type</label>
+        <select id="effect-edit-effectType" class="form-control"/>
+    </div>
+
+    <div class="text-center propertyelement">
+        <button class="btn btn-info" id="close"><i class="fa fa-close"></i> Close</button>
+        <button class="btn btn-danger" id="delete"><i class="fa fa-remove"></i> Delete effect</button>
+    </div>
+</script>

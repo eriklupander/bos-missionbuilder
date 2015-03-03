@@ -70,7 +70,7 @@ var maprenderer = new function() {
             if(state.getState() == state.NORMAL) {
                 if(util.notNull(state.getCurrentMission())) {
                     var result = coordTranslator.ifUnitGroupSelected(hitBox, metadata, function(obj) {state.setDragTarget(obj)});
-                    if(result && (util.notNull(state.getSelectedUnitGroup()) || util.notNull(state.getSelectedStaticObjectGroup()))) {
+                    if(result && (util.notNull(state.getSelectedUnitGroup()) || util.notNull(state.getSelectedStaticObjectGroup()) || util.notNull(state.getSelectedEffect()))) {
                       // Allow drag of unit
                         state.setState(state.NORMAL);
                         state.setDragAllowed(true);
@@ -150,6 +150,14 @@ var maprenderer = new function() {
                         });
                     }
                     break;
+                case state.MAP_WAITING_FOR_CLICK_EFFECT:
+                    if(Math.abs(e.clientX - mouseDownX) < 6 && Math.abs(e.clientY - mouseDownY) < 6) {
+                        var coords = coordTranslator.imageToWorld(
+                            imageX+startXX*zoom, imageY+startYY*zoom,
+                            metadata);
+                        effects.saveEffect(coords.x, coords.z);
+                    }
+                    break;
                 case state.DRAGGING_UNIT:
                     state.setState(state.NORMAL);
                     if(util.notNull(state.getDragTarget()) && !util.notNull(state.getDragTarget().clientId)) {
@@ -169,7 +177,7 @@ var maprenderer = new function() {
                     // Test select
                     var hitBox = coordTranslator.calculateHitBox(imageX+startXX*zoom, imageY+startYY*zoom, metadata, 16, zoom);
                     var hit = coordTranslator.ifUnitGroupSelected(hitBox, metadata, missionbuilder.objectSelected);
-                    if(!hit && (util.notNull(state.getSelectedUnitGroup())  || util.notNull(state.getSelectedStaticObjectGroup()) || util.notNull(state.getSelectedWaypoint()))) {
+                    if(!hit && (util.notNull(state.getSelectedUnitGroup())  || util.notNull(state.getSelectedStaticObjectGroup()) || util.notNull(state.getSelectedWaypoint()) || util.notNull(state.getSelectedEffect()) )) {
                         state.deselectAll();
                     }
                     break;
@@ -266,6 +274,9 @@ var maprenderer = new function() {
         }
         if(state.getFilter('airfields')) {
             renderer.renderAirfields(viewport, ctx);
+        }
+        if(state.getFilter('effects')) {
+            renderer.renderEffects(viewport, ctx);
         }
         if(util.notNull(state.getSelectionBox())) {
             renderer.renderSelectionBox(ctx);

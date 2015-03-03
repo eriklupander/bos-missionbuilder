@@ -417,21 +417,31 @@ var missionbuilder = new function() {
             state.setSelectedWaypoint(null);
             state.setSelectedTriggerZone(null);
             state.setSelectedStaticObjectGroup(null);
+            state.setSelectedEffect(null);
         } else if(object.objectType == 'WAYPOINT') {
             state.setSelectedWaypoint(object);
             //state.setSelectedUnitGroup(null);      // TEST - do not deselect unit group when selecting waypoint.
             state.setSelectedTriggerZone(null);
             state.setSelectedStaticObjectGroup(null);
+            state.setSelectedEffect(null);
         }  else if(object.objectType == 'TRIGGER') {
             state.setSelectedWaypoint(null);
             state.setSelectedUnitGroup(null);
             state.setSelectedTriggerZone(object);
             state.setSelectedStaticObjectGroup(null);
+            state.setSelectedEffect(null);
         } else if(object.objectType == 'STATIC_OBJECT') {
             state.setSelectedWaypoint(null);
             state.setSelectedUnitGroup(null);
             state.setSelectedTriggerZone(null);
             state.setSelectedStaticObjectGroup(object);
+            state.setSelectedEffect(null);
+        } else if(object.objectType == 'EFFECT') {
+            state.setSelectedWaypoint(null);
+            state.setSelectedUnitGroup(null);
+            state.setSelectedTriggerZone(null);
+            state.setSelectedStaticObjectGroup(null);
+            state.setSelectedEffect(object);
         }
 
         maprenderer.redraw();
@@ -647,6 +657,17 @@ var missionbuilder = new function() {
 
             if(!util.notNull(obj.groupType)) {
                 switch(obj.objectType) {
+                    case "EFFECT":
+                        var src = $('#effect-edit-tpl').html();
+                        var template = Handlebars.compile(src);
+                        var html    = template(obj);
+                        $('#object-properties').html(html);
+                        rest.getEffectTypes(function(data) {
+                            util.populateSelect('effect-edit-effectType', obj, 'effectType', data);
+                        });
+
+
+                        break;
                     case "TRIGGER":
                         var src = $('#trigger-edit-tpl').html();
                         var template = Handlebars.compile(src);
@@ -767,7 +788,6 @@ var missionbuilder = new function() {
             }
             $('#object-properties').removeClass('hidden');
             $('#object-properties h4').drags();
-            //$('#object-properties').css('top',50+$('#rightmenu').height() + 'px');
         }
 
         $('#close').unbind().click(function() {

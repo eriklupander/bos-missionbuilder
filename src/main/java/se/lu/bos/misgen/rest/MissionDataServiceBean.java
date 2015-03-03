@@ -353,4 +353,9 @@ public class MissionDataServiceBean {
     public ResponseEntity<List<String>> getSkins() throws IOException {
         return new ResponseEntity(skinManager.getSkins(), HttpStatus.OK);
     }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/effectTypes", produces = "application/json")
+    public ResponseEntity<List<String>> getEffectTypes() throws IOException {
+        return new ResponseEntity(EffectType.values(), HttpStatus.OK);
+    }
 }

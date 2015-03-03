@@ -7,6 +7,8 @@ var state = new function() {
     this.MAP_WAITING_FOR_CLICK_STATIC_OBJECT_GROUP = "MAP_WAITING_FOR_CLICK_STATIC_OBJECT_GROUP";
     this.MAP_WAITING_FOR_CLICK_TRIGGER = "MAP_WAITING_FOR_CLICK_TRIGGER";
     this.MAP_WAITING_FOR_CLICK_TRIGGER_RADIUS = "MAP_WAITING_FOR_CLICK_TRIGGER_RADIUS";
+    this.MAP_WAITING_FOR_CLICK_EFFECT = "MAP_WAITING_FOR_CLICK_EFFECT";
+
     this.NORMAL = "NORMAL";
     this.DRAGGING_UNIT = "DRAGGING_UNIT";
     this.PLACING_WAYPOINT = "PLACING_WAYPOINT";
@@ -29,6 +31,7 @@ var state = new function() {
     var selectedStaticObjectGroup = null;
     var selectedWaypoint = null;
     var selectedTriggerZone = null;
+    var selectedEffect = null;
 
     var dragTarget = null;
 
@@ -37,6 +40,7 @@ var state = new function() {
         selectedStaticObjectGroup = null;
         selectedWaypoint = null;
         selectedTriggerZone = null;
+        selectedEffect = null;
         dragTarget = null;
         this.setState(state.NORMAL);
         $('#clickOnMapDiv').addClass('hidden');
@@ -60,7 +64,8 @@ var state = new function() {
         'static_object' : true,
         'trigger' : true,
         'airfields' : false,
-        'both_sides' : false
+        'both_sides' : false,
+        'effects' : true
     }
 
     this.setSelectionBox = function(topX, topY, bottomX, bottomY) {
@@ -145,6 +150,22 @@ var state = new function() {
         }
     }
 
+    this.getSelectedEffect = function() {
+        return selectedEffect;
+    }
+
+    this.setSelectedEffect = function(effect) {
+        this.selectedEffect = effect;
+
+        if(effect != null) {
+            missionbuilder.handleObjectSelected(effect);
+        } else {
+            if(noneSelected()) {
+                $('#object-properties').addClass('hidden');
+            }
+        }
+    }
+
     this.getSelectedUnitGroup = function() {
         return selectedUnitGroup;
     }
@@ -205,7 +226,7 @@ var state = new function() {
     }
 
     var noneSelected = function() {
-        return selectedTriggerZone == null && selectedUnitGroup == null && selectedWaypoint == null && selectedStaticObjectGroup == null;
+        return selectedTriggerZone == null && selectedUnitGroup == null && selectedWaypoint == null && selectedStaticObjectGroup == null && selectedEffect == null;
     }
 
     this.setCurrentCountry = function(countryCode) {

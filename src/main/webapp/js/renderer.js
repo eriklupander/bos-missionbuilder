@@ -58,6 +58,41 @@ var renderer = new function() {
         }
     }
 
+    this.renderEffects = function(viewport, context) {
+        if(util.isNull(state.getCurrentMission()) || util.isNull(state.getCurrentMission().effects) || state.getCurrentMission().effects.length == 0) {
+            return;
+        }
+
+        for(var a = 0; a < state.getCurrentMission().effects().length; a++) {
+            var effect = state.getCurrentMission().effects[a];
+            var coords = coordTranslator.worldToImageInViewport(effect.x, effect.z, viewport, maprenderer.mapWidth, maprenderer.mapHeight);
+
+            // Primitive occlusion culling
+            if(coords.x < 0 || coords.y < 0 || coords.x > maprenderer.mapWidth || coords.y >  maprenderer.mapHeight) continue;
+
+            drawEffect(coords.x, coords.y, effect.effectType, context);
+        }
+    }
+
+    var drawEffect = function(x, y, name, context) {
+        context.save();
+        context.beginPath();
+        context.arc(x, y, 12, 0, 2*Math.PI, false);
+        context.fillStyle = 'orange';
+        context.globalAlpha = 0.1;
+        context.fill();
+        context.globalAlpha = 0.5;
+        context.lineWidth = 1;
+        context.strokeStyle = 'orange';
+        context.stroke();
+        context.globalAlpha = 1;
+        context.font = '12pt Open Sans';
+        context.textAlign = 'center';
+
+        context.fillText(name, x, y+12+12);
+        context.restore();
+    }
+
     var drawAirfield = function(x, y, name, context) {
         context.save();
         context.beginPath();

@@ -113,6 +113,9 @@
                         <a href="#" onclick="missionbuilder.toggleMapFilter('trigger');"><i id="trigger_check" class="fa fa-check"></i> Triggers</a>
                     </li>
                     <li>
+                        <a href="#" onclick="missionbuilder.toggleMapFilter('effects');"><i id="effects_check" class="fa fa-check"></i> Effects</a>
+                    </li>
+                    <li>
                         <a href="#" onclick="missionbuilder.toggleMapFilter('airfields');"><i id="airfields_check" class="fa fa-check hidden"></i> Airfields</a>
                     </li>
                 </ul>
@@ -175,6 +178,9 @@
                 <li id="menu-add-static-object-group" class="menuitem">
                     <a href="#" onclick="missionbuilder.addStaticObjectGroup();"><i class="fa fa-fw fa-plus-circle"></i> Add static object group</a>
                 </li>
+                <li id="menu-add-effect" class="menuitem">
+                    <a href="#" onclick="effects.addEffect();"><i class="fa fa-fw fa-plus-circle"></i> Add effect</a>
+                </li>
                 <li id="menu-add-waypoint" class="menuitem hidden">
                     <a href="#" onclick="missionbuilder.addWaypoint();"><i class="fa fa-fw fa-times-circle-o"></i> Add waypoint</a>
                 </li>
@@ -226,6 +232,7 @@
 <script src="js/sidemenu.js"></script>
 <script src="js/state.js"></script>
 <script src="js/weathereditor.js"></script>
+<script src="js/effects.js"></script>
 <script src="js/flightmanager.js"></script>
 <script src="js/missionbuilder.js"></script>
 <script src="js/coordTranslator.js"></script>
