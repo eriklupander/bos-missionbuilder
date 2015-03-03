@@ -62,7 +62,7 @@ public class GroupFactory {
         for(int a = 0; a < ug.getSize(); a++) {
             Plane plane = PlaneFactory.buildPlane(ug.getAiLevel() == 0, PlaneType.valueOf(ug.getType()), a,
                     ug.getAiLevel(), ug.getX(), ug.getY(), ug.getZ(), ug.getyOri(), ug.getLoadout(), ug.getName(), ug.getPlayerIndex());
-
+            applyAILevel(plane, ug, a);
             objectGroup.getObjects().add(plane);
         }
         objectGroup.getObjects().stream().forEach( o -> {
@@ -81,6 +81,16 @@ public class GroupFactory {
         objectGroup.applyPosition(ug.getX(), ug.getY(), ug.getZ(), ug.getyOri(), formationType);
 
         return objectGroup;
+    }
+
+    private static void applyAILevel(Plane plane, UnitGroup ug, int index) {
+        if(plane.getAILevel() == 0) return;
+
+        if(ug.getAiLevels().size() > index) {
+            plane.setAILevel(ug.getAiLevels().get(index));
+        } else {
+            plane.setAILevel(ug.getAiLevel());
+        }
     }
 
     private static void applySkin(Plane plane, UnitGroup ug) {

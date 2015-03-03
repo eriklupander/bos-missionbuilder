@@ -665,7 +665,18 @@ var missionbuilder = new function() {
                         rest.getEffectTypes(function(data) {
                             util.populateSelect('effect-edit-effectType', obj, 'effectType', data);
                         });
-
+                        $('.slider').slider().on('slide', function(ev){
+                            $('#effect-edit-y-text').text(ev.value);
+                            obj.y = ev.value;
+                            maprenderer.redraw();
+                        }).on('slideStop', function(ev){
+                                $('#effect-edit-y-text').text(ev.value);
+                                obj.y = ev.value;
+                                rest.updateMission(state.getCurrentMission(), function(data) {
+                                    state.setCurrentMission(data);
+                                    maprenderer.redraw();
+                                })
+                            });
 
                         break;
                     case "TRIGGER":
@@ -795,6 +806,7 @@ var missionbuilder = new function() {
             state.deselectAll();
         });
 
+        // TODO refactor this ugly method...
         $('#delete').unbind().click(function() {
             if(confirm("Do you want to delete this object?")) {
                 if(util.notNull(state.getSelectedUnitGroup())) {
@@ -856,6 +868,21 @@ var missionbuilder = new function() {
                             rest.updateMission(state.getCurrentMission(), function(data) {
                                 state.setCurrentMission(data);
                                 console.log("Deleted static object group and saved mission");
+                                maprenderer.redraw();
+                            });
+                            return;
+                        }
+                    }
+                }
+                if(util.notNull(state.getSelectedEffect())) {
+                    for(var a = 0; a < state.getCurrentMission().effects.length; a++) {
+                        var effect =  state.getCurrentMission().effects[a];
+                        if(state.getSelectedEffect().clientId == effect.clientId) {
+                            state.getCurrentMission().effects.splice(a, 1);
+                            state.setSelectedEffect(null);
+                            rest.updateMission(state.getCurrentMission(), function(data) {
+                                state.setCurrentMission(data);
+                                console.log("Deleted effect and saved mission");
                                 maprenderer.redraw();
                             });
                             return;

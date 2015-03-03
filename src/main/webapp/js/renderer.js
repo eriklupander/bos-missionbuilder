@@ -22,9 +22,7 @@ var renderer = new function() {
     for(var src in sources) {
         images[src] = new Image();
         images[src].onload = function() {
-//            if(++loadedImages >= numImages) {
-//                callback(images);
-//            }
+
         };
         images[src].src = sources[src];
     }
@@ -63,30 +61,35 @@ var renderer = new function() {
             return;
         }
 
-        for(var a = 0; a < state.getCurrentMission().effects().length; a++) {
+        for(var a = 0; a < state.getCurrentMission().effects.length; a++) {
             var effect = state.getCurrentMission().effects[a];
             var coords = coordTranslator.worldToImageInViewport(effect.x, effect.z, viewport, maprenderer.mapWidth, maprenderer.mapHeight);
 
             // Primitive occlusion culling
             if(coords.x < 0 || coords.y < 0 || coords.x > maprenderer.mapWidth || coords.y >  maprenderer.mapHeight) continue;
 
-            drawEffect(coords.x, coords.y, effect.effectType, context);
+            drawEffect(coords.x, coords.y, effect.effectType, context, effect);
         }
     }
 
-    var drawEffect = function(x, y, name, context) {
+    var drawEffect = function(x, y, name, context, effect) {
         context.save();
         context.beginPath();
         context.arc(x, y, 12, 0, 2*Math.PI, false);
         context.fillStyle = 'orange';
-        context.globalAlpha = 0.1;
+        context.globalAlpha = 0.4;
         context.fill();
-        context.globalAlpha = 0.5;
-        context.lineWidth = 1;
+        context.globalAlpha = 0.9;
+        if(util.notNull(state.getSelectedEffect()) && effect.clientId == state.getSelectedEffect().clientId) {
+            context.lineWidth = 4;
+        } else {
+            context.lineWidth = 2;
+        }
         context.strokeStyle = 'orange';
         context.stroke();
         context.globalAlpha = 1;
-        context.font = '12pt Open Sans';
+        context.fillStyle = 'black';
+        context.font = '10pt Open Sans';
         context.textAlign = 'center';
 
         context.fillText(name, x, y+12+12);

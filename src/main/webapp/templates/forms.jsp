@@ -316,6 +316,15 @@
         <select id="effect-edit-effectType" class="form-control"/>
     </div>
 
+    <div class="propertyelement">
+        <label>Altitude</label>
+        <div><i>Must be set manually to ground level by trial&error</i></div>
+        <input id="effect-edit-y" type="text" class="slider" style="width:200px;" value="{{y}}"
+               data-slider-min="0" data-slider-max="1000" data-slider-step="1" data-slider-value="{{y}}"
+               data-slider-orientation="horizontal" data-slider-selection="after" data-slider-tooltip="hide">
+        <div id="effect-edit-y-text" class="text-center">{{y}} meters</div>
+    </div>
+
     <div class="text-center propertyelement">
         <button class="btn btn-info" id="close"><i class="fa fa-close"></i> Close</button>
         <button class="btn btn-danger" id="delete"><i class="fa fa-remove"></i> Delete effect</button>

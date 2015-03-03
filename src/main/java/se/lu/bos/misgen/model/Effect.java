@@ -51,6 +51,7 @@ public class Effect extends GameEntity {
 
     public Effect(float x, float y, float z, EffectType effectType) {
         setId(GlobalId.nextLong());
+        setName("Effect");
         setXPos(x);
         setYPos(y);
         setZPos(z);

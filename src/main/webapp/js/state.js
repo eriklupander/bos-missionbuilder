@@ -133,6 +133,18 @@ var state = new function() {
                 }
             }
         }
+
+        // TODO do the same for static object groups
+
+        // Reset select effect
+        if(util.notNull(currentMission) &&  util.notNull(selectedEffect)) {
+            for(var a = 0; a < currentMission.effects.length; a++) {
+                if(currentMission.effects[a].clientId === selectedEffect.clientId) {
+                    currentMission.effects[a] = selectedEffect;
+                    break;
+                }
+            }
+        }
     }
 
     this.getSelectedStaticObjectGroup = function() {
@@ -155,7 +167,7 @@ var state = new function() {
     }
 
     this.setSelectedEffect = function(effect) {
-        this.selectedEffect = effect;
+        selectedEffect = effect;
 
         if(effect != null) {
             missionbuilder.handleObjectSelected(effect);

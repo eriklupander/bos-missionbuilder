@@ -31,6 +31,10 @@ public class UnitGroup extends MapObject {
     private boolean briefingWaypointIcons = false;
 
     private List<String> skins = new ArrayList<>();
+
+    /**
+     * AI levels per aircraft in the flight, if applicable. Overrides the group AI level set in "aiLevel"
+     */
     private List<Integer> aiLevels = new ArrayList<>();
 
     private FormationType formation = FormationType.NONE;

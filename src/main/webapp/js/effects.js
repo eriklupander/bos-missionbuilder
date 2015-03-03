@@ -15,7 +15,7 @@ var effects = new function() {
 
     this.saveEffect = function(xPos, zPos) {
         var effect = {
-            objectType:'EFFECT',
+            objectType: 'EFFECT',
             x:xPos,
             y:0,
             z:zPos,
@@ -24,6 +24,9 @@ var effects = new function() {
         }
 
         state.getCurrentMission().effects.push(effect);
+        state.setState(state.NORMAL);
+        $("#map").css("cursor", "");
+        $('#clickOnMapDiv').addClass('hidden');
         rest.updateMission(state.getCurrentMission(), function(data) {
             state.setCurrentMission(data);
             maprenderer.redraw();
