@@ -226,9 +226,10 @@
 <script src="js/bootstrap-slider.js"></script>
 <script src="js/handlebars-v2.0.0.js"></script>
 <!-- script references -->
+<script src="js/rest.js"></script>
 <script src="js/statics.js"></script>
 <script src="js/util.js"></script>
-<script src="js/rest.js"></script>
+
 <script src="js/sidemenu.js"></script>
 <script src="js/state.js"></script>
 <script src="js/weathereditor.js"></script>

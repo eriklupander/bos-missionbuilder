@@ -35,7 +35,7 @@ public enum VehicleType {
 
     LAND_LIGHT_USSR(101, "LuaScripts\\WorldObjects\\vehicles\\landlightsu.txt", "graphics\\artillery\\landlightsu\\landlightsu.mgm", VEHICLE, "LandlightSU.jpg"),
     SEARCH_LIGHT_USSR(101, "LuaScripts\\WorldObjects\\vehicles\\searchlightsu.txt", "graphics\\artillery\\searchlightsu\\searchlightsu.mgm", VEHICLE, "SearchlightSU.jpg"),
-    NDB_USSR(201, "LuaScripts\\WorldObjects\\vehicles\\ndb.txt", "graphics\\vehicles\\ndb\\ndb.mgm", VEHICLE, "NDB.jpg"),
+    NDB_USSR(101, "LuaScripts\\WorldObjects\\vehicles\\ndb.txt", "graphics\\vehicles\\ndb\\ndb.mgm", VEHICLE, "NDB.jpg"),
 
     MG34(201, "LuaScripts\\WorldObjects\\vehicles\\mg34.txt", "graphics\\artillery\\mg34\\mg34.mgm", VEHICLE, "mg34.jpg"),
     MG34_AA(201, "LuaScripts\\WorldObjects\\vehicles\\mg34-aa.txt", "graphics\\artillery\\mg34-aa\\mg34-aa.mgm", ARTILLERY, "mg34-aa.jpg"),
@@ -87,6 +87,14 @@ public enum VehicleType {
 
     public int getCountry() {
         return country;
+    }
+
+    public VehicleCategory getVehicleCategory() {
+        return vehicleCategory;
+    }
+
+    public String getIconImage() {
+        return iconImage;
     }
 
     public Set<VehicleType> values(int country) {

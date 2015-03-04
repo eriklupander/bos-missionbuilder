@@ -36,6 +36,16 @@ public class LoadoutFactory {
             case PE2:
                 loadouts.add(new Loadout(planeType, 2, "Bombs?"));
                 break;
+            case BF109G2:
+                break;
+            case HE111:
+                break;
+            case LA5:
+                break;
+            case LAGG3:
+                break;
+            case YAK1:
+                break;
         }
 
         return loadouts;

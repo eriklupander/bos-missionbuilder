@@ -116,4 +116,8 @@ var rest = new function() {
     this.getEffectTypes = function(callback) {
         $.getJSON(BASE + "/effectTypes", callback);
     }
+
+    this.getVehicleMetadata = function(callback) {
+        $.getJSON(BASE + "/vehicleTypes/metadata", callback);
+    }
 }

@@ -630,7 +630,12 @@ var missionbuilder = new function() {
                     util.bindTextField('ground-group-edit-group-heading', obj, 'yOri');
                     util.bindTextArea('ground-group-edit-group-description', obj, 'description');
                     rest.getVehicleTypes(state.getCurrentCountry(), function(data) {
-                        util.populateSelect('ground-group-edit-group-type', obj, 'type', data);
+                        util.populateSelect('ground-group-edit-group-type', obj, 'type', data, function(id, obj, field, items, newValue) {
+                            var url = 'http://' + document.location.hostname + ':' + document.location.port;
+                            $('#ground-group-edit-group-thumbnail').attr('src',url + "/thumbs?imageUrl=" + statics.getVehicleMetadata()[newValue].iconImage);
+                        });
+                        var url = 'http://' + document.location.hostname + ':' + document.location.port;
+                        $('#ground-group-edit-group-thumbnail').attr('src',url + "/thumbs?imageUrl=" + statics.getVehicleMetadata()[obj.type].iconImage);
                     });
                     rest.getFormationTypes("GROUND_GROUP", function(data) {
                         util.populateSelect('ground-group-edit-group-formation', obj, 'formation', data);

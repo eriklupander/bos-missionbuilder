@@ -25,10 +25,13 @@ import se.lu.bos.misgen.util.EnvUtil;
 import se.lu.bos.misgen.webmodel.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -357,5 +360,16 @@ public class MissionDataServiceBean {
     @RequestMapping(method = RequestMethod.GET, value = "/effectTypes", produces = "application/json")
     public ResponseEntity<List<String>> getEffectTypes() throws IOException {
         return new ResponseEntity(EffectType.values(), HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/vehicleTypes/metadata", produces = "application/json")
+    public ResponseEntity<Map<String, VehicleMetadata>> getVehicleTypeMetadata() {
+        Map<String, VehicleMetadata> metadataMap = Arrays.asList(VehicleType.values())
+                .stream()
+                .sorted((VehicleType vt1, VehicleType vt2) -> vt1.name().compareTo(vt2.name()))
+                .map(vt -> new VehicleMetadata(vt.name(), vt.getCountry(), vt.getModel(), vt.getScript(), vt.getVehicleCategory(), vt.getIconImage()))
+                .collect(Collectors.toMap(vmd -> vmd.getIdentifier(), vmd -> vmd));
+
+        return new ResponseEntity(metadataMap, HttpStatus.OK);
     }
 }

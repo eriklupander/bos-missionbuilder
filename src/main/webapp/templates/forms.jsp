@@ -83,9 +83,30 @@
     </div>
 
 </script>
+  <!--
+section.container {
+background: #fff;
+width: 620px;
+margin: auto;
+-moz-border-radius: 10px;
+border-radius: 10px;
+padding: 10px;
+box-shadow: 0px 0px 20px #888;
+}
+section.body {
+margin-top:10px;
+}
 
+img {
+border-radius: 10px 0 0 0;
+}
+-->
 <script id="ground-group-edit-tpl" type="text/x-handlebars-template">
     <h4>Edit {{name}}</h4>
+    <div class="text-center">
+
+        <img style="border-radius: 10px 0 0 0;box-shadow: 0px 0px 20px #888;-moz-border-radius: 10px;border-radius: 10px;" id="ground-group-edit-group-thumbnail"/>
+    </div>
     <div class="propertyelement">
         <label>Type</label>
         <select  class="form-control" id="ground-group-edit-group-type">

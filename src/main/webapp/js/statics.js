@@ -1,6 +1,15 @@
 var statics = new function() {
 
     var airfields = [];
+    var vehicleMetadata;
+
+    rest.getVehicleMetadata(function(data) {
+        vehicleMetadata = data;
+    });
+
+    this.getVehicleMetadata = function() {
+        return vehicleMetadata;
+    }
 
     this.loadAirfields = function() {
         rest.loadAirfields(function(data) {

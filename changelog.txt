@@ -1,3 +1,10 @@
+-- 2015-03-04 --
+* Added Flight Manager, which replaces the Skin Manager. Allows AI level to be set for individual planes as well as skins. Will also add Loadouts to this view later on. Please note that I have locked the currently selected player plane for now in order to not make things over-complicated syncing this view with the controls in the Edit Flight form.
+* Added all ground vehicles present in the FME to SMB
+* Added thumbnail images for all ground vehicles (should help people figure out what a "61K" or "BA10M" is). Note - uses the preview images from within the BoS data/graphics/preview folder so if your application.properties file does not point at the correct folder you won't see any images (and export etc won't work)
+* Added "effects". There are five different smokes and fires to choose from. IMPORTANT: I recommend using these sparingly since you must figure out the exact altitude for the effect somehow. SMB does not have access to any altitude data (height maps etc) from the game so I can't automatically make an effect appear exactly at ground level. For planes, vehicles etc. the simulator places them on ground level automatically but effects will appear at the altitude specified - be it underground or high up in the air.
+
+
 -- 2015-03-01 --
 * Added Skin Manager, allowing user-made skins to be set on individual aircraft.
 * Added Priority (1-3) to waypoints and commands.
