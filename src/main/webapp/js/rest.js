@@ -120,4 +120,8 @@ var rest = new function() {
     this.getVehicleMetadata = function(callback) {
         $.getJSON(BASE + "/vehicleTypes/metadata", callback);
     }
+
+    this.getGameObjectMetadata = function(callback) {
+        $.getJSON(BASE + "/gameObjectTypes/metadata", callback);
+    }
 }

@@ -19,6 +19,9 @@
 
 <script id="planes-edit-tpl" type="text/x-handlebars-template">
     <h4 class="text-center">Edit {{name}}</h4>
+    <div class="text-center">
+        <img style="border-radius: 10px 0 0 0;box-shadow: 0px 0px 20px #888;-moz-border-radius: 10px;border-radius: 10px;" id="planes-edit-group-thumbnail" src="">
+    </div>
     <div class="propertyelement">
         <label>Type</label>
         <select  class="form-control" id="planes-edit-group-type">
@@ -104,7 +107,6 @@ border-radius: 10px 0 0 0;
 <script id="ground-group-edit-tpl" type="text/x-handlebars-template">
     <h4>Edit {{name}}</h4>
     <div class="text-center">
-
         <img style="border-radius: 10px 0 0 0;box-shadow: 0px 0px 20px #888;-moz-border-radius: 10px;border-radius: 10px;" id="ground-group-edit-group-thumbnail"/>
     </div>
     <div class="propertyelement">
@@ -180,7 +182,9 @@ border-radius: 10px 0 0 0;
 
 <script id="static-object-group-edit-tpl" type="text/x-handlebars-template">
     <h4>Edit Static Object Group</h4>
-
+    <div class="text-center">
+        <img style="border-radius: 10px 0 0 0;box-shadow: 0px 0px 20px #888;-moz-border-radius: 10px;border-radius: 10px;" id="static-object-group-edit-thumbnail" src="">
+    </div>
     <div class="propertyelement">
         <label>Name</label>
         <input id="static-object-group-edit-name" class="form-control" type="text" value="{{name}}"/>
@@ -331,19 +335,18 @@ border-radius: 10px 0 0 0;
 
 <script id="effect-edit-tpl" type="text/x-handlebars-template">
     <h4>Edit effect</h4>
-
+    <div class="text-center">
+        <img style="border-radius: 10px 0 0 0;box-shadow: 0px 0px 20px #888;-moz-border-radius: 10px;border-radius: 10px;" id="effect-edit-thumbnail" src="">
+    </div>
     <div class="propertyelement">
         <label>Effect type</label>
         <select id="effect-edit-effectType" class="form-control"/>
     </div>
 
     <div class="propertyelement">
-        <label>Altitude</label>
+        <label>Altitude (m)</label>
         <div><i>Must be set manually to ground level by trial&error</i></div>
-        <input id="effect-edit-y" type="text" class="slider" style="width:200px;" value="{{y}}"
-               data-slider-min="0" data-slider-max="1000" data-slider-step="1" data-slider-value="{{y}}"
-               data-slider-orientation="horizontal" data-slider-selection="after" data-slider-tooltip="hide">
-        <div id="effect-edit-y-text" class="text-center">{{y}} meters</div>
+        <input id="effect-edit-y" type="text" class="form-control" value="{{y}}">
     </div>
 
     <div class="text-center propertyelement">

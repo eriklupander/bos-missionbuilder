@@ -19,6 +19,9 @@ public class WayPoint extends MapObject {
     private Integer priority = 1;
     private Integer area = 500;
 
+    // Experimental Time on Target
+    private Integer timeOffset;
+
     public WayPoint() {
         super.setObjectType(MapObjectType.WAYPOINT);
         this.action = new WaypointAction();
@@ -79,5 +82,13 @@ public class WayPoint extends MapObject {
 
     public void setArea(Integer area) {
         this.area = area;
+    }
+
+    public Integer getTimeOffset() {
+        return timeOffset;
+    }
+
+    public void setTimeOffset(Integer timeOffset) {
+        this.timeOffset = timeOffset;
     }
 }

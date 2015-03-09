@@ -1,14 +1,20 @@
 var statics = new function() {
 
     var airfields = [];
-    var vehicleMetadata;
+//    var vehicleMetadata;
+//
+//    rest.getVehicleMetadata(function(data) {
+//        vehicleMetadata = data;
+//    });
 
-    rest.getVehicleMetadata(function(data) {
-        vehicleMetadata = data;
+    var gameObjectMetadata;
+
+    rest.getGameObjectMetadata(function(data) {
+        gameObjectMetadata = data;
     });
 
-    this.getVehicleMetadata = function() {
-        return vehicleMetadata;
+    this.getGameObjectMetadata = function() {
+        return gameObjectMetadata;
     }
 
     this.loadAirfields = function() {

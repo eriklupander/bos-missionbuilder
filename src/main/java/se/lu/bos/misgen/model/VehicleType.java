@@ -66,14 +66,14 @@ public enum VehicleType {
     private final int country;
     private final String script;
     private final String model;
-    private final VehicleCategory vehicleCategory;
+    private final VehicleCategory category;
     private final String iconImage;
 
-    VehicleType(int country, String script, String model, VehicleCategory vehicleCategory, String iconImage) {
+    VehicleType(int country, String script, String model, VehicleCategory category, String iconImage) {
         this.country = country;
         this.script = script;
         this.model = model;
-        this.vehicleCategory = vehicleCategory;
+        this.category = category;
         this.iconImage = iconImage;
     }
 
@@ -89,8 +89,8 @@ public enum VehicleType {
         return country;
     }
 
-    public VehicleCategory getVehicleCategory() {
-        return vehicleCategory;
+    public VehicleCategory getCategory() {
+        return category;
     }
 
     public String getIconImage() {

@@ -122,7 +122,7 @@ var flightmanager = new function() {
 
     var getSkinForClientId = function(selectId, objects) {
         var clientId = selectId.split("-")[0];
-        var index = selectId.split("-")[1];
+        var index = parseInt(selectId.split("-")[1]);
 
         for(var a = 0; a < objects.length; a++) {
             if(objects[a].clientId == clientId) {
@@ -143,7 +143,7 @@ var flightmanager = new function() {
 
     var getAIForClientId = function(selectId, objects) {
         var clientId = selectId.split("-")[1];
-        var index = selectId.split("-")[2];
+        var index = parseInt(selectId.split("-")[2]);
 
         for(var a = 0; a < objects.length; a++) {
             if(objects[a].clientId == clientId) {
@@ -167,7 +167,7 @@ var flightmanager = new function() {
                             aiLevelArr.push(groupAILevel);
                             setAILevelForClientId(selectId, groupAILevel);
                         }
-                        return "Default";
+                        return groupAILevel;
                     } else {
                         return aiLevelArr[index];
                     }

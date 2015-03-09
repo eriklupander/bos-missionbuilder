@@ -9,24 +9,24 @@ import se.lu.bos.misgen.model.VehicleCategory;
  * Time: 13:29
  * To change this template use File | Settings | File Templates.
  */
-public class VehicleMetadata {
+public class GameObjectMetadata {
 
     private String identifier;
     private int country;
     private String script;
     private String model;
-    private VehicleCategory vehicleCategory;
+    private String category;
     private String iconImage;
 
-    public VehicleMetadata() {}
+    public GameObjectMetadata() {}
 
-    public VehicleMetadata(String identifier, int country, String model, String script, VehicleCategory vehicleCategory, String iconImage) {
+    public GameObjectMetadata(String identifier, int country, String model, String script, String vehicleCategory, String iconImage) {
         this.identifier = identifier;
 
         this.country = country;
         this.model = model;
         this.script = script;
-        this.vehicleCategory = vehicleCategory;
+        this.category = category;
         this.iconImage = iconImage;
     }
 
@@ -54,12 +54,12 @@ public class VehicleMetadata {
         this.model = model;
     }
 
-    public VehicleCategory getVehicleCategory() {
-        return vehicleCategory;
+    public String getCategory() {
+        return category;
     }
 
-    public void setVehicleCategory(VehicleCategory vehicleCategory) {
-        this.vehicleCategory = vehicleCategory;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public String getIconImage() {

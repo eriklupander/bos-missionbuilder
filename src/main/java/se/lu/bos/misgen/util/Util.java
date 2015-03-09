@@ -1,11 +1,15 @@
 package se.lu.bos.misgen.util;
 
+import com.sun.javafx.geom.Vec3f;
 import javafx.geometry.Point2D;
+import javafx.geometry.Point3D;
 import javafx.scene.shape.Line;
 import se.lu.bos.misgen.model.IconType;
 import se.lu.bos.misgen.model.OnEvent;
 import se.lu.bos.misgen.model.PlaneType;
 import se.lu.bos.misgen.model.VehicleType;
+import se.lu.bos.misgen.webmodel.UnitGroup;
+import se.lu.bos.misgen.webmodel.WayPoint;
 
 import java.util.List;
 
@@ -168,5 +172,27 @@ public class Util {
 
     public static Integer getIconIdForStaticObject(String type, boolean friendly) {
         return friendly ? IconType.FORTIFICATION_BLUE.getCode() :  IconType.FORTIFICATION_RED.getCode();
+    }
+
+    public static void applyTimeOnTarget(UnitGroup unitGroup) {
+        Point3D unitPos = new Point3D(unitGroup.getX(), unitGroup.getY(), unitGroup.getZ());
+        for(int a = 0; a < unitGroup.getWaypoints().size(); a++) {
+            WayPoint wp = unitGroup.getWaypoints().get(a);
+            Point3D wpPos = new Point3D(wp.getX(), wp.getY(), wp.getZ());
+            Point3D nextWpPos = null;
+            if(a < unitGroup.getWaypoints().size() -1) {
+                WayPoint nextWp = unitGroup.getWaypoints().get(a+1);
+                nextWpPos = new Point3D(nextWp.getX(), nextWp.getY(), nextWp.getZ());
+            }
+
+            double dist;
+            if(a == 0) {
+                dist = wpPos.distance(unitPos);
+            } else if(nextWpPos != null) {
+                dist = nextWpPos.distance(wpPos);
+            } else {
+                dist = 0.0f;
+            }
+        }
     }
 }

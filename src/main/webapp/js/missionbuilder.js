@@ -1,5 +1,7 @@
 var missionbuilder = new function() {
 
+    var ICONBASE = 'http://' + document.location.hostname + ':' + document.location.port;
+
     var BASEPATH = "/rest/missionbuilder";
 
     this.initMap = function() {
@@ -533,8 +535,14 @@ var missionbuilder = new function() {
                     util.bindTextField('planes-edit-group-heading', obj, 'yOri');
                     util.bindTextArea('planes-edit-group-description', obj, 'description');
                     rest.getPlaneTypes(state.getCurrentCountry(), function(data) {
-                        util.populateSelect('planes-edit-group-type', obj, 'type', data);
+                        util.populateSelect('planes-edit-group-type', obj, 'type', data, function(id, obj, field, items, newValue) {
+
+                            $('#planes-edit-group-thumbnail').attr('src', ICONBASE + "/thumbs?imageUrl=" + statics.getGameObjectMetadata()[newValue].iconImage);
+                        });
+
+                        $('#planes-edit-group-thumbnail').attr('src', ICONBASE + "/thumbs?imageUrl=" + statics.getGameObjectMetadata()[obj.type].iconImage);
                     });
+
 //                    rest.getFormationTypes(function(data) {
 //                        util.populateSelect('planes-edit-group-formation', obj, 'formation', data);
 //                    });
@@ -631,11 +639,11 @@ var missionbuilder = new function() {
                     util.bindTextArea('ground-group-edit-group-description', obj, 'description');
                     rest.getVehicleTypes(state.getCurrentCountry(), function(data) {
                         util.populateSelect('ground-group-edit-group-type', obj, 'type', data, function(id, obj, field, items, newValue) {
-                            var url = 'http://' + document.location.hostname + ':' + document.location.port;
-                            $('#ground-group-edit-group-thumbnail').attr('src',url + "/thumbs?imageUrl=" + statics.getVehicleMetadata()[newValue].iconImage);
+
+                            $('#ground-group-edit-group-thumbnail').attr('src',ICONBASE + "/thumbs?imageUrl=" + statics.getGameObjectMetadata()[newValue].iconImage);
                         });
-                        var url = 'http://' + document.location.hostname + ':' + document.location.port;
-                        $('#ground-group-edit-group-thumbnail').attr('src',url + "/thumbs?imageUrl=" + statics.getVehicleMetadata()[obj.type].iconImage);
+
+                        $('#ground-group-edit-group-thumbnail').attr('src',ICONBASE + "/thumbs?imageUrl=" + statics.getGameObjectMetadata()[obj.type].iconImage);
                     });
                     rest.getFormationTypes("GROUND_GROUP", function(data) {
                         util.populateSelect('ground-group-edit-group-formation', obj, 'formation', data);
@@ -651,9 +659,17 @@ var missionbuilder = new function() {
                     var html    = template(obj);
                     $('#object-properties').html(html);
                     util.bindTextField('static-object-group-edit-name', obj, 'name');
+
                     rest.getStaticObjectTypes(state.getCurrentCountry(), function(data) {
-                        util.populateSelect('static-object-group-edit-type', obj, 'type', data);
+
+                        util.populateSelect('static-object-group-edit-type', obj, 'type', data, function(id, obj, field, items, newValue) {
+
+                            $('#static-object-group-edit-thumbnail').attr('src', ICONBASE + "/thumbs?imageUrl=" + statics.getGameObjectMetadata()[newValue].iconImage);
+                        });
+
+                        $('#static-object-group-edit-thumbnail').attr('src', ICONBASE + "/thumbs?imageUrl=" + statics.getGameObjectMetadata()[obj.type].iconImage);
                     });
+
                     util.populateSelect('static-object-group-edit-size', obj, 'size', statics.getGroupSizes());
                     util.bindTextField('static-object-group-edit-heading', obj, 'yOri');
                     util.bindCheckbox('static-object-group-edit-group-icon', obj, 'briefingIcon');
@@ -668,21 +684,16 @@ var missionbuilder = new function() {
                         var html    = template(obj);
                         $('#object-properties').html(html);
                         rest.getEffectTypes(function(data) {
-                            util.populateSelect('effect-edit-effectType', obj, 'effectType', data);
-                        });
-                        $('.slider').slider().on('slide', function(ev){
-                            $('#effect-edit-y-text').text(ev.value);
-                            obj.y = ev.value;
-                            maprenderer.redraw();
-                        }).on('slideStop', function(ev){
-                                $('#effect-edit-y-text').text(ev.value);
-                                obj.y = ev.value;
-                                rest.updateMission(state.getCurrentMission(), function(data) {
-                                    state.setCurrentMission(data);
-                                    maprenderer.redraw();
-                                })
+                            util.populateSelect('effect-edit-effectType', obj, 'effectType', data, function(id, obj, field, items, newValue) {
+
+                                $('#effect-edit-thumbnail').attr('src', ICONBASE + "/thumbs?imageUrl=" + statics.getGameObjectMetadata()[newValue].iconImage);
                             });
 
+                            $('#effect-edit-thumbnail').attr('src', ICONBASE + "/thumbs?imageUrl=" + statics.getGameObjectMetadata()[obj.effectType].iconImage);
+                        });
+
+
+                        util.bindTextField('effect-edit-y', obj, 'y');
                         break;
                     case "TRIGGER":
                         var src = $('#trigger-edit-tpl').html();

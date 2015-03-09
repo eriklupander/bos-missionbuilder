@@ -25,14 +25,13 @@ import se.lu.bos.misgen.util.EnvUtil;
 import se.lu.bos.misgen.webmodel.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
@@ -363,13 +362,62 @@ public class MissionDataServiceBean {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/vehicleTypes/metadata", produces = "application/json")
-    public ResponseEntity<Map<String, VehicleMetadata>> getVehicleTypeMetadata() {
-        Map<String, VehicleMetadata> metadataMap = Arrays.asList(VehicleType.values())
+    public ResponseEntity<Map<String, GameObjectMetadata>> getVehicleTypeMetadata() {
+        Map<String, GameObjectMetadata> metadataMap = Arrays.asList(VehicleType.values())
                 .stream()
                 .sorted((VehicleType vt1, VehicleType vt2) -> vt1.name().compareTo(vt2.name()))
-                .map(vt -> new VehicleMetadata(vt.name(), vt.getCountry(), vt.getModel(), vt.getScript(), vt.getVehicleCategory(), vt.getIconImage()))
+                .map(vt -> new GameObjectMetadata(vt.name(), vt.getCountry(), vt.getModel(), vt.getScript(), vt.getCategory().name(), vt.getIconImage()))
                 .collect(Collectors.toMap(vmd -> vmd.getIdentifier(), vmd -> vmd));
 
         return new ResponseEntity(metadataMap, HttpStatus.OK);
     }
+
+
+    @RequestMapping(method = RequestMethod.GET, value = "/planeTypes/metadata", produces = "application/json")
+    public ResponseEntity<Map<String, GameObjectMetadata>> getPlaneTypeMetadata() {
+        Map<String, GameObjectMetadata> metadataMap = Arrays.asList(PlaneType.values())
+                .stream()
+                .sorted((PlaneType pt1, PlaneType pt2) -> pt1.name().compareTo(pt2.name()))
+                .map(vt -> new GameObjectMetadata(vt.name(), vt.getCountry(), vt.getModel(), vt.getScript(), vt.getCategory().name(), vt.getIconImage()))
+                .collect(Collectors.toMap(vmd -> vmd.getIdentifier(), vmd -> vmd));
+
+        return new ResponseEntity(metadataMap, HttpStatus.OK);
+    }
+
+
+    @RequestMapping(method = RequestMethod.GET, value = "/staticObjectTypes/metadata", produces = "application/json")
+    public ResponseEntity<Map<String, GameObjectMetadata>> getStaticObjectTypeMetadata() {
+        Map<String, GameObjectMetadata> metadataMap = Arrays.asList(StaticObjectType.values())
+                .stream()
+                .sorted((StaticObjectType sot1, StaticObjectType sot2) -> sot1.name().compareTo(sot2.name()))
+                .map(vt -> new GameObjectMetadata(vt.name(), vt.getCountry(), vt.getModel(), vt.getScript(), vt.getCategory().name(), vt.getIconImage()))
+                .collect(Collectors.toMap(vmd -> vmd.getIdentifier(), vmd -> vmd));
+
+        return new ResponseEntity(metadataMap, HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/gameObjectTypes/metadata", produces = "application/json")
+    public ResponseEntity<Map<String, GameObjectMetadata>> getGameObjectTypeMetadata() {
+
+        Stream<GameObjectMetadata> concat = Stream.concat(
+                Arrays.asList(VehicleType.values())
+                        .stream()
+                        .sorted((VehicleType vt1, VehicleType vt2) -> vt1.name().compareTo(vt2.name()))
+                        .map(vt -> new GameObjectMetadata(vt.name(), vt.getCountry(), vt.getModel(), vt.getScript(), vt.getCategory().name(), vt.getIconImage())),
+                Arrays.asList(PlaneType.values())
+                        .stream()
+                        .sorted((PlaneType pt1, PlaneType pt2) -> pt1.name().compareTo(pt2.name()))
+                        .map(vt -> new GameObjectMetadata(vt.name(), vt.getCountry(), vt.getModel(), vt.getScript(), vt.getCategory().name(), vt.getIconImage())));
+
+        Stream<GameObjectMetadata> effectStream = Stream.concat(concat, Arrays.asList(EffectType.values()).stream()
+                    .map( et -> new GameObjectMetadata(et.name(), 0, null, et.getScript(), "EFFECT", et.getIconImage())));
+
+        Stream<GameObjectMetadata> finalStream = Stream.concat(effectStream, Arrays.asList(StaticObjectType.values())
+                .stream()
+                .sorted((StaticObjectType sot1, StaticObjectType sot2) -> sot1.name().compareTo(sot2.name()))
+                .map(vt -> new GameObjectMetadata(vt.name(), vt.getCountry(), vt.getModel(), vt.getScript(), vt.getCategory().name(), vt.getIconImage())));
+
+        return new ResponseEntity(finalStream.collect(Collectors.toMap(vmd -> vmd.getIdentifier(), vmd -> vmd)), HttpStatus.OK);
+    }
+
 }
