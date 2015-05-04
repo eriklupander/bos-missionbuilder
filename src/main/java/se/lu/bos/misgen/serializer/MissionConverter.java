@@ -574,6 +574,16 @@ public class MissionConverter {
                         gm.getTakeOffCommands().add(cmdStart);
                         eWp.getTargets().add(cmdStart.getId().intValue());
                         eWp.setYPos(0.0f);
+                        
+                        final ClientAirfield field = findClosestAirfield(eWp.getXPos(), eWp.getZPos());
+                        // B: Use the waypoint position and find the closest airfield and add it.
+                        Airfield startAirfield = new Airfield(field.getX(), field.getY(), field.getZ(), field.getName());
+
+                        // Only add once if there are several flights using same airfield.
+                        if(gm.getAirfieldEntities().stream().filter(ae -> ae.getName().equals(field.getName())).count() == 0) {
+                            gm.getAirfieldEntities().add(startAirfield);
+                        }
+                        
                         generatedWaypoints.add(eWp);
                         break;
                     case LAND:
