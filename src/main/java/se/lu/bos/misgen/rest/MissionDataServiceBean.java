@@ -43,6 +43,8 @@ public class MissionDataServiceBean {
     private final static Logger log = LoggerFactory.getLogger(MissionDataServiceBean.class);
 
     public static final String DEFAULT_DATA_DIR = "H:\\skyrim\\SteamApps\\common\\IL-2 Sturmovik Battle of Stalingrad\\data\\";
+    public static final String MISSIONS_WEBMISSIONS = "Missions\\webmissions";
+    public static final String MISSIONS_COOPMISSIONS =  "Multiplayer\\Cooperative";
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -132,11 +134,16 @@ public class MissionDataServiceBean {
 
             GeneratedMission generatedMission = missionConverter.convert(clientMission);
             String missionFileBody = new MissionWriter().generateMission(generatedMission);
-            String path = envUtil.getBasePath()  + "Missions\\webmissions";
+            String path = envUtil.getBasePath() + (clientMission.getMissionType().intValue() == 0 ? MISSIONS_WEBMISSIONS : MISSIONS_COOPMISSIONS);
             if(!path.endsWith("/")) {
                 path = path + "/";
             }
             missionFileWriter.write(clientMission.getName(), generatedMission.getLocalization(), missionFileBody, path);
+
+
+            if(clientMission.getMissionType().intValue() == 1) {
+                missionFileWriter.writeLstFile(clientMission.getName(), generatedMission.getLocalization(), path);
+            }
 
             return new ResponseEntity(path, HttpStatus.OK);
         } catch (Exception e) {

@@ -16,7 +16,7 @@ public enum StaticObjectType {
     STATIC_OPEL(201, "LuaScripts\\WorldObjects\\Blocks\\static_opel.txt", "graphics\\blocks\\static_opel.mgm", StaticObjectCategory.VEHICLE, "static_opel.jpg"),
     STATIC_BF109_OPEN(201, "LuaScripts\\WorldObjects\\Blocks\\static_bf109_open.txt", "graphics\\blocks\\static_bf109_open.mgm", StaticObjectCategory.VEHICLE, "static_bf109_open.jpg"),
     STATIC_OPEN_FUEL(201, "LuaScripts\\WorldObjects\\Blocks\\static_opel_fuel.txt", "graphics\\blocks\\static_opel_fuel.mgm", StaticObjectCategory.VEHICLE, "static_opel_fuel.jpg"),
-    STATIC_HE111(201, "LuaScripts\\WorldObjects\\Blocks\\static_he111.txt", "graphics\\blocks\\static_he111.mgm", StaticObjectCategory.VEHICLE, "static_he111.mgm.jpg"),
+    STATIC_HE111(201, "LuaScripts\\WorldObjects\\Blocks\\static_he111.txt", "graphics\\blocks\\static_he111.mgm", StaticObjectCategory.VEHICLE, "static_he111.jpg"),
     STATIC_JU87(201, "LuaScripts\\WorldObjects\\Blocks\\static_ju87.txt", "graphics\\blocks\\static_ju87.mgm", StaticObjectCategory.VEHICLE, "static_ju87.jpg"),
 
     ART_POSITION_SMALL(0, "LuaScripts\\WorldObjects\\Blocks\\art_position_small.txt", "graphics\\blocks\\art_position_small.mgm", StaticObjectCategory.EMPLACEMENT, "art_position_small.jpg"),

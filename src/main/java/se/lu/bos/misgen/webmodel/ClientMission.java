@@ -31,6 +31,8 @@ public class ClientMission {
 
     private Weather weather;
 
+    private Integer missionType = 0; // 3=Training (0=Single, 1=Cooperative, 2=Dogfight)
+
     private List<Effect> effects = new ArrayList<>();
 
     private ClientMission() {
@@ -147,5 +149,13 @@ public class ClientMission {
 
     public void setEffects(List<Effect> effects) {
         this.effects = effects;
+    }
+
+    public Integer getMissionType() {
+        return missionType;
+    }
+
+    public void setMissionType(Integer missionType) {
+        this.missionType = missionType;
     }
 }

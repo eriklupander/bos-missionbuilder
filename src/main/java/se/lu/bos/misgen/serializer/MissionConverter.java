@@ -55,10 +55,13 @@ public class MissionConverter {
         lcId = 0;
 
         List<UnitGroup> playerGroups = cm.getSides().entrySet().stream().flatMap(e -> e.getValue().getUnitGroups().stream()).filter(ug -> ug.getAiLevel() == 0).collect(Collectors.toList());
-        if(playerGroups.size() != 1) {
+        if(playerGroups.size() != 1 && cm.getMissionType().intValue() == 0) {
             throw new RuntimeException("Can't generate mission, mission must have exactly ONE (1) group with Skill Level \"Player\". You have " + playerGroups.size() + " such Groups.");
         }
-        UnitGroup playerGroup =  playerGroups.get(0);
+        if(playerGroups.stream().anyMatch(ug -> !PlaneType.valueOf(ug.getType()).getFlyable())) {
+            throw new RuntimeException("Can't generate mission. There is a non-playable aircraft (e.g. JU-52) specified as \"Player\". This causes the simulator to crash, so please change your mission and try again");
+        }
+        UnitGroup playerGroup =  playerGroups != null && playerGroups.size() > 0 ? playerGroups.get(0) : null;
 
         clientAirfields = clientAirfieldParser.build();
 
@@ -69,7 +72,7 @@ public class MissionConverter {
 
 
 
-        buildObjectGroups(cm, gm, playerGroup);
+        buildObjectGroups(cm, gm);
         buildEffects(cm, gm);
         buildStaticObjectGroups(cm, gm);
 
@@ -223,7 +226,7 @@ public class MissionConverter {
         gm.getStaticObjects().addAll(blocks);
     }
 
-    private void buildObjectGroups(ClientMission cm, GeneratedMission gm, UnitGroup playerGroup) {
+    private void buildObjectGroups(ClientMission cm, GeneratedMission gm) {
         Side ussr = cm.getSides().get(101);
         Side germany = cm.getSides().get(201);
 
@@ -248,7 +251,25 @@ public class MissionConverter {
                     ObjectGroup objectGroup = null;
                     try {
                         objectGroup = GroupFactory.buildPlaneGroup(ug, FormationType.VEE);
-                        //objectGroup = GroupFactory.buildPlaneGroup(ug.getAiLevel() == 0, ug.getSize(), PlaneType.valueOf(ug.getType()), ug.getY() != 0, ug.getX(), ug.getY(), ug.getZ(), ug.getyOri(), ug.getLoadout(), ug.getName(), FormationType.VEE);
+
+                        // Need some ugly stuff here to handle coop missions...
+                        if (cm.getMissionType().intValue() == 1) {
+                            // Make sure no aiLevel = 0 exists
+                            objectGroup.getObjects().forEach(ge -> {
+                                Plane p = (Plane) ge;
+                                if (p.getAILevel().intValue() == 0) {
+                                    p.setAILevel(3);
+                                }
+                                for(int a = 0; a < ug.getCoop().size(); a++) {
+                                    if(a == p.getNumberInFormation().intValue()) {
+                                        p.setCoopStart(ug.getCoop().get(a));
+                                    }
+                                }
+                            });
+
+
+                        }
+
                         groupMap.put(ug.getClientId(), objectGroup);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -269,11 +290,19 @@ public class MissionConverter {
                         formationType = FormationType.LINE;
                     }
                     ObjectGroup objectGroup = GroupFactory.buildVehicleGroup(ug.getSize(), VehicleType.valueOf(ug.getType()), ug.getX(), ug.getY(), ug.getZ(), ug.getyOri(), formationType);
+                    objectGroup.getObjects().stream().forEach( o -> {
+                        Vehicle v = (Vehicle) o;
+                        v.setName(ug.getName() + " " + v.getNumberInFormation() + "(" + ug.getType() + ")");
+                    });
                     groupMap.put(ug.getClientId(), objectGroup);
                     return objectGroup;
                 })
                 .collect(Collectors.toList());
 
+        addKilledMessageToGroundVehicle(vehicleGroups, gm);
+
+        gm.getObjectGroups().addAll(airGroups);
+        gm.getObjectGroups().addAll(vehicleGroups);
 
         // Next, run through the UnitGroups again but this time we want to generate waypoints and commands.
         all = rebuildStream(ussr, germany);
@@ -281,7 +310,7 @@ public class MissionConverter {
              // Find the corresponding objectGroup
             ObjectGroup objectGroup = groupMap.get(ug.getClientId());
             if(ug.getWaypoints().size() > 0) {
-                generateWaypoints(ug, objectGroup, gm, playerGroup);
+                generateWaypoints(ug, objectGroup, gm);
             } else {
                 // Do we need a mission begin translator if there are no waypoints at all?
             }
@@ -289,8 +318,7 @@ public class MissionConverter {
         });
 
 
-        gm.getObjectGroups().addAll(airGroups);
-        gm.getObjectGroups().addAll(vehicleGroups);
+
         gm.getWayPoints().addAll(allWaypoints);
 
 
@@ -356,8 +384,14 @@ public class MissionConverter {
 
 
         unitGroupStream = rebuildStream(ussr, germany);
-        UnitGroup playerUnitGroup = unitGroupStream.filter(ug -> ug.getAiLevel() == 0).findFirst().get();
-        int countryId = playerUnitGroup.getCountryCode();
+        Optional<UnitGroup> first = unitGroupStream.filter(ug -> ug.getAiLevel() == 0).findFirst();
+        int xCountryId = 201;
+        if(first.isPresent()) {
+            UnitGroup playerUnitGroup = first.get();
+            xCountryId = playerUnitGroup.getCountryCode();
+        }
+        final int countryId = xCountryId;
+
 
 
         // Generate unit icons
@@ -433,7 +467,7 @@ public class MissionConverter {
         gm.getTranslatorIcons().addAll(staticGermanyGroupUnitIcons);
     }
 
-    private void generateWaypoints(UnitGroup ug, ObjectGroup og, GeneratedMission gm, UnitGroup playerGroup) {
+    private void generateWaypoints(UnitGroup ug, ObjectGroup og, GeneratedMission gm) {
         List<WayPoint> generatedWaypoints = new ArrayList<>();
         for (int a = 0; a < ug.getWaypoints().size(); a++) {
             se.lu.bos.misgen.webmodel.WayPoint wp = ug.getWaypoints().get(a);
@@ -559,7 +593,8 @@ public class MissionConverter {
                             gm.getAttackTargetCommands().add(attackCmd);
 
                             // Add attack target to waypoint target list. Or should this be done on the previous waypoint??
-                            // TODO How do we resume route after command has completed?
+                            // TODO How do we resume route after command has completed? We use the OnEvent mechanism on the target group
+
                             eWp.getTargets().clear();
                             eWp.getTargets().add(attackCmd.getId().intValue());
                             generatedWaypoints.add(eWp);
@@ -649,6 +684,15 @@ public class MissionConverter {
                         gm.getTimers().add(attackCompleteTimer);
                         lastWaypoint.getTargets().add(attackCompleteTimer.getId().intValue());
 
+
+
+
+
+                        attackCompleteTimer.getTargets().add(subtitle.getId().intValue());
+                        gm.getTranslatorSubtitles().add(subtitle);
+
+                        gm.getTimers().add(attackCompleteTimer);
+
                         wpIter.remove();
                         a++;
                         continue;
@@ -657,20 +701,25 @@ public class MissionConverter {
             }
 
             // Test, add subtitle for planes of same coalition
-            if(ug.getGroupType() == GroupType.AIR_GROUP && ug.getCountryCode().equals(playerGroup.getCountryCode())) {
-                String text = ug.getName() + " (" + ug.getType() + ") has reached waypoint " + (a+1);
-                lcId++;
-                TranslatorSubtitle subtitle = new TranslatorSubtitle(wayPoint.getXPos(), wayPoint.getYPos(), wayPoint.getZPos(), lcId);
-                subtitle.setDuration(10);
-                localization.put(lcId, text);
-                wayPoint.getTargets().add(subtitle.getId().intValue());
-                gm.getTranslatorSubtitles().add(subtitle);
-            }
+//            if(ug.getGroupType() == GroupType.AIR_GROUP && ug.getCountryCode().equals(playerGroup.getCountryCode())) {
+//                String text = ug.getName() + " (" + ug.getType() + ") has reached waypoint " + (a+1);
+//                lcId++;
+//                TranslatorSubtitle subtitle = new TranslatorSubtitle(wayPoint.getXPos(), wayPoint.getYPos(), wayPoint.getZPos(), lcId);
+//                subtitle.setDuration(10);
+//                localization.put(lcId, text);
+//                wayPoint.getTargets().add(subtitle.getId().intValue());
+//                gm.getTranslatorSubtitles().add(subtitle);
+//            }
             lastWaypoint = wayPoint;
             a++;
         }
 
         gm.getWayPoints().addAll(generatedWaypoints);
+    }
+
+    private GameEntity findGameEntity(Integer entityTrId, GeneratedMission gm) {
+        Optional<ObjectGroup> first = gm.getObjectGroups().stream().filter(og -> og.getLeader().getMCU_TR_Entity().getId().intValue() == entityTrId.intValue()).findFirst();
+        return first.get().getLeader();
     }
 
     private GameEntity findAttackCommand(Integer id, GeneratedMission gm) {
@@ -700,6 +749,7 @@ public class MissionConverter {
 
     private MissionOptions buildMissionOptions(ClientMission cm, UnitGroup playerUnitGroup) {
         MissionOptions mo = MissionFactory.buildDefaultMissionOptions();
+        mo.setMissionType(0); //cm.getMissionType());
         mo.setDate(cm.getDate());
         mo.setTime(cm.getTime());
         mo.setLCName(lcId); // Mission title, for briefing
@@ -708,8 +758,10 @@ public class MissionConverter {
         mo.setLCDesc(lcId); // Mission briefing text
         localization.put(lcId, cm.getDescription());
 
-        PlaneType planeType = PlaneType.valueOf(playerUnitGroup.getType());
-        mo.setPlayerConfig(planeType.getScript());
+        if(cm.getMissionType().intValue() == 0) {
+            PlaneType planeType = PlaneType.valueOf(playerUnitGroup.getType());
+            mo.setPlayerConfig(planeType.getScript());
+        }
 
         applyWeather(cm, mo);
 
@@ -725,5 +777,30 @@ public class MissionConverter {
         mo.setTemperature(cm.getWeather().getTemperature());
         mo.setTurbulence(cm.getWeather().getTurbulence());
         mo.setWindLayers(cm.getWeather().getWindLayers());
+    }
+
+    private void addKilledMessageToGroundVehicle(List<ObjectGroup> vehicleGroups, GeneratedMission gm) {
+
+        vehicleGroups.stream().forEach( og -> {
+            og.getObjects().stream().forEach(o -> {
+                Vehicle v = (Vehicle) o;
+                lcId++;
+                TranslatorSubtitle tgtKilledSub = new TranslatorSubtitle(v.getXPos(), v.getYPos(), v.getZPos(), lcId);
+                localization.put(lcId, "Target " + v.getName() + " killed");
+                OnEvent destroyedEvent = new OnEvent(EventType.ON_KILLED.getEventId(), tgtKilledSub.getId().intValue());
+                v.getMCU_TR_Entity().getOnEvents().add(destroyedEvent);
+                gm.getTranslatorSubtitles().add(tgtKilledSub);
+
+                lcId++;
+                TranslatorSubtitle tgtDamagedSub = new TranslatorSubtitle(v.getXPos(), v.getYPos(), v.getZPos(), lcId);
+                localization.put(lcId, "Target " + v.getName() + " damaged");
+                OnEvent damagedEvent = new OnEvent(EventType.ON_DAMAGED.getEventId(), tgtDamagedSub.getId().intValue());
+                v.getMCU_TR_Entity().getOnEvents().add(damagedEvent);
+                gm.getTranslatorSubtitles().add(tgtDamagedSub);
+            });
+
+        });
+
+
     }
 }

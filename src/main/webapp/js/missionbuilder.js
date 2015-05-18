@@ -361,6 +361,7 @@ var missionbuilder = new function() {
             "description": $('#create-mission-desc').val(),
             "date": $('#create-mission-date').val(),
             "time": $('#create-mission-time').val(),
+            "missionType": $('#create-mission-type').val(),
             "generateAAAAtAirfields": $('#create-mission-gen-airfield-aaa').prop('checked'),
             //"generateAAAAtBridges": $('#create-mission-gen-bridge-aaa').prop('checked'),
             "includeStalingradCity": $('#create-mission-include-stalingrad').prop('checked')

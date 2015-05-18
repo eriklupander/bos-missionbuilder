@@ -12,7 +12,7 @@ var flightmanager = new function() {
 
         var cm = state.getCurrentMission();
         var side = cm.sides[state.getCurrentCountry()];
-        var tpl = ' <div class="row h4"><div class="col-md-4">Flight Group</div><div class="col-md-1">#</div><div class="col-md-5">Skin</div><div class="col-md-2">AI level</div></div>';
+        var tpl = ' <div class="row h4"><div class="col-md-4">Flight Group</div><div class="col-md-1">#</div><div class="col-md-4">Skin</div><div class="col-md-2">AI level</div><div class="col-md-1 coopselect-header">Coop</div></div>';
 
         for(var a = 0; a < side.unitGroups.length; a++) {
             var ug = side.unitGroups[a];
@@ -23,21 +23,31 @@ var flightmanager = new function() {
             tpl += ' <div class="row spacer">' +
                    '    <div class="col-md-4"><strong>'  + ug.name + ' ('+ug.type+')' + '</strong></div>' +
                     '   <div class="col-md-1">Leader</div>' +
-                    '   <div class="col-md-5"><select class="skinselect" id="'+ ug.clientId + '-0" airtype="' + ug.type + '"/></div>' +
-                '       <div class="col-md-2"><select class="aiselect" id="ailevel-'+ ug.clientId + '-0"/></div>' +
+                    '   <div class="col-md-4"><select class="skinselect" id="'+ ug.clientId + '-0" airtype="' + ug.type + '"/></div>' +
+                    '   <div class="col-md-2"><select class="aiselect" id="ailevel-'+ ug.clientId + '-0"/></div>' +
+                    '   <div class="col-md-1"><input class="coopselect" type="checkbox" id="coop-'+ ug.clientId + '-0"/></div>' +
                 '</div>';
             for(var index = 1; index < side.unitGroups[a].size; index++) {
                 tpl += ' <div class="row">' +
                     '       <div class="col-md-4"></div>' +
                     '       <div class="col-md-1">#'+ (index+1) +'</div>' +
-                    '       <div class="col-md-5"><select class="skinselect" id="'+ ug.clientId + '-'+index+ '"airtype="' + ug.type + '"/></div>' +
+                    '       <div class="col-md-4"><select class="skinselect" id="'+ ug.clientId + '-'+index+ '"airtype="' + ug.type + '"/></div>' +
                     '       <div class="col-md-2"><select class="aiselect" id="ailevel-'+ ug.clientId + '-'+index+ '"/></div>' +
+                    '       <div class="col-md-1"><input class="coopselect" type="checkbox" id="coop-'+ ug.clientId + '-'+index+ '"/></div>' +
                     '   </div>';
             }
             tpl += ' </div>';
         }
         $('#skins-body').empty();
         $('#skins-body').append(tpl);
+
+        if(state.getCurrentMission().missionType == 0) {
+            $('.coopselect').addClass("hidden");
+            $('.coopselect-header').addClass("hidden");
+        } else {
+            $('.coopselect').removeClass("hidden");
+            $('.coopselect-header').removeClass("hidden");
+        }
 
         rest.getSkins(function(data) {
 
@@ -78,9 +88,6 @@ var flightmanager = new function() {
         });
 
 
-
-
-
         $('.aiselect').each(function(i, obj) {
             var id = $(obj).attr('id');
             var aiLevel = getAIForClientId(id, side.unitGroups);
@@ -92,6 +99,25 @@ var flightmanager = new function() {
 
             $(obj).unbind().change(function() {
                 setAILevelForClientId(id, $(obj).val());
+            });
+        });
+
+
+
+
+
+        var coopCheckboxes = $('.coopselect');
+        $.each(coopCheckboxes, function(index, checkBox) {
+            var id = $(checkBox).attr('id');
+            var val = getCoopForClientId(id, side.unitGroups);
+            if(val == 0) {
+                $('#'+id).prop('checked', false);
+            } else {
+                $('#'+id).prop('checked', true);
+            }
+
+            $(checkBox).unbind().change(function() {
+                setCoopForClientId(id, $(checkBox).prop('checked') ? 1 : 0);
             });
         });
     }
@@ -115,6 +141,18 @@ var flightmanager = new function() {
         for(var a = 0; a < objects.length; a++) {
             if(objects[a].clientId == clientId) {
                 objects[a].aiLevels[index] = value;
+                break;
+            }
+        }
+    }
+
+    var setCoopForClientId = function(checkBoxId, value) {
+        var clientId = checkBoxId.split("-")[1];
+        var index = checkBoxId.split("-")[2];
+        var objects = state.getCurrentMission().sides[state.getCurrentCountry()].unitGroups;
+        for(var a = 0; a < objects.length; a++) {
+            if(objects[a].clientId == clientId) {
+                objects[a].coop[index] = value;
                 break;
             }
         }
@@ -171,6 +209,35 @@ var flightmanager = new function() {
                     } else {
                         return aiLevelArr[index];
                     }
+                }
+            }
+        }
+    }
+
+
+
+
+
+    var getCoopForClientId = function(checkBoxId, objects) {
+        var clientId = checkBoxId.split("-")[1];
+        var index = parseInt(checkBoxId.split("-")[2]);
+
+        for(var a = 0; a < objects.length; a++) {
+            if(objects[a].clientId == clientId) {
+                if(util.isNull(objects[a].coop)) {
+                    objects[a].coop = new Array();
+                }
+                var coopArr = objects[a].coop;
+
+                if(index >= coopArr.length) {
+                    // TODO we probably need to auto-adapt the array size here
+                    for(var b = coopArr.length; b < objects[a].size; b++) {
+                        coopArr.push(0);
+                        setCoopForClientId(checkBoxId, 0);       // Init with value = 0
+                    }
+                    return 0;
+                } else {
+                    return coopArr[index];
                 }
 
             }

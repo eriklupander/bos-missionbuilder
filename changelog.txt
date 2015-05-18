@@ -1,3 +1,8 @@
+-- 2015-05-18 --
+* Ju-52 can now be added to missions. Note: Must not be player-controlled.
+* Thanks to community member KpgQuop, we now have a more or less full set of static objects we can include in missions.
+* Minor bug fixes.
+
 -- 2015-03-04 --
 * Added Flight Manager, which replaces the Skin Manager. Allows AI level to be set for individual planes as well as skins. Will also add Loadouts to this view later on. Please note that I have locked the currently selected player plane for now in order to not make things over-complicated syncing this view with the controls in the Edit Flight form.
 * Added all ground vehicles present in the FME to SMB

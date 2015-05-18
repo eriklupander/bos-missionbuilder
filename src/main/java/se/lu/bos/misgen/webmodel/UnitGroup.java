@@ -37,6 +37,11 @@ public class UnitGroup extends MapObject {
      */
     private List<Integer> aiLevels = new ArrayList<>();
 
+    /**
+     * Coop 0 = NO, 1 = YES
+     */
+    private List<Integer> coop = new ArrayList<>();
+
     private FormationType formation = FormationType.NONE;
 
     public UnitGroup() {
@@ -177,5 +182,13 @@ public class UnitGroup extends MapObject {
 
     public void setAiLevels(List<Integer> aiLevels) {
         this.aiLevels = aiLevels;
+    }
+
+    public List<Integer> getCoop() {
+        return coop;
+    }
+
+    public void setCoop(List<Integer> coop) {
+        this.coop = coop;
     }
 }

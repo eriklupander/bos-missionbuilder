@@ -31,6 +31,15 @@
                     <label>Mission name</label>
                     <input id="create-mission-name" class="form-control">
                 </div>
+                <!--
+                <div class="form-group">
+                    <label>Mission type</label>
+                    <select class="form-control"  id="create-mission-type">
+                        <option value="0" selected>Single player</option>
+                        <option value="1">Cooperative</option>
+                    </select>
+                </div>
+                -->
                 <div class="form-group">
                     <label>Mission date & time</label>
                     <input id="create-mission-date" class="form-control" value="11.12.1942">

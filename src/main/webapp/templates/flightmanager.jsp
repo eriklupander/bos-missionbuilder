@@ -1,6 +1,6 @@
 <div class="modal fade" id="skinsModal">
     <div id="skinsDialog" class="modal-dialog" >
-        <div class="modal-content"  style="width:750px;">
+        <div class="modal-content"  style="width:850px;">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
                         class="sr-only">Close</span></button>
