@@ -49,11 +49,11 @@
         <div class="col-md-2"></div>
         <div class="col-md-5">
             <select id="cloudConfig">
-                <option value="00_clear_03\sky.ini">Clear</option>
-                <option value="01_Light_08\sky.ini">Light</option>
-                <option value="02_Medium_07\sky.ini">Medium</option>
-                <option value="03_Heavy_03\sky.ini">Heavy</option>
-                <option value="04_Overcast_01\sky.ini">Overcast</option>
+                <option value="winter\00_clear_03\sky.ini">Clear (winter)</option>
+                <option value="winter\01_Light_08\sky.ini">Light (winter)</option>
+                <option value="winter\02_Medium_07\sky.ini">Medium (winter)</option>
+                <option value="winter\03_Heavy_03\sky.ini">Heavy (winter)</option>
+                <option value="winter\04_Overcast_01\sky.ini">Overcast (winter)</option>
             </select>
         </div>
     </div>

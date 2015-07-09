@@ -16,8 +16,8 @@ public class PilotFactory {
     private static Random rnd2 = new Random();
     private static Random rnd3 = new Random();
 
-    private static String[] firstNamesGerman = {"Hans", "Rudolf","Erich", "Klaus", "Jürgen", "Steffen", "Mats", "Werner", "Helmut", "Adolf", "Heinrich", "Torsten", "Karl-Heinz", "Stefan", "Rudi", "Ralf", "Michael", "Mueller"};
-    private static String[] lastNamesGerman = {"Hummels", "Mertesacker", "Kohler", "Völler", "Klinsmann", "Jancker", "Rummenigge", "Schwartz", "Weiss", "Frings", "Böhme", "Braun", "Brehme", "Lahm", "Loew", "Thomas"};
+    private static String[] firstNamesGerman = {"Hans", "Rudolf","Erich", "Klaus", "Jürgen", "Steffen", "Mats", "Werner", "Helmut", "Adolf", "Heinrich", "Torsten", "Karl-Heinz", "Stefan", "Rudi", "Ralf", "Michael", "Thomas"};
+    private static String[] lastNamesGerman = {"Hummels", "Mertesacker", "Kohler", "Völler", "Klinsmann", "Jancker", "Rummenigge", "Schwartz", "Weiss", "Frings", "Böhme", "Braun", "Brehme", "Lahm", "Loew", "Mueller"};
     private static String randomFirstName;
 
     public static Pilot getEnlistedPilot() {
