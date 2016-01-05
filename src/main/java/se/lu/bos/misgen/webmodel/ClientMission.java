@@ -35,6 +35,8 @@ public class ClientMission {
 
     private List<Effect> effects = new ArrayList<>();
 
+    private MapType mapType;
+
     private ClientMission() {
         sides.put(101, new Side("USSR"));
         sides.put(201, new Side("Germany"));
@@ -157,5 +159,13 @@ public class ClientMission {
 
     public void setMissionType(Integer missionType) {
         this.missionType = missionType;
+    }
+
+    public MapType getMapType() {
+        return mapType;
+    }
+
+    public void setMapType(MapType mapType) {
+        this.mapType = mapType;
     }
 }

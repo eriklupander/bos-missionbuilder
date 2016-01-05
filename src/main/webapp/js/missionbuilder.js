@@ -114,11 +114,20 @@ var missionbuilder = new function() {
             $(obj).addClass('hidden');
         }
         state.setFilter(toggleId, !$(obj).hasClass('hidden'));
-    }
+    };
 
     this.openCreateDialog = function() {
+
+        rest.getMaps(function(data) {
+            var mapSelect = $('#create-mission-map');
+            $(mapSelect).empty();
+            $(mapSelect).append('<option value="STALINGRAD_WINTER">-- Select map --</option>');
+            for(var a = 0 ; a < data.length; a++) {
+                $(mapSelect).append('<option value="' + data[a] + '">' + data[a] + '</option>');
+            }
+        });
         $('#createMissionModal').modal({backdrop:'static'});
-    }
+    };
 
     this.editMission = function() {
         var src = $('#mission-edit-tpl').html();
@@ -141,9 +150,20 @@ var missionbuilder = new function() {
         } else {
             $('#edit-mission-gen-include-stalingrad').removeAttr('checked');
         }
+        rest.getMaps(function(data) {
+            util.populateSelect('edit-mission-map', state.getCurrentMission(), 'mapType', data);
+        });
+
+        //rest.getMaps(function(data) {
+        //    var mapSelect = $('#edit-mission-map');
+        //    $(mapSelect).empty();
+        //    for(var a = 0 ; a < data.length; a++) {
+        //        $(mapSelect).append('<option value="' + data[a] + '">' + data[a] + '</option>');
+        //    }
+        //});
 
         $('#editMissionModal').modal({backdrop:'static'});
-    }
+    };
 
     this.saveMission = function() {
 
@@ -154,6 +174,7 @@ var missionbuilder = new function() {
         state.getCurrentMission().generateAAAAtAirfields = $('#edit-mission-gen-airfield-aaa').prop('checked');
         //state.getCurrentMission().generateAAAAtBridges = $('#edit-mission-gen-bridge-aaa').prop('checked');
         state.getCurrentMission().includeStalingradCity = $('#edit-mission-gen-include-stalingrad').prop('checked');
+        state.getCurrentMission().mapType = $('#edit-mission-map').val();
 
         rest.updateMission(state.getCurrentMission(), function(data) {
             state.setCurrentMission(data);
@@ -200,7 +221,7 @@ var missionbuilder = new function() {
             $('#localizationFileLink').removeClass('hidden');
             */
         });
-    }
+    };
 
     this.openCreateUnitDialog = function (screenToWorld) {
 
@@ -212,6 +233,7 @@ var missionbuilder = new function() {
         });
 
         $('#createUnitGroupModal').modal({backdrop:'static'});
+        $('#create-unit-group-name').val('');
         $('#create-unit-group-altitude').slider().on('slide', function(ev){
             $('#ycreate-text').text(ev.value);
         }).on('slideStop', function(ev){
@@ -339,7 +361,7 @@ var missionbuilder = new function() {
             clientId : new Date().getTime(),
             briefingIcon : $('#create-unit-group-icon').prop('checked'),
             briefingWaypointIcons : $('#create-unit-group-icon-waypoint').prop('checked')
-        }
+        };
 
         var currentMission = state.getCurrentMission();
         state.pushMissionState(currentMission);
@@ -352,7 +374,7 @@ var missionbuilder = new function() {
 
             maprenderer.redraw();
         });
-    }
+    };
 
     this.createMission = function() {
         // Post basic stuff to server, get template document back
@@ -362,15 +384,16 @@ var missionbuilder = new function() {
             "date": $('#create-mission-date').val(),
             "time": $('#create-mission-time').val(),
             "missionType": $('#create-mission-type').val(),
+            "mapType": $('create-mission-map').val(),
             "generateAAAAtAirfields": $('#create-mission-gen-airfield-aaa').prop('checked'),
             //"generateAAAAtBridges": $('#create-mission-gen-bridge-aaa').prop('checked'),
             "includeStalingradCity": $('#create-mission-include-stalingrad').prop('checked')
-        }
+        };
         $('#country-select').removeClass('hidden');
         $('#weather-select').removeClass('hidden');
         $('#skins-select').removeClass('hidden');
         rest.createMission(mission, handleMissionCreateResponse);
-    }
+    };
 
     this.addFlightGroup = function() {
         $('#clickOnMapDiv').html("Select group location by clicking on map");

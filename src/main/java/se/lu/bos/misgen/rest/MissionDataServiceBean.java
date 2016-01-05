@@ -427,4 +427,15 @@ public class MissionDataServiceBean {
         return new ResponseEntity(finalStream.collect(Collectors.toMap(vmd -> vmd.getIdentifier(), vmd -> vmd)), HttpStatus.OK);
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/maps", produces = "application/json")
+    public ResponseEntity<List<MapType>> getMaps() {
+        List<MapType> mapsList = Arrays.asList(MapType.values())
+                .stream()
+                .sorted((MapType sot1, MapType sot2) -> sot1.name().compareTo(sot2.name()))
+                .collect(Collectors.toList());
+
+        return new ResponseEntity(mapsList, HttpStatus.OK);
+    }
+
+
 }

@@ -49,11 +49,16 @@
         <div class="col-md-2"></div>
         <div class="col-md-5">
             <select id="cloudConfig">
-                <option value="winter\00_clear_03\sky.ini">Clear (winter)</option>
-                <option value="winter\01_Light_08\sky.ini">Light (winter)</option>
-                <option value="winter\02_Medium_07\sky.ini">Medium (winter)</option>
-                <option value="winter\03_Heavy_03\sky.ini">Heavy (winter)</option>
-                <option value="winter\04_Overcast_01\sky.ini">Overcast (winter)</option>
+                <option value="00_clear_03\sky.ini">Clear (Winter)</option>
+                <option value="01_Light_08\sky.ini">Light (Winter)</option>
+                <option value="02_Medium_07\sky.ini">Medium (Winter)</option>
+                <option value="03_Heavy_03\sky.ini">Heavy (Winter)</option>
+                <option value="04_Overcast_01\sky.ini">Overcast (Winter)</option>
+                <option value="summer\00_Clear_01\sky.ini">Clear (Summer)</option>
+                <option value="summer\01_Light_03\sky.ini">Light (Summer)</option>
+                <option value="summer\02_Medium_05\sky.ini">Medium (Summer)</option>
+                <option value="summer\03_Heavy_01\sky.ini">Heavy (Summer)</option>
+                <option value="summer\04_Overcast_03\sky.ini">Overcast (Summer)</option>
             </select>
         </div>
     </div>

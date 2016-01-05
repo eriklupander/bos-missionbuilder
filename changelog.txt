@@ -1,3 +1,10 @@
+-- 2016-01-06 --
+* Stalingrad Summer / Winter now selectable when creating or editing mission
+* Weather Editor now has Cloud Types for summer and winter. If summer map chosen with winter clouds, light summer weather will be set automatically. Sim goes very blue otherwise.
+* Added Battle of Moscow planes currently available: Mig3, P-40, I-16, Bf109E7, Bf110 and MC202 are now addable to missions.
+* Fixed bug where flight group name from previous group would be present in textfield.
+* Fixed bug where changed unit thumbnail path in BoS install caused path to become invalid making thumbnail images disappear.
+
 -- 2015-05-18 --
 * Ju-52 can now be added to missions. Note: Must not be player-controlled.
 * Thanks to community member KpgQuop, we now have a more or less full set of static objects we can include in missions.

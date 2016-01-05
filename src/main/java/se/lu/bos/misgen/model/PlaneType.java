@@ -24,7 +24,14 @@ public enum PlaneType {
     LA5(101, "LuaScripts\\WorldObjects\\Planes\\la5s8.txt", "graphics\\planes\\la5s8\\la5s8.mgm", PlaneCategory.FIGHTER, "La5s8", "La5s8.jpg", true),
     PE2(101, "LuaScripts\\WorldObjects\\Planes\\pe2s87.txt", "graphics\\planes\\pe2s87\\pe2s87.mgm", PlaneCategory.BOMBER, "Pe2s87", "Pe2s87.jpg", true),
     IL2M42(101, "LuaScripts\\WorldObjects\\Planes\\il2m42.txt", "graphics\\planes\\il2m42\\il2m42.mgm", PlaneCategory.BOMBER, "IL2M42", "Il2m42.jpg", true),   // 18
-    JU52(201, "LuaScripts\\WorldObjects\\Planes\\Ju523mg4e.txt", "graphics\\planes\\Ju523mg4e\\Ju523mg4e.mgm", PlaneCategory.BOMBER, "Ju523mg4e", "Ju523mg4e.jpg", false);
+    JU52(201, "LuaScripts\\WorldObjects\\Planes\\Ju523mg4e.txt", "graphics\\planes\\Ju523mg4e\\Ju523mg4e.mgm", PlaneCategory.BOMBER, "Ju523mg4e", "Ju523mg4e.jpg", false),
+
+    P40E(101, "luascripts\\worldobjects\\planes\\p40e1.txt", "graphics\\planes\\p40e1\\p40e1.mgm", PlaneCategory.FIGHTER, "p40e1", "p40e1.jpg", true),
+    MIG3(101, "luascripts\\worldobjects\\planes\\mig3s24.txt", "graphics\\planes\\mig3s24\\mig3s24.mgm", PlaneCategory.FIGHTER, "mig3s24", "mig3s24.jpg", true),
+    I16T24(101, "luascripts\\worldobjects\\planes\\i16t24.txt", "graphics\\planes\\I16t24\\I16t24.mgm", PlaneCategory.FIGHTER, "i16t24", "i16t24.jpg", true),
+    BF109E7(201, "luascripts\\worldobjects\\planes\\bf109e7.txt", "graphics\\planes\\bf109e7\\bf109e7.mgm", PlaneCategory.FIGHTER, "bf109e7", "bf109e7.jpg", true),
+    MC202(201, "luascripts\\worldobjects\\planes\\mc202s8.txt", "graphics\\planes\\mc202s8\\mc202s8.mgm", PlaneCategory.FIGHTER, "mc202s8", "mc202s8.jpg", true),
+    BF110E2(201, "luascripts\\worldobjects\\planes\\bf110e2.txt", "graphics\\planes\\bf110e2\\bf110e2.mgm", PlaneCategory.FIGHTER, "bf110e2", "bf110e2.jpg", true);
 
     private final int country;
     private final String script;

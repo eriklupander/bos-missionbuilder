@@ -31,6 +31,11 @@
                     <label>Mission name</label>
                     <input id="create-mission-name" class="form-control">
                 </div>
+                <div class="form-group">
+                    <label>Map</label>
+                    <select id="create-mission-map" class="form-control" value="{{mapType}}">
+                    </select>
+                </div>
                 <!--
                 <div class="form-group">
                     <label>Mission type</label>

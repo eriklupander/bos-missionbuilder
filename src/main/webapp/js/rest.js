@@ -124,4 +124,8 @@ var rest = new function() {
     this.getGameObjectMetadata = function(callback) {
         $.getJSON(BASE + "/gameObjectTypes/metadata", callback);
     }
+
+    this.getMaps = function(callback) {
+        $.getJSON(BASE + "/maps", callback);
+    }
 }

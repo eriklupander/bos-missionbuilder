@@ -758,17 +758,51 @@ public class MissionConverter {
         mo.setLCDesc(lcId); // Mission briefing text
         localization.put(lcId, cm.getDescription());
 
-        if(cm.getMissionType().intValue() == 0) {
+        if (cm.getMissionType().intValue() == 0) {
             PlaneType planeType = PlaneType.valueOf(playerUnitGroup.getType());
             mo.setPlayerConfig(planeType.getScript());
         }
 
         applyWeather(cm, mo);
-
+        applyMap(cm, mo);
         return mo;
     }
 
+    private void applyMap(ClientMission cm, MissionOptions mo) {
+        if (cm.getMapType() == null) {
+           cm.setMapType(MapType.STALINGRAD_WINTER);
+        }
+
+        switch(cm.getMapType()) {
+            case STALINGRAD_SUMMER:
+            case STALINGRAD_AUTUMN:
+                mo.setGuiMap(SeasonConstants.STALINGRAD_S_GuiMap);
+                mo.setHMap(SeasonConstants.STALINGRAD_S_HMap);
+                mo.setForests(SeasonConstants.STALINGRAD_S_Forests);
+                mo.setTextures(SeasonConstants.STALINGRAD_S_Textures);
+                mo.setSeasonPrefix(SeasonConstants.SUMMER_SeasonPrefix);
+                break;
+            case STALINGRAD_WINTER:
+                mo.setGuiMap(SeasonConstants.STALINGRAD_W_GuiMap);
+                mo.setHMap(SeasonConstants.STALINGRAD_W_HMap);
+                mo.setForests(SeasonConstants.STALINGRAD_W_Forests);
+                mo.setTextures(SeasonConstants.STALINGRAD_W_Textures);
+                mo.setSeasonPrefix(SeasonConstants.WINTER_SeasonPrefix);
+                break;
+            default:
+                mo.setGuiMap(SeasonConstants.STALINGRAD_W_GuiMap);
+                mo.setHMap(SeasonConstants.STALINGRAD_W_HMap);
+                mo.setForests(SeasonConstants.STALINGRAD_W_Forests);
+                mo.setTextures(SeasonConstants.STALINGRAD_W_Textures);
+                mo.setSeasonPrefix(SeasonConstants.WINTER_SeasonPrefix);
+        }
+    }
+
     private void applyWeather(ClientMission cm, MissionOptions mo) {
+        // A little hack to make sure a summer cloudconfig is used if not properly set, game look blue otherwise...
+        if (cm.getMapType() == MapType.STALINGRAD_SUMMER && !cm.getWeather().getCloudConfig().toLowerCase().contains("summer")) {
+            cm.getWeather().setCloudConfig("summer\\01_Light_03\\sky.ini");
+        }
         mo.setCloudConfig(cm.getWeather().getCloudConfig());
         mo.setCloudHeight(cm.getWeather().getCloudHeight());
         mo.setCloudLevel(cm.getWeather().getCloudLevel());

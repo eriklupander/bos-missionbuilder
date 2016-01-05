@@ -32,7 +32,7 @@ public class ImageServlet {
     @RequestMapping(value = "/thumbs", method = RequestMethod.GET, produces = "image/jpg")
     public @ResponseBody ResponseEntity<byte[]> getImage(@RequestParam String imageUrl) throws IOException {
 
-        File file = new File(envUtil.getBasePath() + File.separator + "graphics" + File.separator + "preview" + File.separator + imageUrl);
+        File file = new File(envUtil.getBasePath() + File.separator + "GUI" + File.separator + "preview" + File.separator + imageUrl);
         FileInputStream fileInputStream = FileUtils.openInputStream(file);
 
         byte[] data = IOUtils.toByteArray(fileInputStream);

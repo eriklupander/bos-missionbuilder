@@ -305,6 +305,11 @@ border-radius: 10px 0 0 0;
         <input id="edit-mission-name" class="form-control" value="{{name}}">
     </div>
     <div class="form-group">
+        <label>Map</label>
+        <select id="edit-mission-map" class="form-control" value="{{mapType}}">
+        </select>
+    </div>
+    <div class="form-group">
         <label>Mission date & time</label>
         <input id="edit-mission-date" class="form-control" value="{{date}}">
         <input id="edit-mission-time" class="form-control" value="{{time}}">
